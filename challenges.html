@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Challenges — Coming Soon | SkillCoin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <style>
+    .coming-soon-wrapper {
+      min-height: calc(100vh - 80px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .coming-soon-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .cs-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.15;
+    }
+
+    .cs-orb-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--red);
+      top: -100px;
+      left: -100px;
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+
+    .cs-orb-2 {
+      width: 350px;
+      height: 350px;
+      background: var(--gold);
+      bottom: -100px;
+      right: -100px;
+      animation: floatOrb 10s ease-in-out infinite reverse;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+
+    .coming-soon-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 50px 40px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cs-icon-wrap {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 24px;
+      background: linear-gradient(135deg, var(--red), var(--gold));
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      color: white;
+      box-shadow: 0 20px 50px rgba(255, 107, 107, 0.4);
+      animation: pulseIcon 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseIcon {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .cs-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--red), var(--gold));
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .cs-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--red), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cs-desc {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 30px;
+      max-width: 450px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cs-features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .cs-feature {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .cs-feature i {
+      color: var(--red);
+      font-size: 1.1rem;
+      width: 28px;
+      text-align: center;
+    }
+
+    .cs-feature span {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .cs-progress {
+      background: var(--bg-2);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .cs-progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .cs-progress-header strong {
+      color: var(--gold);
+      font-weight: 800;
+    }
+
+    .cs-progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .cs-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+      border-radius: 4px;
+      width: 65%;
+      animation: progressGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes progressGlow {
+      0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+      50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+    }
+
+    .cs-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cs-actions .btn {
+      min-width: 180px;
+    }
+
+    .cs-note {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .cs-note strong {
+      background: linear-gradient(135deg, var(--primary), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @media (max-width: 600px) {
+      .coming-soon-card { padding: 30px 20px; }
+      .cs-title { font-size: 1.8rem; }
+      .cs-icon-wrap { width: 90px; height: 90px; font-size: 2.5rem; }
+      .cs-features { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body class="dashboard-body">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-coins"></i></div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar-mini" id="sidebarAvatar"><span id="sidebarInitial">?</span></div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Loading...</span>
+        <span class="user-level-mini">
+          <i class="fas fa-shield-alt"></i>
+          <span id="sidebarLevel">Level 1</span>
+        </span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="courses.html" class="sidebar-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+        <a href="missions.html" class="sidebar-link"><i class="fas fa-tasks"></i><span>Missions</span></a>
+        <a href="challenges.html" class="sidebar-link active"><i class="fas fa-bolt"></i><span>Challenges</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Explore</span>
+        <a href="marketplace.html" class="sidebar-link"><i class="fas fa-store"></i><span>Marketplace</span></a>
+        <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
+        <a href="studenthub.html" class="sidebar-link"><i class="fas fa-graduation-cap"></i><span>StudentHub</span></a>
+        <a href="skill-ai.html" class="sidebar-link"><i class="fas fa-robot"></i><span>Skill AI</span><span class="nav-badge new">NEW</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a href="profile.html" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="upload.html" class="sidebar-link"><i class="fas fa-upload"></i><span>Upload Skill</span></a>
+        <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i><span>Settings</span></a>
+      </div>
+    </nav>
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search..." disabled/>
+      </div>
+      <div class="top-actions">
+        <div class="coin-balance">
+          <i class="fas fa-coins"></i>
+          <span id="coinAmount">0</span>
+        </div>
+        <button class="icon-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="user-avatar" id="topAvatar"><span id="topInitial">?</span></div>
+      </div>
+    </header>
+
+    <div class="coming-soon-wrapper">
+      <div class="coming-soon-bg">
+        <div class="cs-orb cs-orb-1"></div>
+        <div class="cs-orb cs-orb-2"></div>
+      </div>
+
+      <div class="coming-soon-card">
+        <div class="cs-icon-wrap">
+          <i class="fas fa-bolt"></i>
+        </div>
+
+        <div class="cs-badge">
+          <i class="fas fa-rocket"></i>
+          Coming Very Soon!
+        </div>
+
+        <h1 class="cs-title">Daily Challenges</h1>
+        
+        <p class="cs-desc">
+          We're cooking up something INSANE! 🔥 Daily brain-teasing challenges with 
+          instant coin rewards, difficulty levels, and streak bonuses!
+        </p>
+
+        <div class="cs-features">
+          <div class="cs-feature">
+            <i class="fas fa-brain"></i>
+            <span>Brain Teasers</span>
+          </div>
+          <div class="cs-feature">
+            <i class="fas fa-coins"></i>
+            <span>Instant Rewards</span>
+          </div>
+          <div class="cs-feature">
+            <i class="fas fa-fire"></i>
+            <span>Streak Bonuses</span>
+          </div>
+          <div class="cs-feature">
+            <i class="fas fa-trophy"></i>
+            <span>Global Rankings</span>
+          </div>
+        </div>
+
+        <div class="cs-progress">
+          <div class="cs-progress-header">
+            <span>Development Progress</span>
+            <strong>65%</strong>
+          </div>
+          <div class="cs-progress-bar">
+            <div class="cs-progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="cs-actions">
+          <a href="dashboard.html" class="btn btn-outline btn-large">
+            <i class="fas fa-home"></i>
+            Back to Dashboard
+          </a>
+          <a href="missions.html" class="btn btn-primary btn-large">
+            <i class="fas fa-tasks"></i>
+            Try Missions
+          </a>
+        </div>
+
+        <p class="cs-note">
+          Meanwhile, check out our <strong>Missions</strong> feature for daily rewards! 
+          Or chat with <strong>Skill AI</strong> for fun quizzes! 🤖
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-link"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="courses.html" class="bottom-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+    <a href="skill-ai.html" class="bottom-link ai-nav"><i class="fas fa-robot"></i><span>AI</span></a>
+    <a href="marketplace.html" class="bottom-link"><i class="fas fa-store"></i><span>Store</span></a>
+    <a href="profile.html" class="bottom-link"><i class="fas fa-user"></i><span>Profile</span></a>
+  </nav>
+
+  <a href="skill-ai.html" class="ai-float-btn">
+    <i class="fas fa-robot"></i>
+    <span class="ai-tooltip">Ask Skill AI ✨</span>
+  </a>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script type="module">
+    import { auth, db, signOut, onAuthStateChanged, doc, getDoc } from './js/firebase-config.js';
+
+    const ADMIN_EMAIL = "techgamers273@gmail.com";
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const userSnap = await getDoc(doc(db, 'users', user.uid));
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          const name = data.name || 'Learner';
+          const initial = name.charAt(0).toUpperCase();
+          document.getElementById('sidebarName').textContent = name;
+          document.getElementById('sidebarInitial').textContent = initial;
+          document.getElementById('sidebarLevel').textContent = `Level ${data.level || 1}`;
+          document.getElementById('topInitial').textContent = initial;
+          const isAdmin = user.email === ADMIN_EMAIL;
+          document.getElementById('coinAmount').textContent = isAdmin ? '∞' : formatNumber(data.skillCoins || 0);
+        }
+      } catch (err) { console.error(err); }
+    });
+
+    function formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+      return num.toString();
+    }
+
+    // Sidebar toggle
+    document.getElementById('menuToggle')?.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    });
+
+    document.getElementById('sidebarOverlay')?.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('active');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+    });
+
+    // Logout
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+      if (!confirm('Logout?')) return;
+      await signOut(auth);
+      localStorage.removeItem('skillcoin_user');
+      window.location.href = 'login.html';
+    });
+  </script>
+
+  <script type="module" src="js/admin-inject.js"></script>
+</body>
+</html>

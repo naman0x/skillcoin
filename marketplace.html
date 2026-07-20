@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Marketplace — SkillCoin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/marketplace.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse"><i class="fas fa-coins"></i></div>
+      <span class="loader-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+    <p class="loader-message">Loading marketplace...</p>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-coins"></i></div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar-mini" id="sidebarAvatar"><span id="sidebarInitial">?</span></div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Loading...</span>
+        <span class="user-level-mini">
+          <i class="fas fa-shield-alt"></i>
+          <span id="sidebarLevel">Level 1</span>
+        </span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="courses.html" class="sidebar-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+        <a href="missions.html" class="sidebar-link"><i class="fas fa-tasks"></i><span>Missions</span></a>
+        <a href="challenges.html" class="sidebar-link"><i class="fas fa-bolt"></i><span>Challenges</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Explore</span>
+        <a href="marketplace.html" class="sidebar-link active"><i class="fas fa-store"></i><span>Marketplace</span></a>
+        <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
+        <a href="studenthub.html" class="sidebar-link"><i class="fas fa-graduation-cap"></i><span>StudentHub</span></a>
+        <a href="skill-ai.html" class="sidebar-link"><i class="fas fa-robot"></i><span>Skill AI</span><span class="nav-badge new">NEW</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a href="profile.html" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="upload.html" class="sidebar-link"><i class="fas fa-upload"></i><span>Upload Skill</span></a>
+        <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i><span>Settings</span></a>
+      </div>
+    </nav>
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search items..." id="marketSearch"/>
+      </div>
+      <div class="top-actions">
+        <div class="coin-balance">
+          <i class="fas fa-coins"></i>
+          <span id="coinAmount">0</span>
+        </div>
+        <button class="icon-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="user-avatar" id="topAvatar"><span id="topInitial">?</span></div>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+
+      <!-- Market Hero -->
+      <section class="market-hero">
+        <div class="market-hero-orb"></div>
+        <div class="market-hero-content">
+          <div class="market-hero-badge">
+            <i class="fas fa-store"></i>
+            <span>SkillCoin Store</span>
+          </div>
+          <h1 class="market-hero-title">
+            Spend Your <span class="gold-text">SkillCoins</span> 🪙<br/>
+            <span class="gradient-text">Unlock Premium Perks</span>
+          </h1>
+          <p class="market-hero-desc">
+            Use your hard-earned coins to unlock premium notes, badges, 
+            themes, and more exclusive rewards!
+          </p>
+          <div class="market-balance-display">
+            <div class="market-balance-icon"><i class="fas fa-coins"></i></div>
+            <div>
+              <span class="market-balance-label">Your Balance</span>
+              <strong class="market-balance-value" id="heroBalance">0 Coins</strong>
+            </div>
+          </div>
+        </div>
+        <div class="market-hero-visual">
+          <div class="market-icon-float float-1">🎁</div>
+          <div class="market-icon-float float-2">🏅</div>
+          <div class="market-icon-float float-3">🎨</div>
+          <div class="market-icon-float float-4">📘</div>
+        </div>
+      </section>
+
+      <!-- Category Tabs -->
+      <section class="market-categories">
+        <button class="market-cat-tab active" data-category="all">
+          <i class="fas fa-th"></i>
+          All Items
+        </button>
+        <button class="market-cat-tab" data-category="notes">
+          <i class="fas fa-book"></i>
+          Notes & PDFs
+        </button>
+        <button class="market-cat-tab" data-category="badges">
+          <i class="fas fa-medal"></i>
+          Badges
+        </button>
+        <button class="market-cat-tab" data-category="themes">
+          <i class="fas fa-palette"></i>
+          Themes
+        </button>
+        <button class="market-cat-tab" data-category="avatars">
+          <i class="fas fa-user-circle"></i>
+          Avatar Frames
+        </button>
+        <button class="market-cat-tab" data-category="power-ups">
+          <i class="fas fa-bolt"></i>
+          Power-Ups
+        </button>
+      </section>
+
+      <!-- Items Grid -->
+      <section class="items-grid" id="itemsGrid">
+        <!-- Injected by JS -->
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Purchase Modal -->
+  <div class="modal-overlay" id="purchaseModal">
+    <div class="modal purchase-modal">
+      <button class="modal-close" id="closePurchase">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="purchase-icon" id="purchaseModalIcon">
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+      <h2 id="purchaseTitle">Buy Item</h2>
+      <p id="purchaseDesc">Confirm your purchase</p>
+      <div class="purchase-info">
+        <div class="purchase-row">
+          <span>Item</span>
+          <strong id="purchaseItemName">-</strong>
+        </div>
+        <div class="purchase-row">
+          <span>Price</span>
+          <strong id="purchasePrice">0 🪙</strong>
+        </div>
+        <div class="purchase-row">
+          <span>Your Balance</span>
+          <strong id="purchaseBalance">0 🪙</strong>
+        </div>
+        <div class="purchase-divider"></div>
+        <div class="purchase-row total">
+          <span>Balance After</span>
+          <strong id="purchaseAfter">0 🪙</strong>
+        </div>
+      </div>
+      <div class="purchase-actions">
+        <button class="btn btn-outline" id="cancelPurchase">Cancel</button>
+        <button class="btn btn-primary" id="confirmPurchase">
+          <i class="fas fa-check"></i>
+          Confirm Purchase
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-link"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="courses.html" class="bottom-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+    <a href="skill-ai.html" class="bottom-link ai-nav"><i class="fas fa-robot"></i><span>AI</span></a>
+    <a href="marketplace.html" class="bottom-link active"><i class="fas fa-store"></i><span>Store</span></a>
+    <a href="profile.html" class="bottom-link"><i class="fas fa-user"></i><span>Profile</span></a>
+  </nav>
+
+  <a href="skill-ai.html" class="ai-float-btn">
+    <i class="fas fa-robot"></i>
+    <span class="ai-tooltip">Ask Skill AI ✨</span>
+  </a>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script type="module" src="js/marketplace.js"></script>
+</body>
+</html>

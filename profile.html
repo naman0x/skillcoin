@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Profile — SkillCoin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/profile.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse"><i class="fas fa-coins"></i></div>
+      <span class="loader-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+    <p class="loader-message">Loading profile...</p>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-coins"></i></div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar-mini" id="sidebarAvatar"><span id="sidebarInitial">?</span></div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Loading...</span>
+        <span class="user-level-mini">
+          <i class="fas fa-shield-alt"></i>
+          <span id="sidebarLevel">Level 1</span>
+        </span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="courses.html" class="sidebar-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+        <a href="missions.html" class="sidebar-link"><i class="fas fa-tasks"></i><span>Missions</span></a>
+        <a href="challenges.html" class="sidebar-link"><i class="fas fa-bolt"></i><span>Challenges</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Explore</span>
+        <a href="marketplace.html" class="sidebar-link"><i class="fas fa-store"></i><span>Marketplace</span></a>
+        <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
+        <a href="studenthub.html" class="sidebar-link"><i class="fas fa-graduation-cap"></i><span>StudentHub</span></a>
+        <a href="skill-ai.html" class="sidebar-link"><i class="fas fa-robot"></i><span>Skill AI</span><span class="nav-badge new">NEW</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a href="profile.html" class="sidebar-link active"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="upload.html" class="sidebar-link"><i class="fas fa-upload"></i><span>Upload Skill</span></a>
+        <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i><span>Settings</span></a>
+      </div>
+    </nav>
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search..." disabled/>
+      </div>
+      <div class="top-actions">
+        <div class="coin-balance">
+          <i class="fas fa-coins"></i>
+          <span id="coinAmount">0</span>
+        </div>
+        <button class="icon-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="user-avatar" id="topAvatar"><span id="topInitial">?</span></div>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+
+      <!-- Profile Hero -->
+      <section class="profile-hero" id="profileHero">
+        <div class="profile-hero-bg"></div>
+        
+        <!-- Cover Actions -->
+        <div class="profile-actions-top">
+          <button class="profile-action-btn" id="shareBtn" title="Share Profile">
+            <i class="fas fa-share-alt"></i>
+          </button>
+          <button class="profile-action-btn" onclick="window.location.href='settings.html'" title="Settings">
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
+
+        <div class="profile-main-info">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar-big" id="profileAvatar">
+              <span id="profileInitial">?</span>
+            </div>
+            <div class="profile-level-tag">
+              <i class="fas fa-shield-alt"></i>
+              Level <span id="profileLevel">1</span>
+            </div>
+          </div>
+
+          <div class="profile-details">
+            <div class="profile-name-wrap">
+              <h1 class="profile-name" id="profileName">Loading...</h1>
+              <span class="profile-badge-verified" id="verifiedBadge" style="display:none;">
+                <i class="fas fa-crown"></i>
+                Developer
+              </span>
+            </div>
+            <p class="profile-email" id="profileEmail">--</p>
+            <p class="profile-bio" id="profileBio">Just a learner earning SkillCoins ✨</p>
+
+            <div class="profile-quick-stats">
+              <div class="profile-quick">
+                <i class="fas fa-fire"></i>
+                <span><strong id="profileStreak">0</strong> day streak</span>
+              </div>
+              <div class="profile-quick">
+                <i class="fas fa-calendar"></i>
+                <span>Joined <strong id="profileJoined">recently</strong></span>
+              </div>
+              <div class="profile-quick">
+                <i class="fas fa-tag"></i>
+                <span>Code: <strong id="profileReferral">--</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- XP Progress -->
+        <div class="profile-xp-section">
+          <div class="profile-xp-info">
+            <span>XP Progress</span>
+            <strong><span id="profileXP">0</span> / <span id="profileXPNeeded">500</span></strong>
+          </div>
+          <div class="profile-xp-bar">
+            <div class="profile-xp-fill" id="profileXPFill" style="width: 0%"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Grid -->
+      <section class="profile-stats-grid">
+        <div class="pstats-card gold">
+          <div class="pstats-icon"><i class="fas fa-coins"></i></div>
+          <div class="pstats-info">
+            <span class="pstats-value" id="statsBalance">0</span>
+            <span class="pstats-label">Current Balance</span>
+          </div>
+        </div>
+        <div class="pstats-card teal">
+          <div class="pstats-icon"><i class="fas fa-arrow-up"></i></div>
+          <div class="pstats-info">
+            <span class="pstats-value" id="statsEarned">0</span>
+            <span class="pstats-label">Total Earned</span>
+          </div>
+        </div>
+        <div class="pstats-card red">
+          <div class="pstats-icon"><i class="fas fa-arrow-down"></i></div>
+          <div class="pstats-info">
+            <span class="pstats-value" id="statsSpent">0</span>
+            <span class="pstats-label">Total Spent</span>
+          </div>
+        </div>
+        <div class="pstats-card purple">
+          <div class="pstats-icon"><i class="fas fa-book"></i></div>
+          <div class="pstats-info">
+            <span class="pstats-value" id="statsCompleted">0</span>
+            <span class="pstats-label">Courses Done</span>
+          </div>
+        </div>
+        <div class="pstats-card blue">
+          <div class="pstats-icon"><i class="fas fa-upload"></i></div>
+          <div class="pstats-info">
+            <span class="pstats-value" id="statsUploaded">0</span>
+            <span class="pstats-label">Courses Uploaded</span>
+          </div>
+        </div>
+        <div class="pstats-card green">
+          <div class="pstats-icon"><i class="fas fa-medal"></i></div>
+          <div class="pstats-info">
+            <span class="pstats-value" id="statsBadges">0</span>
+            <span class="pstats-label">Badges Earned</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Two Column -->
+      <section class="profile-columns">
+
+        <!-- Left: Badges -->
+        <div class="profile-column">
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h3><i class="fas fa-medal"></i> Badges Collection</h3>
+              <span class="badge-count" id="badgeCountText">0 earned</span>
+            </div>
+            <div class="badges-grid" id="badgesGrid">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h3><i class="fas fa-history"></i> Recent Activity</h3>
+            </div>
+            <div class="activity-timeline" id="activityTimeline">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Info -->
+        <div class="profile-column">
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h3><i class="fas fa-info-circle"></i> About</h3>
+            </div>
+            <div class="about-list">
+              <div class="about-item">
+                <i class="fas fa-user"></i>
+                <div>
+                  <span>Username</span>
+                  <strong id="aboutUsername">--</strong>
+                </div>
+              </div>
+              <div class="about-item">
+                <i class="fas fa-envelope"></i>
+                <div>
+                  <span>Email</span>
+                  <strong id="aboutEmail">--</strong>
+                </div>
+              </div>
+              <div class="about-item">
+                <i class="fas fa-shield-alt"></i>
+                <div>
+                  <span>Level</span>
+                  <strong id="aboutLevel">1</strong>
+                </div>
+              </div>
+              <div class="about-item">
+                <i class="fas fa-fire"></i>
+                <div>
+                  <span>Current Streak</span>
+                  <strong id="aboutStreak">0 days</strong>
+                </div>
+              </div>
+              <div class="about-item">
+                <i class="fas fa-calendar-check"></i>
+                <div>
+                  <span>Member Since</span>
+                  <strong id="aboutJoined">--</strong>
+                </div>
+              </div>
+              <div class="about-item">
+                <i class="fas fa-gift"></i>
+                <div>
+                  <span>Referral Code</span>
+                  <strong id="aboutReferral">--</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h3><i class="fas fa-book-open"></i> My Courses</h3>
+            </div>
+            <div class="my-courses-list" id="myCoursesList">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-link"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="courses.html" class="bottom-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+    <a href="skill-ai.html" class="bottom-link ai-nav"><i class="fas fa-robot"></i><span>AI</span></a>
+    <a href="marketplace.html" class="bottom-link"><i class="fas fa-store"></i><span>Store</span></a>
+    <a href="profile.html" class="bottom-link active"><i class="fas fa-user"></i><span>Profile</span></a>
+  </nav>
+
+  <a href="skill-ai.html" class="ai-float-btn">
+    <i class="fas fa-robot"></i>
+    <span class="ai-tooltip">Ask Skill AI ✨</span>
+  </a>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script type="module" src="js/profile.js"></script>
+</body>
+</html>

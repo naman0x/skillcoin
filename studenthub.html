@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>StudentHub — SkillCoin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/studenthub.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse"><i class="fas fa-coins"></i></div>
+      <span class="loader-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+    <p class="loader-message">Loading StudentHub...</p>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-coins"></i></div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar-mini" id="sidebarAvatar"><span id="sidebarInitial">?</span></div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Loading...</span>
+        <span class="user-level-mini">
+          <i class="fas fa-shield-alt"></i>
+          <span id="sidebarLevel">Level 1</span>
+        </span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="courses.html" class="sidebar-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+        <a href="missions.html" class="sidebar-link"><i class="fas fa-tasks"></i><span>Missions</span></a>
+        <a href="challenges.html" class="sidebar-link"><i class="fas fa-bolt"></i><span>Challenges</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Explore</span>
+        <a href="marketplace.html" class="sidebar-link"><i class="fas fa-store"></i><span>Marketplace</span></a>
+        <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
+        <a href="studenthub.html" class="sidebar-link active"><i class="fas fa-graduation-cap"></i><span>StudentHub</span></a>
+        <a href="skill-ai.html" class="sidebar-link"><i class="fas fa-robot"></i><span>Skill AI</span><span class="nav-badge new">NEW</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a href="profile.html" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="upload.html" class="sidebar-link"><i class="fas fa-upload"></i><span>Upload Skill</span></a>
+        <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i><span>Settings</span></a>
+      </div>
+    </nav>
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search tools..." id="toolSearch"/>
+      </div>
+      <div class="top-actions">
+        <div class="coin-balance">
+          <i class="fas fa-coins"></i>
+          <span id="coinAmount">0</span>
+        </div>
+        <button class="icon-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="user-avatar" id="topAvatar"><span id="topInitial">?</span></div>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+
+      <!-- Hero -->
+      <section class="hub-hero">
+        <div class="hub-hero-orb"></div>
+        <div class="hub-hero-info">
+          <div class="hub-hero-badge">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Student Tools</span>
+          </div>
+          <h1 class="hub-hero-title">
+            Your Ultimate <span class="gradient-text">Study Hub</span> 🎓
+          </h1>
+          <p class="hub-hero-desc">
+            All the tools you need to boss your studies — Pomodoro timer, calculators, 
+            note-makers and more. Everything in one place! 🚀
+          </p>
+        </div>
+        <div class="hub-hero-visual">
+          <div class="hub-icon-float f-1">📚</div>
+          <div class="hub-icon-float f-2">🍅</div>
+          <div class="hub-icon-float f-3">🧮</div>
+          <div class="hub-icon-float f-4">📝</div>
+        </div>
+      </section>
+
+      <!-- Tools Grid -->
+      <section class="tools-section">
+        <h2 class="section-header"><i class="fas fa-tools"></i> Study Tools</h2>
+        <div class="tools-grid">
+
+          <div class="tool-card" data-tool="pomodoro">
+            <div class="tool-icon red"><i class="fas fa-stopwatch"></i></div>
+            <h3>Pomodoro Timer</h3>
+            <p>Focus in 25-min bursts. Boost productivity!</p>
+            <span class="tool-tag">🍅 Time Management</span>
+          </div>
+
+          <div class="tool-card" data-tool="gpa">
+            <div class="tool-icon purple"><i class="fas fa-chart-line"></i></div>
+            <h3>GPA Calculator</h3>
+            <p>Calculate your Grade Point Average</p>
+            <span class="tool-tag">📊 Grading</span>
+          </div>
+
+          <div class="tool-card" data-tool="percentage">
+            <div class="tool-icon gold"><i class="fas fa-percent"></i></div>
+            <h3>Percentage Calc</h3>
+            <p>Marks percentage, discounts & more</p>
+            <span class="tool-tag">💯 Math</span>
+          </div>
+
+          <div class="tool-card" data-tool="age">
+            <div class="tool-icon teal"><i class="fas fa-birthday-cake"></i></div>
+            <h3>Age Calculator</h3>
+            <p>Calculate exact age in years, months, days</p>
+            <span class="tool-tag">🎂 Date</span>
+          </div>
+
+          <div class="tool-card" data-tool="unit">
+            <div class="tool-icon blue"><i class="fas fa-ruler-combined"></i></div>
+            <h3>Unit Converter</h3>
+            <p>Convert length, weight, temperature</p>
+            <span class="tool-tag">📏 Conversion</span>
+          </div>
+
+          <div class="tool-card" data-tool="word">
+            <div class="tool-icon green"><i class="fas fa-font"></i></div>
+            <h3>Word Counter</h3>
+            <p>Count words, characters, paragraphs</p>
+            <span class="tool-tag">📝 Writing</span>
+          </div>
+
+          <div class="tool-card" data-tool="calc">
+            <div class="tool-icon pink"><i class="fas fa-calculator"></i></div>
+            <h3>Scientific Calc</h3>
+            <p>Advanced calculator with sin, cos, log</p>
+            <span class="tool-tag">🧮 Math</span>
+          </div>
+
+          <div class="tool-card" data-tool="notes">
+            <div class="tool-icon orange"><i class="fas fa-sticky-note"></i></div>
+            <h3>Quick Notes</h3>
+            <p>Save notes that sync across devices</p>
+            <span class="tool-tag">📓 Notes</span>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Motivational Quote -->
+      <section class="quote-section">
+        <div class="quote-card">
+          <div class="quote-icon">💫</div>
+          <blockquote id="dailyQuote">"Loading motivation..."</blockquote>
+          <cite id="quoteAuthor">- Loading</cite>
+          <button class="quote-refresh" id="refreshQuote">
+            <i class="fas fa-sync"></i>
+            New Quote
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============ TOOL MODAL ============ -->
+  <div class="tool-modal" id="toolModal">
+    <div class="tool-modal-content">
+      <button class="tool-modal-close" id="closeToolModal">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="tool-modal-body" id="toolModalBody">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-link"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="courses.html" class="bottom-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+    <a href="skill-ai.html" class="bottom-link ai-nav"><i class="fas fa-robot"></i><span>AI</span></a>
+    <a href="marketplace.html" class="bottom-link"><i class="fas fa-store"></i><span>Store</span></a>
+    <a href="profile.html" class="bottom-link"><i class="fas fa-user"></i><span>Profile</span></a>
+  </nav>
+
+  <a href="skill-ai.html" class="ai-float-btn">
+    <i class="fas fa-robot"></i>
+    <span class="ai-tooltip">Ask Skill AI ✨</span>
+  </a>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script type="module" src="js/studenthub.js"></script>
+</body>
+</html>

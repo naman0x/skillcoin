@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Dashboard — SkillCoin</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <!-- ============ LOADING SCREEN ============ -->
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse">
+        <i class="fas fa-coins"></i>
+      </div>
+      <span class="loader-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="loader-bar">
+      <div class="loader-fill"></div>
+    </div>
+    <p class="loader-message">Loading your dashboard...</p>
+  </div>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <i class="fas fa-coins"></i>
+      </div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+
+    <!-- User Mini Card -->
+    <div class="sidebar-user">
+      <div class="user-avatar-mini" id="sidebarAvatar">
+        <span id="sidebarInitial">N</span>
+      </div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Loading...</span>
+        <span class="user-level-mini">
+          <i class="fas fa-shield-alt"></i>
+          <span id="sidebarLevel">Level 1</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a href="dashboard.html" class="sidebar-link active">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="courses.html" class="sidebar-link">
+          <i class="fas fa-book-open"></i>
+          <span>Courses</span>
+        </a>
+        <a href="missions.html" class="sidebar-link">
+          <i class="fas fa-tasks"></i>
+          <span>Missions</span>
+          <span class="nav-badge">3</span>
+        </a>
+        <a href="challenges.html" class="sidebar-link">
+          <i class="fas fa-bolt"></i>
+          <span>Challenges</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">Explore</span>
+        <a href="marketplace.html" class="sidebar-link">
+          <i class="fas fa-store"></i>
+          <span>Marketplace</span>
+        </a>
+        <a href="leaderboard.html" class="sidebar-link">
+          <i class="fas fa-trophy"></i>
+          <span>Leaderboard</span>
+        </a>
+        <a href="studenthub.html" class="sidebar-link">
+          <i class="fas fa-graduation-cap"></i>
+          <span>StudentHub</span>
+        </a>
+        <a href="skill-ai.html" class="sidebar-link">
+          <i class="fas fa-robot"></i>
+          <span>Skill AI</span>
+          <span class="nav-badge new">NEW</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a href="profile.html" class="sidebar-link">
+          <i class="fas fa-user"></i>
+          <span>Profile</span>
+        </a>
+        <a href="upload.html" class="sidebar-link">
+          <i class="fas fa-upload"></i>
+          <span>Upload Skill</span>
+        </a>
+        <a href="settings.html" class="sidebar-link">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Logout -->
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Logout</span>
+    </button>
+
+  </aside>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      
+      <!-- Menu Toggle (Mobile) -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search courses, skills, topics..." id="topSearch"/>
+        <span class="search-hint">AI Powered ✨</span>
+      </div>
+
+      <!-- Top Actions -->
+      <div class="top-actions">
+        
+        <!-- Coin Balance -->
+        <div class="coin-balance" id="coinBalance">
+          <i class="fas fa-coins"></i>
+          <span id="coinAmount">0</span>
+        </div>
+
+        <!-- Notifications -->
+        <button class="icon-btn" id="notifBtn" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot"></span>
+        </button>
+
+        <!-- Avatar -->
+        <div class="user-avatar" id="topAvatar" title="Profile">
+          <span id="topInitial">N</span>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+
+      <!-- Welcome Section -->
+      <section class="welcome-section">
+        <div class="welcome-card">
+          <div class="welcome-orb"></div>
+          <div class="welcome-info">
+            <div class="welcome-badge">
+              <i class="fas fa-fire"></i>
+              <span id="welcomeStreak">0 Day Streak</span>
+            </div>
+            <h1 class="welcome-title">
+              Welcome back, <span id="welcomeName">Learner</span>! 👋
+            </h1>
+            <p class="welcome-message" id="welcomeMessage">
+              Ready to earn some SkillCoins today?
+            </p>
+            
+            <!-- Level Progress -->
+            <div class="level-progress">
+              <div class="level-info">
+                <span class="level-label">
+                  <i class="fas fa-shield-alt"></i>
+                  Level <span id="levelNumber">1</span>
+                </span>
+                <span class="xp-label">
+                  <span id="currentXP">0</span> / <span id="neededXP">500</span> XP
+                </span>
+              </div>
+              <div class="level-bar">
+                <div class="level-fill" id="levelFill" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="welcome-visual">
+            <div class="floating-coin"><i class="fas fa-coins"></i></div>
+            <div class="floating-star"><i class="fas fa-star"></i></div>
+            <div class="floating-medal"><i class="fas fa-medal"></i></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Grid -->
+      <section class="stats-grid">
+        
+        <div class="stat-card gold">
+          <div class="stat-icon">
+            <i class="fas fa-coins"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">SkillCoins</span>
+            <span class="stat-value" id="statCoins">0</span>
+            <span class="stat-change positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+100 today</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="stat-card purple">
+          <div class="stat-icon">
+            <i class="fas fa-book"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Courses Done</span>
+            <span class="stat-value" id="statCourses">0</span>
+            <span class="stat-change neutral">
+              <i class="fas fa-play"></i>
+              <span>Start learning!</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="stat-card red">
+          <div class="stat-icon">
+            <i class="fas fa-fire"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Current Streak</span>
+            <span class="stat-value" id="statStreak">0 days</span>
+            <span class="stat-change positive">
+              <i class="fas fa-fire"></i>
+              <span>Keep it up!</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="stat-card teal">
+          <div class="stat-icon">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Global Rank</span>
+            <span class="stat-value" id="statRank">#---</span>
+            <span class="stat-change neutral">
+              <i class="fas fa-chart-line"></i>
+              <span>Climb up!</span>
+            </span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Two Column Grid -->
+      <section class="dashboard-grid">
+
+        <!-- LEFT COLUMN -->
+        <div class="dashboard-left">
+
+          <!-- Daily Missions -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <div>
+                <h3><i class="fas fa-tasks"></i> Daily Missions</h3>
+                <p>Complete missions to earn bonus coins!</p>
+              </div>
+              <a href="missions.html" class="see-all">See All <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="missions-list">
+              
+              <div class="mission-item">
+                <div class="mission-icon purple">
+                  <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <div class="mission-info">
+                  <span class="mission-title">Login Today</span>
+                  <span class="mission-desc">Visit SkillCoin today</span>
+                  <div class="mission-progress">
+                    <div class="progress-bar-mini">
+                      <div class="progress-fill-mini gold" style="width: 100%"></div>
+                    </div>
+                    <span>Completed</span>
+                  </div>
+                </div>
+                <div class="mission-reward complete">
+                  <i class="fas fa-check"></i>
+                  <span>+10</span>
+                </div>
+              </div>
+
+              <div class="mission-item">
+                <div class="mission-icon teal">
+                  <i class="fas fa-book-reader"></i>
+                </div>
+                <div class="mission-info">
+                  <span class="mission-title">Complete 2 Lessons</span>
+                  <span class="mission-desc">Finish any 2 lessons today</span>
+                  <div class="mission-progress">
+                    <div class="progress-bar-mini">
+                      <div class="progress-fill-mini purple" style="width: 0%"></div>
+                    </div>
+                    <span>0 / 2</span>
+                  </div>
+                </div>
+                <div class="mission-reward">
+                  <i class="fas fa-coins"></i>
+                  <span>+30</span>
+                </div>
+              </div>
+
+              <div class="mission-item">
+                <div class="mission-icon gold">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <div class="mission-info">
+                  <span class="mission-title">Take an AI Quiz</span>
+                  <span class="mission-desc">Test your knowledge!</span>
+                  <div class="mission-progress">
+                    <div class="progress-bar-mini">
+                      <div class="progress-fill-mini teal" style="width: 0%"></div>
+                    </div>
+                    <span>Not started</span>
+                  </div>
+                </div>
+                <div class="mission-reward">
+                  <i class="fas fa-coins"></i>
+                  <span>+20</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Recommended Courses -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <div>
+                <h3><i class="fas fa-fire"></i> Recommended For You</h3>
+                <p>Popular courses trending now</p>
+              </div>
+              <a href="courses.html" class="see-all">Browse All <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="courses-grid">
+              
+              <div class="course-card-mini">
+                <div class="course-thumb purple">
+                  <i class="fab fa-python"></i>
+                </div>
+                <div class="course-info">
+                  <span class="course-cat">Programming</span>
+                  <h4>Python for Beginners</h4>
+                  <div class="course-meta">
+                    <span><i class="fas fa-star"></i> 4.9</span>
+                    <span><i class="fas fa-users"></i> 1.2k</span>
+                    <span class="course-price"><i class="fas fa-coins"></i> 150</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="course-card-mini">
+                <div class="course-thumb teal">
+                  <i class="fas fa-paint-brush"></i>
+                </div>
+                <div class="course-info">
+                  <span class="course-cat">Design</span>
+                  <h4>UI/UX Fundamentals</h4>
+                  <div class="course-meta">
+                    <span><i class="fas fa-star"></i> 4.8</span>
+                    <span><i class="fas fa-users"></i> 890</span>
+                    <span class="course-price"><i class="fas fa-coins"></i> 200</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="course-card-mini">
+                <div class="course-thumb gold">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="course-info">
+                  <span class="course-cat">Business</span>
+                  <h4>Digital Marketing 101</h4>
+                  <div class="course-meta">
+                    <span><i class="fas fa-star"></i> 4.7</span>
+                    <span><i class="fas fa-users"></i> 650</span>
+                    <span class="course-price free">FREE</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="course-card-mini">
+                <div class="course-thumb red">
+                  <i class="fab fa-js"></i>
+                </div>
+                <div class="course-info">
+                  <span class="course-cat">Programming</span>
+                  <h4>JavaScript Mastery</h4>
+                  <div class="course-meta">
+                    <span><i class="fas fa-star"></i> 4.9</span>
+                    <span><i class="fas fa-users"></i> 2.1k</span>
+                    <span class="course-price"><i class="fas fa-coins"></i> 250</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="dashboard-right">
+
+          <!-- Quick Actions -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            </div>
+            <div class="quick-actions">
+              <a href="skill-ai.html" class="quick-action">
+                <div class="quick-icon teal"><i class="fas fa-robot"></i></div>
+                <span>Ask Skill AI</span>
+              </a>
+              <a href="upload.html" class="quick-action">
+                <div class="quick-icon purple"><i class="fas fa-upload"></i></div>
+                <span>Upload Skill</span>
+                <span class="mini-reward">+1000 🪙</span>
+              </a>
+              <a href="studenthub.html" class="quick-action">
+                <div class="quick-icon gold"><i class="fas fa-graduation-cap"></i></div>
+                <span>Student Tools</span>
+              </a>
+              <a href="challenges.html" class="quick-action">
+                <div class="quick-icon red"><i class="fas fa-bolt"></i></div>
+                <span>Daily Challenge</span>
+                <span class="mini-reward">+50 🪙</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Streak Card -->
+          <div class="dashboard-card streak-card">
+            <div class="streak-header">
+              <div class="streak-flame">
+                <i class="fas fa-fire"></i>
+              </div>
+              <div>
+                <h3>Your Streak</h3>
+                <p><span id="streakDays">0</span> days in a row</p>
+              </div>
+            </div>
+            <div class="streak-info">
+              <div class="streak-reward">
+                <span>Today's reward</span>
+                <strong id="todayReward">+55 🪙</strong>
+              </div>
+              <div class="streak-next">
+                <span>Next milestone</span>
+                <strong>7 days</strong>
+              </div>
+            </div>
+            <div class="streak-tip">
+              💡 <span>Login every day to grow your streak & rewards!</span>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h3><i class="fas fa-history"></i> Recent Activity</h3>
+            </div>
+            <div class="activity-list">
+              
+              <div class="activity-item">
+                <div class="activity-icon gold">
+                  <i class="fas fa-coins"></i>
+                </div>
+                <div class="activity-info">
+                  <span class="activity-title">Welcome bonus earned!</span>
+                  <span class="activity-time">Just now</span>
+                </div>
+                <span class="activity-reward">+100</span>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon purple">
+                  <i class="fas fa-medal"></i>
+                </div>
+                <div class="activity-info">
+                  <span class="activity-title">Badge unlocked: First Login</span>
+                  <span class="activity-time">Just now</span>
+                </div>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon teal">
+                  <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="activity-info">
+                  <span class="activity-title">Joined SkillCoin! 🎉</span>
+                  <span class="activity-time">Just now</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ============ MOBILE BOTTOM NAV ============ -->
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-link active">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    <a href="courses.html" class="bottom-link">
+      <i class="fas fa-book-open"></i>
+      <span>Courses</span>
+    </a>
+    <a href="skill-ai.html" class="bottom-link ai-nav">
+      <i class="fas fa-robot"></i>
+      <span>AI</span>
+    </a>
+    <a href="marketplace.html" class="bottom-link">
+      <i class="fas fa-store"></i>
+      <span>Store</span>
+    </a>
+    <a href="profile.html" class="bottom-link">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+  <!-- Skill AI Float Button -->
+  <a href="skill-ai.html" class="ai-float-btn" title="Ask Skill AI">
+    <i class="fas fa-robot"></i>
+    <span class="ai-tooltip">Ask Skill AI ✨</span>
+  </a>
+
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/dashboard.js"></script>
+
+</body>
+</html>

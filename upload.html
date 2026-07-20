@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Upload Course — SkillCoin</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/upload.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <!-- ============ LOADING SCREEN ============ -->
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse">
+        <i class="fas fa-coins"></i>
+      </div>
+      <span class="loader-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="loader-bar">
+      <div class="loader-fill"></div>
+    </div>
+    <p class="loader-message">Preparing upload form...</p>
+  </div>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <i class="fas fa-coins"></i>
+      </div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar-mini" id="sidebarAvatar">
+        <span id="sidebarInitial">?</span>
+      </div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Loading...</span>
+        <span class="user-level-mini">
+          <i class="fas fa-shield-alt"></i>
+          <span id="sidebarLevel">Level 1</span>
+        </span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a href="dashboard.html" class="sidebar-link">
+          <i class="fas fa-home"></i><span>Dashboard</span>
+        </a>
+        <a href="courses.html" class="sidebar-link">
+          <i class="fas fa-book-open"></i><span>Courses</span>
+        </a>
+        <a href="missions.html" class="sidebar-link">
+          <i class="fas fa-tasks"></i><span>Missions</span>
+          <span class="nav-badge">3</span>
+        </a>
+        <a href="challenges.html" class="sidebar-link">
+          <i class="fas fa-bolt"></i><span>Challenges</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">Explore</span>
+        <a href="marketplace.html" class="sidebar-link">
+          <i class="fas fa-store"></i><span>Marketplace</span>
+        </a>
+        <a href="leaderboard.html" class="sidebar-link">
+          <i class="fas fa-trophy"></i><span>Leaderboard</span>
+        </a>
+        <a href="studenthub.html" class="sidebar-link">
+          <i class="fas fa-graduation-cap"></i><span>StudentHub</span>
+        </a>
+        <a href="skill-ai.html" class="sidebar-link">
+          <i class="fas fa-robot"></i><span>Skill AI</span>
+          <span class="nav-badge new">NEW</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a href="profile.html" class="sidebar-link">
+          <i class="fas fa-user"></i><span>Profile</span>
+        </a>
+        <a href="upload.html" class="sidebar-link active">
+          <i class="fas fa-upload"></i><span>Upload Skill</span>
+        </a>
+        <a href="settings.html" class="sidebar-link">
+          <i class="fas fa-cog"></i><span>Settings</span>
+        </a>
+      </div>
+    </nav>
+
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Logout</span>
+    </button>
+  </aside>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search..." disabled/>
+      </div>
+
+      <div class="top-actions">
+        <div class="coin-balance">
+          <i class="fas fa-coins"></i>
+          <span id="coinAmount">0</span>
+        </div>
+        <button class="icon-btn">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="user-avatar" id="topAvatar">
+          <span id="topInitial">?</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ UPLOAD CONTENT ============ -->
+    <div class="upload-wrapper">
+
+      <!-- Upload Hero -->
+      <section class="upload-hero">
+        <div class="upload-hero-orb"></div>
+        <div class="upload-hero-info">
+          <div class="upload-hero-badge">
+            <i class="fas fa-upload"></i>
+            <span>Creator Zone</span>
+          </div>
+          <h1 class="upload-hero-title">
+            Share Your <span class="gradient-text">Skills</span><br/>
+            Earn <span class="gold-text">1000 Coins</span> 🪙
+          </h1>
+          <p class="upload-hero-desc">
+            Upload your course and get instantly rewarded! 
+            Plus, earn coins every time someone buys your course. 
+            Let's build the future together! 🚀
+          </p>
+
+          <div class="upload-perks">
+            <div class="upload-perk">
+              <i class="fas fa-coins"></i>
+              <div>
+                <strong>+1000 Coins</strong>
+                <span>Instant reward</span>
+              </div>
+            </div>
+            <div class="upload-perk">
+              <i class="fas fa-star"></i>
+              <div>
+                <strong>+500 Bonus</strong>
+                <span>First upload</span>
+              </div>
+            </div>
+            <div class="upload-perk">
+              <i class="fas fa-users"></i>
+              <div>
+                <strong>Earn Forever</strong>
+                <span>From every sale</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-hero-visual">
+          <div class="upload-icon-big">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upload Form -->
+      <section class="upload-form-container">
+        <form class="upload-form" id="uploadForm">
+
+          <!-- Step Progress -->
+          <div class="form-steps">
+            <div class="step-indicator active">
+              <span class="step-number">1</span>
+              <span class="step-label">Basic Info</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-indicator">
+              <span class="step-number">2</span>
+              <span class="step-label">Details</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-indicator">
+              <span class="step-number">3</span>
+              <span class="step-label">Lessons</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-indicator">
+              <span class="step-number">4</span>
+              <span class="step-label">Publish</span>
+            </div>
+          </div>
+
+          <!-- Section 1: Basic Info -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <span class="section-number">1</span>
+              <div>
+                <h2>Basic Information</h2>
+                <p>Tell us about your course</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="courseTitle">
+                <i class="fas fa-heading"></i>
+                Course Title *
+              </label>
+              <input 
+                type="text" 
+                id="courseTitle" 
+                placeholder="e.g., Master Python in 30 Days"
+                required
+                maxlength="80"
+              />
+              <span class="input-hint">
+                <span id="titleCount">0</span>/80 characters
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label for="courseDesc">
+                <i class="fas fa-align-left"></i>
+                Description *
+              </label>
+              <textarea 
+                id="courseDesc" 
+                placeholder="Describe what students will learn in your course..."
+                required
+                rows="4"
+                maxlength="300"
+              ></textarea>
+              <span class="input-hint">
+                <span id="descCount">0</span>/300 characters
+              </span>
+            </div>
+          </div>
+
+          <!-- Section 2: Details -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <span class="section-number">2</span>
+              <div>
+                <h2>Course Details</h2>
+                <p>Set the category, level & pricing</p>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="courseCategory">
+                  <i class="fas fa-tag"></i>
+                  Category *
+                </label>
+                <select id="courseCategory" required>
+                  <option value="">Choose category...</option>
+                  <option value="programming">💻 Programming</option>
+                  <option value="design">🎨 Design</option>
+                  <option value="business">💼 Business</option>
+                  <option value="marketing">📈 Marketing</option>
+                  <option value="language">🌍 Language</option>
+                  <option value="science">🔬 Science</option>
+                  <option value="lifestyle">✨ Lifestyle</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="courseLevel">
+                  <i class="fas fa-signal"></i>
+                  Difficulty Level *
+                </label>
+                <select id="courseLevel" required>
+                  <option value="">Choose level...</option>
+                  <option value="beginner">🌱 Beginner</option>
+                  <option value="intermediate">📈 Intermediate</option>
+                  <option value="advanced">🚀 Advanced</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Thumbnail Choice -->
+            <div class="form-group">
+              <label>
+                <i class="fas fa-image"></i>
+                Choose Thumbnail Style *
+              </label>
+              
+              <div class="thumbnail-picker">
+                <div class="thumbnail-preview">
+                  <div class="thumbnail-preview-inner" id="thumbnailPreview">
+                    <i class="fas fa-book" id="previewIcon"></i>
+                  </div>
+                  <span>Preview</span>
+                </div>
+
+                <div class="thumbnail-options">
+                  <div class="thumbnail-picker-row">
+                    <label class="picker-label">Color:</label>
+                    <div class="color-options" id="colorOptions">
+                      <button type="button" class="color-btn purple active" data-color="purple"></button>
+                      <button type="button" class="color-btn teal" data-color="teal"></button>
+                      <button type="button" class="color-btn gold" data-color="gold"></button>
+                      <button type="button" class="color-btn red" data-color="red"></button>
+                      <button type="button" class="color-btn blue" data-color="blue"></button>
+                      <button type="button" class="color-btn green" data-color="green"></button>
+                      <button type="button" class="color-btn orange" data-color="orange"></button>
+                      <button type="button" class="color-btn pink" data-color="pink"></button>
+                    </div>
+                  </div>
+
+                  <div class="thumbnail-picker-row">
+                    <label class="picker-label">Icon:</label>
+                    <div class="icon-options" id="iconOptions">
+                      <button type="button" class="icon-btn-picker active" data-icon="fas fa-book">
+                        <i class="fas fa-book"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-code">
+                        <i class="fas fa-code"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-paint-brush">
+                        <i class="fas fa-paint-brush"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-briefcase">
+                        <i class="fas fa-briefcase"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-chart-line">
+                        <i class="fas fa-chart-line"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-language">
+                        <i class="fas fa-language"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-flask">
+                        <i class="fas fa-flask"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-camera">
+                        <i class="fas fa-camera"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-music">
+                        <i class="fas fa-music"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-gamepad">
+                        <i class="fas fa-gamepad"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-bullhorn">
+                        <i class="fas fa-bullhorn"></i>
+                      </button>
+                      <button type="button" class="icon-btn-picker" data-icon="fas fa-atom">
+                        <i class="fas fa-atom"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class="form-group price-group">
+              <label for="coursePrice">
+                <i class="fas fa-coins"></i>
+                Course Price (in SkillCoins) *
+              </label>
+              
+              <div class="price-input-wrapper">
+                <input 
+                  type="range" 
+                  id="priceRange" 
+                  min="0" 
+                  max="600" 
+                  value="100" 
+                  step="10"
+                />
+                <div class="price-display">
+                  <input 
+                    type="number" 
+                    id="coursePrice" 
+                    min="0" 
+                    max="600" 
+                    value="100" 
+                    step="10"
+                  />
+                  <span class="price-coin"><i class="fas fa-coins"></i></span>
+                </div>
+              </div>
+
+              <div class="price-info">
+                <div class="price-range-labels">
+                  <span>FREE 🎁</span>
+                  <span>600 🪙 (Max)</span>
+                </div>
+                <div class="price-suggestions">
+                  <button type="button" class="price-preset" data-price="0">Free</button>
+                  <button type="button" class="price-preset" data-price="50">50 🪙</button>
+                  <button type="button" class="price-preset" data-price="150">150 🪙</button>
+                  <button type="button" class="price-preset" data-price="300">300 🪙</button>
+                  <button type="button" class="price-preset" data-price="600">600 🪙 (Max)</button>
+                </div>
+              </div>
+              
+              <span class="input-hint success">
+                💡 Higher price = more coins per sale! Max allowed: 600 coins
+              </span>
+            </div>
+
+            <!-- Tags -->
+            <div class="form-group">
+              <label for="courseTags">
+                <i class="fas fa-hashtag"></i>
+                Tags (Optional)
+              </label>
+              <input 
+                type="text" 
+                id="courseTags" 
+                placeholder="e.g., python, coding, beginners (comma separated)"
+              />
+              <span class="input-hint">Add tags to help students find your course</span>
+            </div>
+          </div>
+
+          <!-- Section 3: Lessons -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <span class="section-number">3</span>
+              <div>
+                <h2>Course Lessons</h2>
+                <p>Add lessons to your course (min 3 lessons)</p>
+              </div>
+            </div>
+
+            <div class="lessons-editor" id="lessonsEditor">
+              <!-- Lessons will be added here -->
+            </div>
+
+            <button type="button" class="add-lesson-btn" id="addLessonBtn">
+              <i class="fas fa-plus"></i>
+              Add Another Lesson
+            </button>
+
+            <div class="lessons-count-info">
+              <i class="fas fa-info-circle"></i>
+              <span>Total Lessons: <strong id="totalLessons">0</strong> (Minimum 3 required)</span>
+            </div>
+          </div>
+
+          <!-- Section 4: Publish -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <span class="section-number">4</span>
+              <div>
+                <h2>Ready to Publish?</h2>
+                <p>Review and confirm your course upload</p>
+              </div>
+            </div>
+
+            <div class="publish-summary">
+              <div class="summary-row">
+                <span>Course Title</span>
+                <strong id="summaryTitle">Not set</strong>
+              </div>
+              <div class="summary-row">
+                <span>Category</span>
+                <strong id="summaryCategory">Not set</strong>
+              </div>
+              <div class="summary-row">
+                <span>Level</span>
+                <strong id="summaryLevel">Not set</strong>
+              </div>
+              <div class="summary-row">
+                <span>Lessons</span>
+                <strong id="summaryLessons">0 lessons</strong>
+              </div>
+              <div class="summary-row">
+                <span>Price</span>
+                <strong id="summaryPrice">100 🪙</strong>
+              </div>
+              <div class="summary-divider"></div>
+              <div class="summary-row highlight">
+                <span>You'll Earn</span>
+                <strong class="reward-highlight">+1000 🪙 <span id="firstUploadBonus" style="display:none;">(+500 first upload bonus!)</span></strong>
+              </div>
+            </div>
+
+            <div class="publish-agreement">
+              <label class="checkbox-label">
+                <input type="checkbox" id="agreeUpload" required/>
+                <span>I confirm this course is my original content and follows SkillCoin's community guidelines ✅</span>
+              </label>
+            </div>
+
+            <div class="publish-actions">
+              <button type="button" class="btn btn-outline btn-large" onclick="window.location.href='courses.html'">
+                <i class="fas fa-times"></i>
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary btn-large" id="publishBtn">
+                <span class="btn-text">
+                  <i class="fas fa-rocket"></i>
+                  Publish Course & Earn Coins!
+                </span>
+                <span class="btn-loader" style="display:none;">
+                  <i class="fas fa-spinner spin"></i>
+                  Publishing...
+                </span>
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ============ SUCCESS MODAL ============ -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal success-modal">
+      <div class="success-confetti">🎉</div>
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2>Course Published! 🚀</h2>
+      <p>Your course is now live and earning you coins!</p>
+      
+      <div class="success-rewards">
+        <div class="reward-big">
+          <i class="fas fa-coins"></i>
+          <div>
+            <strong id="earnedCoins">+1000</strong>
+            <span>SkillCoins Earned!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="success-actions">
+        <button class="btn btn-outline" onclick="window.location.href='courses.html'">
+          <i class="fas fa-eye"></i>
+          View My Course
+        </button>
+        <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">
+          <i class="fas fa-home"></i>
+          Go to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-link">
+      <i class="fas fa-home"></i><span>Home</span>
+    </a>
+    <a href="courses.html" class="bottom-link">
+      <i class="fas fa-book-open"></i><span>Courses</span>
+    </a>
+    <a href="skill-ai.html" class="bottom-link ai-nav">
+      <i class="fas fa-robot"></i><span>AI</span>
+    </a>
+    <a href="marketplace.html" class="bottom-link">
+      <i class="fas fa-store"></i><span>Store</span>
+    </a>
+    <a href="profile.html" class="bottom-link">
+      <i class="fas fa-user"></i><span>Profile</span>
+    </a>
+  </nav>
+
+  <!-- Skill AI Float Button -->
+  <a href="skill-ai.html" class="ai-float-btn">
+    <i class="fas fa-robot"></i>
+    <span class="ai-tooltip">Ask Skill AI ✨</span>
+  </a>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/upload.js"></script>
+
+</body>
+</html>

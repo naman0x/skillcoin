@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Missions — SkillCoin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/missions.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse"><i class="fas fa-coins"></i></div>
+      <span class="loader-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+    <p class="loader-message">Loading missions...</p>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-coins"></i></div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar-mini" id="sidebarAvatar"><span id="sidebarInitial">?</span></div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Loading...</span>
+        <span class="user-level-mini">
+          <i class="fas fa-shield-alt"></i>
+          <span id="sidebarLevel">Level 1</span>
+        </span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="courses.html" class="sidebar-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+        <a href="missions.html" class="sidebar-link active"><i class="fas fa-tasks"></i><span>Missions</span></a>
+        <a href="challenges.html" class="sidebar-link"><i class="fas fa-bolt"></i><span>Challenges</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Explore</span>
+        <a href="marketplace.html" class="sidebar-link"><i class="fas fa-store"></i><span>Marketplace</span></a>
+        <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
+        <a href="studenthub.html" class="sidebar-link"><i class="fas fa-graduation-cap"></i><span>StudentHub</span></a>
+        <a href="skill-ai.html" class="sidebar-link"><i class="fas fa-robot"></i><span>Skill AI</span><span class="nav-badge new">NEW</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a href="profile.html" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="upload.html" class="sidebar-link"><i class="fas fa-upload"></i><span>Upload Skill</span></a>
+        <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i><span>Settings</span></a>
+      </div>
+    </nav>
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search missions..." disabled/>
+      </div>
+      <div class="top-actions">
+        <div class="coin-balance">
+          <i class="fas fa-coins"></i>
+          <span id="coinAmount">0</span>
+        </div>
+        <button class="icon-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="user-avatar" id="topAvatar"><span id="topInitial">?</span></div>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+
+      <!-- Hero -->
+      <section class="page-header">
+        <div class="page-header-info">
+          <div class="page-badge"><i class="fas fa-tasks"></i><span>Missions</span></div>
+          <h1 class="page-title">Missions & <span class="gradient-text">Rewards</span></h1>
+          <p class="page-desc">Complete missions to earn bonus SkillCoins!</p>
+        </div>
+      </section>
+
+      <!-- Mission Stats -->
+      <section class="mission-stats">
+        <div class="mission-stat purple">
+          <div class="ms-icon"><i class="fas fa-check-circle"></i></div>
+          <div>
+            <span class="ms-value" id="totalCompleted">0</span>
+            <span class="ms-label">Completed</span>
+          </div>
+        </div>
+        <div class="mission-stat gold">
+          <div class="ms-icon"><i class="fas fa-coins"></i></div>
+          <div>
+            <span class="ms-value" id="totalEarned">0</span>
+            <span class="ms-label">Coins from Missions</span>
+          </div>
+        </div>
+        <div class="mission-stat teal">
+          <div class="ms-icon"><i class="fas fa-fire"></i></div>
+          <div>
+            <span class="ms-value" id="dailyCount">0/6</span>
+            <span class="ms-label">Daily Progress</span>
+          </div>
+        </div>
+        <div class="mission-stat red">
+          <div class="ms-icon"><i class="fas fa-clock"></i></div>
+          <div>
+            <span class="ms-value" id="dailyResetTime">--:--</span>
+            <span class="ms-label">Reset In</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mission Tabs -->
+      <section class="mission-tabs">
+        <button class="mission-tab active" data-tab="daily">
+          <i class="fas fa-sun"></i>
+          Daily Missions
+          <span class="tab-count" id="dailyTabCount">6</span>
+        </button>
+        <button class="mission-tab" data-tab="weekly">
+          <i class="fas fa-calendar-week"></i>
+          Weekly Missions
+          <span class="tab-count" id="weeklyTabCount">5</span>
+        </button>
+        <button class="mission-tab" data-tab="special">
+          <i class="fas fa-star"></i>
+          Special Missions
+          <span class="tab-count" id="specialTabCount">6</span>
+        </button>
+      </section>
+
+      <!-- Missions List -->
+      <section class="missions-container" id="missionsContainer">
+        <!-- Injected by JS -->
+      </section>
+
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-link"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="courses.html" class="bottom-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+    <a href="skill-ai.html" class="bottom-link ai-nav"><i class="fas fa-robot"></i><span>AI</span></a>
+    <a href="marketplace.html" class="bottom-link"><i class="fas fa-store"></i><span>Store</span></a>
+    <a href="profile.html" class="bottom-link"><i class="fas fa-user"></i><span>Profile</span></a>
+  </nav>
+
+  <a href="skill-ai.html" class="ai-float-btn">
+    <i class="fas fa-robot"></i>
+    <span class="ai-tooltip">Ask Skill AI ✨</span>
+  </a>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script type="module" src="js/missions.js"></script>
+</body>
+</html>

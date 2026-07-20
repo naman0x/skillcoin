@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Skill AI — SkillCoin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/skill-ai.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <!-- Loader -->
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse"><i class="fas fa-robot"></i></div>
+      <span class="loader-text">Skill<span class="logo-accent">AI</span></span>
+    </div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+    <p class="loader-message">Waking up Skill AI...</p>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-coins"></i></div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <a href="dashboard.html" class="sidebar-link">
+          <i class="fas fa-home"></i><span>Dashboard</span>
+        </a>
+        <a href="courses.html" class="sidebar-link">
+          <i class="fas fa-book-open"></i><span>Courses</span>
+        </a>
+        <a href="skill-ai.html" class="sidebar-link active">
+          <i class="fas fa-robot"></i><span>Skill AI</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+
+    <header class="top-bar">
+      <h2 class="ai-title">
+        🤖 Skill AI
+        <span class="ai-sub">Built by Naman 👑</span>
+      </h2>
+    </header>
+
+    <div class="ai-container">
+
+      <!-- Chat Window -->
+      <div class="chat-box" id="chatBox">
+        <div class="ai-message">
+          <div class="ai-avatar">🤖</div>
+          <div class="message-content">
+            Sup! I’m Skill AI 😎✨  
+            Made by Naman — the 15-year-old chaos coder from Mathura 👑  
+            Ask me anything. Coding, studies, life advice, cricket 🏏 — I got you!
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggested Questions -->
+      <div class="suggested-questions">
+        <button class="suggest-btn">Explain Python in simple words</button>
+        <button class="suggest-btn">Give me a study plan</button>
+        <button class="suggest-btn">Motivate me like Kohli 🏏</button>
+        <button class="suggest-btn">Suggest a course for me</button>
+      </div>
+
+      <!-- Input -->
+      <div class="chat-input">
+        <input 
+          type="text" 
+          id="userInput" 
+          placeholder="Ask Skill AI anything..."
+        />
+        <button id="sendBtn">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+
+<!-- Load config first (has API keys) -->
+<script src="js/config.js"></script>
+<!-- Then load AI logic -->
+<script type="module" src="js/skill-ai.js"></script>
+</body>
+</html>

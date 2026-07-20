@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Course View — SkillCoin</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/courses.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <!-- ============ LOADING SCREEN ============ -->
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse">
+        <i class="fas fa-coins"></i>
+      </div>
+      <span class="loader-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="loader-bar">
+      <div class="loader-fill"></div>
+    </div>
+    <p class="loader-message">Loading course...</p>
+  </div>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <i class="fas fa-coins"></i>
+      </div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar-mini" id="sidebarAvatar">
+        <span id="sidebarInitial">?</span>
+      </div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Loading...</span>
+        <span class="user-level-mini">
+          <i class="fas fa-shield-alt"></i>
+          <span id="sidebarLevel">Level 1</span>
+        </span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a href="dashboard.html" class="sidebar-link">
+          <i class="fas fa-home"></i><span>Dashboard</span>
+        </a>
+        <a href="courses.html" class="sidebar-link active">
+          <i class="fas fa-book-open"></i><span>Courses</span>
+        </a>
+        <a href="missions.html" class="sidebar-link">
+          <i class="fas fa-tasks"></i><span>Missions</span>
+          <span class="nav-badge">3</span>
+        </a>
+        <a href="challenges.html" class="sidebar-link">
+          <i class="fas fa-bolt"></i><span>Challenges</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">Explore</span>
+        <a href="marketplace.html" class="sidebar-link">
+          <i class="fas fa-store"></i><span>Marketplace</span>
+        </a>
+        <a href="leaderboard.html" class="sidebar-link">
+          <i class="fas fa-trophy"></i><span>Leaderboard</span>
+        </a>
+        <a href="studenthub.html" class="sidebar-link">
+          <i class="fas fa-graduation-cap"></i><span>StudentHub</span>
+        </a>
+        <a href="skill-ai.html" class="sidebar-link">
+          <i class="fas fa-robot"></i><span>Skill AI</span>
+          <span class="nav-badge new">NEW</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a href="profile.html" class="sidebar-link">
+          <i class="fas fa-user"></i><span>Profile</span>
+        </a>
+        <a href="upload.html" class="sidebar-link">
+          <i class="fas fa-upload"></i><span>Upload Skill</span>
+        </a>
+        <a href="settings.html" class="sidebar-link">
+          <i class="fas fa-cog"></i><span>Settings</span>
+        </a>
+      </div>
+    </nav>
+
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Logout</span>
+    </button>
+  </aside>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <a href="courses.html" class="back-to-courses">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Courses</span>
+      </a>
+
+      <div class="top-actions">
+        <div class="coin-balance">
+          <i class="fas fa-coins"></i>
+          <span id="coinAmount">0</span>
+        </div>
+        <button class="icon-btn">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="user-avatar" id="topAvatar">
+          <span id="topInitial">?</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ COURSE VIEW CONTENT ============ -->
+    <div class="course-view-wrapper" id="courseWrapper">
+
+      <!-- Course Hero -->
+      <section class="course-hero" id="courseHero">
+        <!-- Will be filled by JS -->
+      </section>
+
+      <!-- Course Body -->
+      <section class="course-body">
+
+        <!-- Lessons Sidebar -->
+        <aside class="lessons-sidebar" id="lessonsSidebar">
+          <div class="lessons-header">
+            <div>
+              <h3><i class="fas fa-list-ul"></i> Course Content</h3>
+              <p id="lessonsCount">Loading...</p>
+            </div>
+            <button class="lessons-toggle" id="lessonsToggle">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <div class="course-progress-box">
+            <div class="progress-header">
+              <span>Your Progress</span>
+              <strong id="progressPercent">0%</strong>
+            </div>
+            <div class="progress-bar-course">
+              <div class="progress-fill-course" id="progressFill" style="width: 0%"></div>
+            </div>
+            <p class="progress-info" id="progressInfo">0 of 0 lessons completed</p>
+          </div>
+
+          <div class="lessons-list" id="lessonsList">
+            <!-- Lessons will be inserted here -->
+          </div>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area" id="contentArea">
+          <!-- Will be filled by JS -->
+        </div>
+
+      </section>
+    </div>
+
+    <!-- Not Enrolled State -->
+    <div class="not-enrolled-state" id="notEnrolledState" style="display:none;">
+      <div class="not-enrolled-card">
+        <div class="not-enrolled-icon">
+          <i class="fas fa-lock"></i>
+        </div>
+        <h2>Enroll to Access This Course</h2>
+        <p>You need to enroll first to access the lessons and content.</p>
+        <button class="btn btn-primary btn-large" id="enrollNowBtn">
+          <i class="fas fa-unlock"></i>
+          Enroll Now
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============ PURCHASE MODAL ============ -->
+  <div class="modal-overlay" id="purchaseModal">
+    <div class="modal purchase-modal">
+      <button class="modal-close" id="closePurchase">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="purchase-icon">
+        <i class="fas fa-coins"></i>
+      </div>
+      
+      <h2 id="purchaseTitle">Enroll in Course</h2>
+      <p id="purchaseDesc">Confirm your enrollment below</p>
+
+      <div class="purchase-info">
+        <div class="purchase-row">
+          <span>Course Price</span>
+          <strong id="purchasePrice">150 🪙</strong>
+        </div>
+        <div class="purchase-row">
+          <span>Your Balance</span>
+          <strong id="purchaseBalance">100 🪙</strong>
+        </div>
+        <div class="purchase-divider"></div>
+        <div class="purchase-row total">
+          <span>Balance After</span>
+          <strong id="purchaseAfter">-50 🪙</strong>
+        </div>
+      </div>
+
+      <div class="purchase-actions">
+        <button class="btn btn-outline" id="cancelPurchase">Cancel</button>
+        <button class="btn btn-primary" id="confirmPurchase">
+          <i class="fas fa-check"></i>
+          Confirm & Enroll
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ COMPLETION MODAL ============ -->
+  <div class="modal-overlay" id="completionModal">
+    <div class="modal completion-modal">
+      <div class="completion-confetti">🎉</div>
+      <div class="completion-icon">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <h2>Course Completed!</h2>
+      <p>Congratulations on finishing this course!</p>
+      
+      <div class="completion-rewards">
+        <div class="reward-item">
+          <i class="fas fa-coins"></i>
+          <span>+100 SkillCoins</span>
+        </div>
+        <div class="reward-item">
+          <i class="fas fa-medal"></i>
+          <span>Course Master Badge</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-large" id="closeCompletion">
+        <i class="fas fa-arrow-right"></i>
+        Continue Learning
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-link">
+      <i class="fas fa-home"></i><span>Home</span>
+    </a>
+    <a href="courses.html" class="bottom-link active">
+      <i class="fas fa-book-open"></i><span>Courses</span>
+    </a>
+    <a href="skill-ai.html" class="bottom-link ai-nav">
+      <i class="fas fa-robot"></i><span>AI</span>
+    </a>
+    <a href="marketplace.html" class="bottom-link">
+      <i class="fas fa-store"></i><span>Store</span>
+    </a>
+    <a href="profile.html" class="bottom-link">
+      <i class="fas fa-user"></i><span>Profile</span>
+    </a>
+  </nav>
+
+  <!-- Mobile Lessons Toggle -->
+  <button class="mobile-lessons-btn" id="mobileLessonsBtn">
+    <i class="fas fa-list-ul"></i>
+    <span>Lessons</span>
+  </button>
+
+  <!-- Skill AI Float Button -->
+  <a href="skill-ai.html" class="ai-float-btn">
+    <i class="fas fa-robot"></i>
+    <span class="ai-tooltip">Ask Skill AI ✨</span>
+  </a>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/course-view.js"></script>
+
+</body>
+</html>

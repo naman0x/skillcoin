@@ -1,0 +1,23 @@
+# API Keys - NEVER upload!
+js/config.js
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+
+# Backup files
+*.bak
+*.tmp
+*~
+
+# Logs
+*.log

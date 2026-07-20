@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Settings — SkillCoin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/settings.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse"><i class="fas fa-coins"></i></div>
+      <span class="loader-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+    <p class="loader-message">Loading settings...</p>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-coins"></i></div>
+      <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar-mini" id="sidebarAvatar"><span id="sidebarInitial">?</span></div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Loading...</span>
+        <span class="user-level-mini">
+          <i class="fas fa-shield-alt"></i>
+          <span id="sidebarLevel">Level 1</span>
+        </span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Main</span>
+        <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="courses.html" class="sidebar-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+        <a href="missions.html" class="sidebar-link"><i class="fas fa-tasks"></i><span>Missions</span></a>
+        <a href="challenges.html" class="sidebar-link"><i class="fas fa-bolt"></i><span>Challenges</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Explore</span>
+        <a href="marketplace.html" class="sidebar-link"><i class="fas fa-store"></i><span>Marketplace</span></a>
+        <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
+        <a href="studenthub.html" class="sidebar-link"><i class="fas fa-graduation-cap"></i><span>StudentHub</span></a>
+        <a href="skill-ai.html" class="sidebar-link"><i class="fas fa-robot"></i><span>Skill AI</span><span class="nav-badge new">NEW</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Account</span>
+        <a href="profile.html" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="upload.html" class="sidebar-link"><i class="fas fa-upload"></i><span>Upload Skill</span></a>
+        <a href="settings.html" class="sidebar-link active"><i class="fas fa-cog"></i><span>Settings</span></a>
+      </div>
+    </nav>
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search..." disabled/>
+      </div>
+      <div class="top-actions">
+        <div class="coin-balance">
+          <i class="fas fa-coins"></i>
+          <span id="coinAmount">0</span>
+        </div>
+        <button class="icon-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="user-avatar" id="topAvatar"><span id="topInitial">?</span></div>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+
+      <section class="page-header">
+        <div class="page-header-info">
+          <div class="page-badge"><i class="fas fa-cog"></i><span>Settings</span></div>
+          <h1 class="page-title">Account <span class="gradient-text">Settings</span></h1>
+          <p class="page-desc">Customize your SkillCoin experience</p>
+        </div>
+      </section>
+
+      <div class="settings-layout">
+
+        <!-- Settings Navigation -->
+        <aside class="settings-nav">
+          <button class="settings-nav-item active" data-section="account">
+            <i class="fas fa-user"></i>
+            Account
+          </button>
+          <button class="settings-nav-item" data-section="security">
+            <i class="fas fa-lock"></i>
+            Security
+          </button>
+          <button class="settings-nav-item" data-section="notifications">
+            <i class="fas fa-bell"></i>
+            Notifications
+          </button>
+          <button class="settings-nav-item" data-section="appearance">
+            <i class="fas fa-palette"></i>
+            Appearance
+          </button>
+          <button class="settings-nav-item" data-section="privacy">
+            <i class="fas fa-shield-alt"></i>
+            Privacy
+          </button>
+          <button class="settings-nav-item" data-section="about">
+            <i class="fas fa-info-circle"></i>
+            About
+          </button>
+          <button class="settings-nav-item danger" data-section="danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            Danger Zone
+          </button>
+        </aside>
+
+        <!-- Settings Content -->
+        <div class="settings-content">
+
+          <!-- Account Section -->
+          <div class="settings-section active" data-section="account">
+            <div class="settings-card">
+              <h2><i class="fas fa-user"></i> Account Information</h2>
+              <p class="settings-desc">Update your basic account details</p>
+
+              <div class="settings-form">
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" id="settingName" placeholder="Your name"/>
+                </div>
+
+                <div class="form-group">
+                  <label>Email Address</label>
+                  <input type="email" id="settingEmail" disabled/>
+                  <span class="input-hint">Email cannot be changed</span>
+                </div>
+
+                <div class="form-group">
+                  <label>Bio</label>
+                  <textarea id="settingBio" rows="3" placeholder="Tell us about yourself..." maxlength="200"></textarea>
+                  <span class="input-hint"><span id="bioCount">0</span>/200 characters</span>
+                </div>
+
+                <button class="btn btn-primary" id="saveAccountBtn">
+                  <i class="fas fa-save"></i>
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security Section -->
+          <div class="settings-section" data-section="security">
+            <div class="settings-card">
+              <h2><i class="fas fa-lock"></i> Change Password</h2>
+              <p class="settings-desc">Keep your account secure</p>
+
+              <div class="settings-form">
+                <div class="form-group">
+                  <label>Current Password</label>
+                  <input type="password" id="currentPassword" placeholder="Enter current password"/>
+                </div>
+
+                <div class="form-group">
+                  <label>New Password</label>
+                  <input type="password" id="newPassword" placeholder="Min 6 characters" minlength="6"/>
+                </div>
+
+                <div class="form-group">
+                  <label>Confirm New Password</label>
+                  <input type="password" id="confirmPassword" placeholder="Re-enter new password"/>
+                </div>
+
+                <button class="btn btn-primary" id="changePasswordBtn">
+                  <i class="fas fa-key"></i>
+                  Update Password
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications Section -->
+          <div class="settings-section" data-section="notifications">
+            <div class="settings-card">
+              <h2><i class="fas fa-bell"></i> Notification Preferences</h2>
+              <p class="settings-desc">Choose what you want to be notified about</p>
+
+              <div class="toggle-list">
+                <div class="toggle-item">
+                  <div>
+                    <strong>Daily Login Reminder</strong>
+                    <span>Get reminded to maintain your streak</span>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="notif_daily" checked/>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-item">
+                  <div>
+                    <strong>Coin Rewards</strong>
+                    <span>Notifications when you earn coins</span>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="notif_coins" checked/>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-item">
+                  <div>
+                    <strong>Course Updates</strong>
+                    <span>New courses in your interests</span>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="notif_courses" checked/>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-item">
+                  <div>
+                    <strong>Mission Reminders</strong>
+                    <span>Alerts for incomplete missions</span>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="notif_missions" checked/>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-item">
+                  <div>
+                    <strong>Leaderboard Updates</strong>
+                    <span>Weekly ranking notifications</span>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="notif_leaderboard"/>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" id="saveNotifBtn">
+                <i class="fas fa-save"></i>
+                Save Preferences
+              </button>
+            </div>
+          </div>
+
+          <!-- Appearance Section -->
+          <div class="settings-section" data-section="appearance">
+            <div class="settings-card">
+              <h2><i class="fas fa-palette"></i> Appearance</h2>
+              <p class="settings-desc">Customize how SkillCoin looks</p>
+
+              <div class="theme-options">
+                <div class="theme-option active" data-theme="dark">
+                  <div class="theme-preview dark-preview">
+                    <div class="tp-header"></div>
+                    <div class="tp-content">
+                      <div class="tp-line"></div>
+                      <div class="tp-line short"></div>
+                    </div>
+                  </div>
+                  <span>🌙 Dark Mode</span>
+                  <small>Default & recommended</small>
+                </div>
+
+                <div class="theme-option" data-theme="light">
+                  <div class="theme-preview light-preview">
+                    <div class="tp-header"></div>
+                    <div class="tp-content">
+                      <div class="tp-line"></div>
+                      <div class="tp-line short"></div>
+                    </div>
+                  </div>
+                  <span>☀️ Light Mode</span>
+                  <small>Coming soon</small>
+                </div>
+
+                <div class="theme-option" data-theme="auto">
+                  <div class="theme-preview auto-preview">
+                    <div class="tp-header"></div>
+                    <div class="tp-content">
+                      <div class="tp-line"></div>
+                      <div class="tp-line short"></div>
+                    </div>
+                  </div>
+                  <span>🔄 Auto</span>
+                  <small>Matches system</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Privacy Section -->
+          <div class="settings-section" data-section="privacy">
+            <div class="settings-card">
+              <h2><i class="fas fa-shield-alt"></i> Privacy Settings</h2>
+              <p class="settings-desc">Control your privacy on SkillCoin</p>
+
+              <div class="toggle-list">
+                <div class="toggle-item">
+                  <div>
+                    <strong>Show on Leaderboard</strong>
+                    <span>Display your rank publicly</span>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked/>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-item">
+                  <div>
+                    <strong>Public Profile</strong>
+                    <span>Anyone can view your profile</span>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked/>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-item">
+                  <div>
+                    <strong>Show Activity Status</strong>
+                    <span>Others can see when you're online</span>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox"/>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- About Section -->
+          <div class="settings-section" data-section="about">
+            <div class="settings-card about-card">
+              <div class="about-header">
+                <div class="about-logo">
+                  <div class="logo-icon"><i class="fas fa-coins"></i></div>
+                  <div>
+                    <h2>SkillCoin</h2>
+                    <span>v1.0.0</span>
+                  </div>
+                </div>
+              </div>
+
+              <p class="about-tagline">
+                "Built with ☕, chaos, and pure mastikhori by <strong>Naman</strong> 🔥"
+              </p>
+
+              <div class="creator-card">
+                <div class="creator-avatar">N</div>
+                <div class="creator-info">
+                  <h3>Created by Naman 👑</h3>
+                  <p>Yo! 👋 I'm Naman, the mastikhor mind behind SkillCoin. A 15-year-old class 11th student from KV No.3 Baad, Mathura, who thinks learning should feel like leveling up in a game 🎮</p>
+                  <p>Fun fact: I built this because Netflix was too boring and I needed a project. Also because Virat Kohli's grind inspired me to grind at code 💻🔥</p>
+                </div>
+              </div>
+
+              <div class="creator-links">
+                <a href="https://www.instagram.com/naman.0x_/" target="_blank" class="creator-link instagram">
+                  <i class="fab fa-instagram"></i>
+                  <div>
+                    <span>Instagram</span>
+                    <strong>@naman.0x_</strong>
+                  </div>
+                </a>
+
+                <a href="mailto:techgamers273@gmail.com" class="creator-link email">
+                  <i class="fas fa-envelope"></i>
+                  <div>
+                    <span>Email</span>
+                    <strong>techgamers273@gmail.com</strong>
+                  </div>
+                </a>
+              </div>
+
+              <div class="about-stats">
+                <div class="about-stat">
+                  <strong>💻</strong>
+                  <span>Full-Stack</span>
+                </div>
+                <div class="about-stat">
+                  <strong>🔥</strong>
+                  <span>Firebase</span>
+                </div>
+                <div class="about-stat">
+                  <strong>🤖</strong>
+                  <span>AI Powered</span>
+                </div>
+                <div class="about-stat">
+                  <strong>🎮</strong>
+                  <span>Gamified</span>
+                </div>
+              </div>
+
+              <div class="about-footer">
+                <p>Made in Mathura 🇮🇳 with 💜</p>
+                <p><strong>© 2026 SkillCoin. All rights reserved.</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="settings-section" data-section="danger">
+            <div class="settings-card danger-card">
+              <h2><i class="fas fa-exclamation-triangle"></i> Danger Zone</h2>
+              <p class="settings-desc">Careful! These actions are irreversible</p>
+
+              <div class="danger-item">
+                <div>
+                  <strong>Reset All Progress</strong>
+                  <span>This will reset your coins, level, streak, and courses</span>
+                </div>
+                <button class="btn btn-danger" id="resetBtn">
+                  <i class="fas fa-undo"></i>
+                  Reset
+                </button>
+              </div>
+
+              <div class="danger-item">
+                <div>
+                  <strong>Delete Account Forever</strong>
+                  <span>Your account and all data will be permanently deleted</span>
+                </div>
+                <button class="btn btn-danger" id="deleteAccountBtn">
+                  <i class="fas fa-trash"></i>
+                  Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-link"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="courses.html" class="bottom-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+    <a href="skill-ai.html" class="bottom-link ai-nav"><i class="fas fa-robot"></i><span>AI</span></a>
+    <a href="marketplace.html" class="bottom-link"><i class="fas fa-store"></i><span>Store</span></a>
+    <a href="profile.html" class="bottom-link"><i class="fas fa-user"></i><span>Profile</span></a>
+  </nav>
+
+  <a href="skill-ai.html" class="ai-float-btn">
+    <i class="fas fa-robot"></i>
+    <span class="ai-tooltip">Ask Skill AI ✨</span>
+  </a>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script type="module" src="js/settings.js"></script>
+</body>
+</html>

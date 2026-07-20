@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Login — SkillCoin</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+</head>
+
+<body class="auth-body">
+
+  <!-- Animated Background -->
+  <div class="auth-bg">
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+  </div>
+
+  <!-- Back to Home -->
+  <a href="index.html" class="back-home">
+    <i class="fas fa-arrow-left"></i>
+    <span>Back to Home</span>
+  </a>
+
+  <!-- Auth Container -->
+  <div class="auth-container">
+
+    <!-- Auth Card -->
+    <div class="auth-card">
+
+      <!-- Logo -->
+      <div class="auth-logo">
+        <div class="logo-icon">
+          <i class="fas fa-coins"></i>
+        </div>
+        <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" id="tabLogin">
+          <i class="fas fa-sign-in-alt"></i>
+          Login
+        </button>
+        <button class="auth-tab" data-tab="signup" id="tabSignup">
+          <i class="fas fa-user-plus"></i>
+          Sign Up
+        </button>
+      </div>
+
+      <!-- ========== LOGIN FORM ========== -->
+      <form id="loginForm" class="auth-form active">
+        
+        <div class="auth-header">
+          <h2>Welcome Back! 👋</h2>
+          <p>Login to continue earning SkillCoins</p>
+        </div>
+
+        <div class="form-group">
+          <label for="loginEmail">
+            <i class="fas fa-envelope"></i>
+            Email
+          </label>
+          <input 
+            type="email" 
+            id="loginEmail" 
+            placeholder="you@example.com" 
+            required 
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">
+            <i class="fas fa-lock"></i>
+            Password
+          </label>
+          <div class="password-wrapper">
+            <input 
+              type="password" 
+              id="loginPassword" 
+              placeholder="Enter your password" 
+              required 
+              autocomplete="current-password"
+            />
+            <button type="button" class="password-toggle" data-target="loginPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberMe" checked/>
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-link" id="forgotPassword">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large btn-full" id="loginBtn">
+          <span class="btn-text">
+            <i class="fas fa-sign-in-alt"></i>
+            Login to SkillCoin
+          </span>
+          <span class="btn-loader" style="display:none;">
+            <i class="fas fa-spinner spin"></i>
+            Logging in...
+          </span>
+        </button>
+
+        <div class="auth-switch">
+          Don't have an account? 
+          <a href="#" data-switch="signup">Sign up now</a>
+        </div>
+
+      </form>
+
+      <!-- ========== SIGNUP FORM ========== -->
+      <form id="signupForm" class="auth-form">
+        
+        <div class="auth-header">
+          <h2>Join SkillCoin! 🚀</h2>
+          <p>Create your free account & get <strong style="color:var(--gold)">+100 coins</strong> instantly!</p>
+        </div>
+
+        <div class="form-group">
+          <label for="signupName">
+            <i class="fas fa-user"></i>
+            Full Name
+          </label>
+          <input 
+            type="text" 
+            id="signupName" 
+            placeholder="Your name" 
+            required 
+            autocomplete="name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="signupEmail">
+            <i class="fas fa-envelope"></i>
+            Email
+          </label>
+          <input 
+            type="email" 
+            id="signupEmail" 
+            placeholder="you@example.com" 
+            required 
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="signupPassword">
+            <i class="fas fa-lock"></i>
+            Password
+          </label>
+          <div class="password-wrapper">
+            <input 
+              type="password" 
+              id="signupPassword" 
+              placeholder="Min 6 characters" 
+              required 
+              minlength="6"
+              autocomplete="new-password"
+            />
+            <button type="button" class="password-toggle" data-target="signupPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="password-strength" id="passwordStrength">
+            <div class="strength-bar">
+              <div class="strength-fill" id="strengthFill"></div>
+            </div>
+            <span class="strength-text" id="strengthText">Password strength</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signupConfirm">
+            <i class="fas fa-lock"></i>
+            Confirm Password
+          </label>
+          <div class="password-wrapper">
+            <input 
+              type="password" 
+              id="signupConfirm" 
+              placeholder="Re-enter password" 
+              required 
+              minlength="6"
+              autocomplete="new-password"
+            />
+            <button type="button" class="password-toggle" data-target="signupConfirm">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <label class="checkbox-label terms">
+          <input type="checkbox" id="agreeTerms" required/>
+          <span>I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a></span>
+        </label>
+
+        <button type="submit" class="btn btn-primary btn-large btn-full" id="signupBtn">
+          <span class="btn-text">
+            <i class="fas fa-rocket"></i>
+            Create Account & Earn 100 Coins
+          </span>
+          <span class="btn-loader" style="display:none;">
+            <i class="fas fa-spinner spin"></i>
+            Creating account...
+          </span>
+        </button>
+
+        <div class="auth-switch">
+          Already have an account? 
+          <a href="#" data-switch="login">Login here</a>
+        </div>
+
+      </form>
+
+    </div>
+
+    <!-- Side Info Card (Desktop) -->
+    <div class="auth-info">
+      <div class="info-badge">🎉 Welcome</div>
+      <h2>Start Your Learning<br/><span class="gradient-text">Adventure Today</span></h2>
+      <p>Join thousands of students earning SkillCoins by learning what they love. Get instant rewards, maintain streaks, unlock badges and level up!</p>
+      
+      <div class="info-features">
+        <div class="info-feature">
+          <div class="info-icon"><i class="fas fa-coins"></i></div>
+          <div>
+            <strong>Earn Instantly</strong>
+            <span>+100 coins on signup</span>
+          </div>
+        </div>
+        <div class="info-feature">
+          <div class="info-icon"><i class="fas fa-fire"></i></div>
+          <div>
+            <strong>Daily Rewards</strong>
+            <span>Up to 350 coins/day</span>
+          </div>
+        </div>
+        <div class="info-feature">
+          <div class="info-icon"><i class="fas fa-robot"></i></div>
+          <div>
+            <strong>AI Assistant</strong>
+            <span>24/7 learning help</span>
+          </div>
+        </div>
+        <div class="info-feature">
+          <div class="info-icon"><i class="fas fa-trophy"></i></div>
+          <div>
+            <strong>Leaderboards</strong>
+            <span>Compete & win big</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-stats">
+        <div class="info-stat">
+          <strong>10K+</strong>
+          <span>Users</span>
+        </div>
+        <div class="info-stat">
+          <strong>500+</strong>
+          <span>Courses</span>
+        </div>
+        <div class="info-stat">
+          <strong>100%</strong>
+          <span>Free</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/auth.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="SkillCoin - Learn, Earn, Grow. A gamified e-learning platform."/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>SkillCoin — Learn. Earn. Grow.</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json"/>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Our CSS -->
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+</head>
+
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+
+      <!-- Logo -->
+      <div class="nav-logo">
+        <div class="logo-icon">
+          <i class="fas fa-coins"></i>
+        </div>
+        <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+      </div>
+
+      <!-- Nav Links (Desktop) -->
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="nav-link active">Home</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+        <li><a href="#stats" class="nav-link">Stats</a></li>
+        <li><a href="#testimonials" class="nav-link">Reviews</a></li>
+      </ul>
+
+      <!-- Nav Buttons -->
+      <div class="nav-buttons">
+        <a href="login.html" class="btn btn-outline">Login</a>
+        <a href="login.html?mode=signup" class="btn btn-primary">Get Started</a>
+      </div>
+
+      <!-- Hamburger (Mobile) -->
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <ul>
+        <li><a href="#home" class="mobile-link">Home</a></li>
+        <li><a href="#features" class="mobile-link">Features</a></li>
+        <li><a href="#how-it-works" class="mobile-link">How It Works</a></li>
+        <li><a href="#stats" class="mobile-link">Stats</a></li>
+        <li><a href="#testimonials" class="mobile-link">Reviews</a></li>
+      </ul>
+      <div class="mobile-buttons">
+        <a href="login.html" class="btn btn-outline">Login</a>
+        <a href="login.html?mode=signup" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== HERO SECTION ========== -->
+  <section class="hero" id="home">
+    <div class="hero-bg">
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
+      <div class="hero-orb orb-3"></div>
+      <div class="particles" id="particles"></div>
+    </div>
+
+    <div class="hero-container">
+      <div class="hero-content">
+
+        <!-- Badge -->
+        <div class="hero-badge">
+          <i class="fas fa-fire"></i>
+          <span>Gamified Learning Platform</span>
+        </div>
+
+        <!-- Heading -->
+        <h1 class="hero-title">
+          Learn Skills.<br/>
+          Earn <span class="gradient-text">SkillCoins</span>.<br/>
+          Level Up Life.
+        </h1>
+
+        <!-- Description -->
+        <p class="hero-desc">
+          The world's first gamified e-learning platform where your knowledge 
+          earns you real rewards. Learn, complete challenges, maintain streaks 
+          and build your future — one coin at a time.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="hero-buttons">
+          <a href="login.html?mode=signup" class="btn btn-primary btn-large">
+            <i class="fas fa-rocket"></i>
+            Start Earning Free
+          </a>
+          <a href="#how-it-works" class="btn btn-ghost btn-large">
+            <i class="fas fa-play-circle"></i>
+            How It Works
+          </a>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="hero-trust">
+          <div class="trust-item">
+            <i class="fas fa-users"></i>
+            <span>10,000+ Learners</span>
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <i class="fas fa-star"></i>
+            <span>4.9 Rating</span>
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <i class="fas fa-shield-alt"></i>
+            <span>100% Free</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hero Visual -->
+      <div class="hero-visual">
+
+        <!-- Main Card -->
+        <div class="hero-card main-card">
+          <div class="card-header">
+            <div class="user-avatar">
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="user-info">
+              <span class="user-name">Alex Kumar</span>
+              <span class="user-level">Level 12 • Scholar</span>
+            </div>
+            <div class="coin-badge">
+              <i class="fas fa-coins"></i>
+              <span>4,280</span>
+            </div>
+          </div>
+          <div class="card-xp">
+            <div class="xp-label">
+              <span>XP Progress</span>
+              <span>78%</span>
+            </div>
+            <div class="xp-bar">
+              <div class="xp-fill" style="width: 78%"></div>
+            </div>
+          </div>
+          <div class="card-streak">
+            <i class="fas fa-fire"></i>
+            <span>23 Day Streak!</span>
+          </div>
+        </div>
+
+        <!-- Floating Cards -->
+        <div class="hero-card float-card coin-card">
+          <i class="fas fa-coins"></i>
+          <div>
+            <span class="float-value">+350</span>
+            <span class="float-label">Daily Reward</span>
+          </div>
+        </div>
+
+        <div class="hero-card float-card badge-card">
+          <i class="fas fa-medal"></i>
+          <div>
+            <span class="float-value">New Badge!</span>
+            <span class="float-label">Week Warrior 🔥</span>
+          </div>
+        </div>
+
+        <div class="hero-card float-card ai-card">
+          <i class="fas fa-robot"></i>
+          <div>
+            <span class="float-value">Skill AI</span>
+            <span class="float-label">Ready to help!</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+      <div class="scroll-dot"></div>
+      <span>Scroll to explore</span>
+    </div>
+  </section>
+
+  <!-- ========== STATS SECTION ========== -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item" data-count="10000">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-number"><span class="counter">10,000</span>+</div>
+          <div class="stat-label">Active Learners</div>
+        </div>
+        <div class="stat-item" data-count="500">
+          <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+          <div class="stat-number"><span class="counter">500</span>+</div>
+          <div class="stat-label">Courses Available</div>
+        </div>
+        <div class="stat-item" data-count="50000">
+          <div class="stat-icon"><i class="fas fa-coins"></i></div>
+          <div class="stat-number"><span class="counter">50,000</span>+</div>
+          <div class="stat-label">Coins Earned Daily</div>
+        </div>
+        <div class="stat-item" data-count="98">
+          <div class="stat-icon"><i class="fas fa-smile"></i></div>
+          <div class="stat-number"><span class="counter">98</span>%</div>
+          <div class="stat-label">Satisfaction Rate</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FEATURES SECTION ========== -->
+  <section class="features-section" id="features">
+    <div class="container">
+
+      <div class="section-header">
+        <div class="section-badge">✨ Features</div>
+        <h2 class="section-title">Everything You Need to <span class="gradient-text">Grow</span></h2>
+        <p class="section-desc">SkillCoin combines learning with gaming to make education addictive in the best way possible.</p>
+      </div>
+
+      <div class="features-grid">
+
+        <div class="feature-card" data-aos="fade-up">
+          <div class="feature-icon purple">
+            <i class="fas fa-coins"></i>
+          </div>
+          <h3>Earn SkillCoins</h3>
+          <p>Complete lessons, maintain streaks, finish challenges and earn virtual currency for every learning action.</p>
+          <div class="feature-tag">+10 to +500 coins per action</div>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-icon gold">
+            <i class="fas fa-fire"></i>
+          </div>
+          <h3>Daily Streaks</h3>
+          <p>Login every day to maintain your streak. The longer your streak, the more coins you earn daily!</p>
+          <div class="feature-tag">Up to 350 coins/day</div>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-icon teal">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3>Skill AI Assistant</h3>
+          <p>Your personal AI tutor that summarizes courses, generates quizzes, answers doubts and recommends content.</p>
+          <div class="feature-tag">Powered by Gemini AI</div>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="feature-icon red">
+            <i class="fas fa-upload"></i>
+          </div>
+          <h3>Share Your Skills</h3>
+          <p>Upload your own courses, skills and experiences. Earn 1000 coins instantly plus coins from every purchase.</p>
+          <div class="feature-tag">+1000 coins per upload</div>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+          <div class="feature-icon blue">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <h3>Missions & Challenges</h3>
+          <p>Complete daily and weekly missions to earn bonus coins. New challenges every day to keep you engaged.</p>
+          <div class="feature-tag">Up to 500 coins/week</div>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+          <div class="feature-icon green">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <h3>StudentHub</h3>
+          <p>All-in-one student toolkit with AI notes, flashcards, Pomodoro timer, grade calculator and more.</p>
+          <div class="feature-tag">20+ student tools</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== HOW IT WORKS ========== -->
+  <section class="how-section" id="how-it-works">
+    <div class="container">
+
+      <div class="section-header">
+        <div class="section-badge">🚀 Process</div>
+        <h2 class="section-title">How <span class="gradient-text">SkillCoin</span> Works</h2>
+        <p class="section-desc">Start earning in 3 simple steps</p>
+      </div>
+
+      <div class="steps-container">
+
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <div class="step-icon">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <h3>Sign Up Free</h3>
+          <p>Create your free account in seconds. Set your learning goals and interests to get personalized recommendations.</p>
+          <div class="step-reward">
+            <i class="fas fa-coins"></i>
+            <span>+100 Welcome Coins</span>
+          </div>
+        </div>
+
+        <div class="step-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <div class="step-icon">
+            <i class="fas fa-book-reader"></i>
+          </div>
+          <h3>Learn & Complete</h3>
+          <p>Watch courses, complete challenges, take AI quizzes and maintain your daily streak to earn SkillCoins.</p>
+          <div class="step-reward">
+            <i class="fas fa-coins"></i>
+            <span>+10 to +350 per day</span>
+          </div>
+        </div>
+
+        <div class="step-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <div class="step-icon">
+            <i class="fas fa-store"></i>
+          </div>
+          <h3>Spend & Unlock</h3>
+          <p>Use your SkillCoins in the marketplace to unlock premium courses, resources, badges and profile upgrades.</p>
+          <div class="step-reward">
+            <i class="fas fa-coins"></i>
+            <span>Unlock Premium Content</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== COIN EARNING SECTION ========== -->
+  <section class="earning-section">
+    <div class="container">
+
+      <div class="section-header">
+        <div class="section-badge">🪙 Economy</div>
+        <h2 class="section-title">Ways to Earn <span class="gradient-text">SkillCoins</span></h2>
+        <p class="section-desc">Multiple ways to fill your coin wallet every single day</p>
+      </div>
+
+      <div class="earning-grid">
+        <div class="earning-card">
+          <div class="earning-icon"><i class="fas fa-sign-in-alt"></i></div>
+          <div class="earning-info">
+            <span class="earning-action">Daily Login</span>
+            <span class="earning-desc">Streak based reward</span>
+          </div>
+          <div class="earning-coins">
+            <i class="fas fa-coins"></i>
+            <span>50–350</span>
+          </div>
+        </div>
+
+        <div class="earning-card">
+          <div class="earning-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="earning-info">
+            <span class="earning-action">Complete Lesson</span>
+            <span class="earning-desc">Per lesson finished</span>
+          </div>
+          <div class="earning-coins">
+            <i class="fas fa-coins"></i>
+            <span>+10</span>
+          </div>
+        </div>
+
+        <div class="earning-card">
+          <div class="earning-icon"><i class="fas fa-flag-checkered"></i></div>
+          <div class="earning-info">
+            <span class="earning-action">Complete Course</span>
+            <span class="earning-desc">Full course done</span>
+          </div>
+          <div class="earning-coins">
+            <i class="fas fa-coins"></i>
+            <span>+100</span>
+          </div>
+        </div>
+
+        <div class="earning-card">
+          <div class="earning-icon"><i class="fas fa-upload"></i></div>
+          <div class="earning-info">
+            <span class="earning-action">Upload a Skill</span>
+            <span class="earning-desc">Share your knowledge</span>
+          </div>
+          <div class="earning-coins">
+            <i class="fas fa-coins"></i>
+            <span>+1000</span>
+          </div>
+        </div>
+
+        <div class="earning-card">
+          <div class="earning-icon"><i class="fas fa-brain"></i></div>
+          <div class="earning-info">
+            <span class="earning-action">AI Quiz</span>
+            <span class="earning-desc">Per quiz completed</span>
+          </div>
+          <div class="earning-coins">
+            <i class="fas fa-coins"></i>
+            <span>20–50</span>
+          </div>
+        </div>
+
+        <div class="earning-card">
+          <div class="earning-icon"><i class="fas fa-tasks"></i></div>
+          <div class="earning-info">
+            <span class="earning-action">Weekly Mission</span>
+            <span class="earning-desc">Big weekly rewards</span>
+          </div>
+          <div class="earning-coins">
+            <i class="fas fa-coins"></i>
+            <span>200–500</span>
+          </div>
+        </div>
+
+        <div class="earning-card">
+          <div class="earning-icon"><i class="fas fa-crown"></i></div>
+          <div class="earning-info">
+            <span class="earning-action">Leaderboard #1</span>
+            <span class="earning-desc">Top of the board</span>
+          </div>
+          <div class="earning-coins">
+            <i class="fas fa-coins"></i>
+            <span>+500</span>
+          </div>
+        </div>
+
+        <div class="earning-card">
+          <div class="earning-icon"><i class="fas fa-user-plus"></i></div>
+          <div class="earning-info">
+            <span class="earning-action">Refer a Friend</span>
+            <span class="earning-desc">Per referral</span>
+          </div>
+          <div class="earning-coins">
+            <i class="fas fa-coins"></i>
+            <span>+150</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TESTIMONIALS ========== -->
+  <section class="testimonials-section" id="testimonials">
+    <div class="container">
+
+      <div class="section-header">
+        <div class="section-badge">💬 Reviews</div>
+        <h2 class="section-title">What Learners <span class="gradient-text">Say</span></h2>
+        <p class="section-desc">Join thousands of happy learners already on SkillCoin</p>
+      </div>
+
+      <div class="testimonials-grid">
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p>"SkillCoin changed how I study! I've maintained a 45-day streak and earned over 8000 coins. The AI quiz feature is absolutely amazing!"</p>
+          <div class="testimonial-author">
+            <div class="author-avatar purple">R</div>
+            <div>
+              <span class="author-name">Rahul Sharma</span>
+              <span class="author-role">Engineering Student</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card featured">
+          <div class="testimonial-stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p>"I uploaded my Python course and earned 1000 coins instantly! Then 3 people bought it and I got even more. This platform is incredible for creators!"</p>
+          <div class="testimonial-author">
+            <div class="author-avatar gold">P</div>
+            <div>
+              <span class="author-name">Priya Mehta</span>
+              <span class="author-role">CS Graduate & Creator</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p>"The StudentHub is a game changer! Pomodoro timer, AI notes, grade calculator — everything I need is in one place. Best study app ever!"</p>
+          <div class="testimonial-author">
+            <div class="author-avatar teal">A</div>
+            <div>
+              <span class="author-name">Arjun Patel</span>
+              <span class="author-role">Class 12 Student</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA SECTION ========== -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-card">
+        <div class="cta-orb cta-orb-1"></div>
+        <div class="cta-orb cta-orb-2"></div>
+        <div class="cta-content">
+          <div class="cta-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <h2>Ready to Start Your Learning Journey?</h2>
+          <p>Join thousands of students already earning SkillCoins. It's completely free — forever.</p>
+          <div class="cta-buttons">
+            <a href="login.html?mode=signup" class="btn btn-primary btn-large">
+              <i class="fas fa-user-plus"></i>
+              Create Free Account
+            </a>
+            <a href="login.html" class="btn btn-outline btn-large">
+              <i class="fas fa-sign-in-alt"></i>
+              Login
+            </a>
+          </div>
+          <p class="cta-note">
+            <i class="fas fa-shield-alt"></i>
+            No credit card required • 100% Free • Instant access
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+
+        <div class="footer-brand">
+          <div class="nav-logo">
+            <div class="logo-icon">
+              <i class="fas fa-coins"></i>
+            </div>
+            <span class="logo-text">Skill<span class="logo-accent">Coin</span></span>
+          </div>
+          <p>Making learning addictive through gamification. Learn, earn and grow every single day.</p>
+          <div class="footer-social">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-discord"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-links">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="courses.html">Courses</a></li>
+            <li><a href="challenges.html">Challenges</a></li>
+            <li><a href="marketplace.html">Marketplace</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="studenthub.html">StudentHub</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>Account</h4>
+          <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="login.html?mode=signup">Sign Up</a></li>
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="settings.html">Settings</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2024 SkillCoin. Made with ❤️ for learners everywhere.</p>
+        <p>100% Free • No Ads • No Spam</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========== SCRIPTS ========== -->
+  <script src="js/auth.js"></script>
+  <script>
+
+    // ---- Navbar Scroll Effect ----
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // ---- Hamburger Menu ----
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      mobileMenu.classList.toggle('active');
+    });
+
+    // ---- Close mobile menu on link click ----
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        mobileMenu.classList.remove('active');
+      });
+    });
+
+    // ---- Smooth Scroll ----
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ---- Particle Generator ----
+    function createParticles() {
+      const container = document.getElementById('particles');
+      if (!container) return;
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        container.appendChild(particle);
+      }
+    }
+    createParticles();
+
+    // ---- Scroll Reveal Animation ----
+    function revealOnScroll() {
+      const cards = document.querySelectorAll(
+        '.feature-card, .stat-item, .step-card, .earning-card, .testimonial-card'
+      );
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 80) {
+          card.classList.add('revealed');
+        }
+      });
+    }
+    window.addEventListener('scroll', revealOnScroll);
+    revealOnScroll();
+
+    // ---- Active Nav Link on Scroll ----
+    const sections = document.querySelectorAll('section[id]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        if (window.scrollY >= sectionTop) {
+          current = section.getAttribute('id');
+        }
+      });
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+  </script>
+
+</body>
+</html>

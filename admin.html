@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6C63FF"/>
+  <title>Admin Panel — SkillCoin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/admin.css"/>
+</head>
+
+<body class="dashboard-body">
+
+  <div class="dashboard-loader" id="dashboardLoader">
+    <div class="loader-logo">
+      <div class="logo-icon pulse"><i class="fas fa-crown"></i></div>
+      <span class="loader-text">Admin<span class="logo-accent">Panel</span></span>
+    </div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+    <p class="loader-message">Verifying admin access...</p>
+  </div>
+
+  <!-- Access Denied Screen -->
+  <div class="access-denied" id="accessDenied" style="display:none;">
+    <div class="denied-card">
+      <div class="denied-icon"><i class="fas fa-shield-alt"></i></div>
+      <h1>Access Denied 🔒</h1>
+      <p>This page is only accessible to the developer (Naman).</p>
+      <p class="denied-sub">If you're seeing this by mistake, please contact <strong>@naman.0x_</strong></p>
+      <a href="dashboard.html" class="btn btn-primary btn-large">
+        <i class="fas fa-home"></i>
+        Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon admin-logo"><i class="fas fa-crown"></i></div>
+      <span class="logo-text">Admin<span class="logo-accent">Panel</span></span>
+    </div>
+    <div class="sidebar-user admin-user">
+      <div class="user-avatar-mini admin-avatar-mini">
+        <span id="sidebarInitial">N</span>
+      </div>
+      <div class="user-info-mini">
+        <span class="user-name-mini" id="sidebarName">Naman</span>
+        <span class="user-level-mini admin-level">
+          <i class="fas fa-crown"></i>
+          Developer
+        </span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">Admin Tools</span>
+        <a href="admin.html" class="sidebar-link active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+        <a href="#users" class="sidebar-link" data-admin-tab="users"><i class="fas fa-users"></i><span>Users</span></a>
+        <a href="#courses" class="sidebar-link" data-admin-tab="courses"><i class="fas fa-book"></i><span>Courses</span></a>
+        <a href="#analytics" class="sidebar-link" data-admin-tab="analytics"><i class="fas fa-chart-bar"></i><span>Analytics</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">Regular Pages</span>
+        <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a href="courses.html" class="sidebar-link"><i class="fas fa-book-open"></i><span>Courses</span></a>
+        <a href="profile.html" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i><span>Settings</span></a>
+      </div>
+    </nav>
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </button>
+  </aside>
+
+  <main class="main-content" id="adminMain" style="display:none;">
+    <header class="top-bar admin-topbar">
+      <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+      <div class="admin-badge-top">
+        <i class="fas fa-crown"></i>
+        <span>ADMIN MODE ACTIVE</span>
+      </div>
+      <div class="top-actions">
+        <div class="coin-balance">
+          <i class="fas fa-coins"></i>
+          <span>∞</span>
+        </div>
+        <div class="user-avatar admin-avatar-top" id="topAvatar"><span id="topInitial">N</span></div>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+
+      <!-- Admin Hero -->
+      <section class="admin-hero">
+        <div class="admin-hero-content">
+          <div class="admin-hero-badge">
+            <i class="fas fa-crown"></i>
+            <span>Developer Zone</span>
+          </div>
+          <h1 class="admin-hero-title">
+            Welcome back, <span class="gold-text">Boss Naman</span> 👑
+          </h1>
+          <p class="admin-hero-desc">
+            Your kingdom awaits, Captain 🏏 Manage users, courses, and monitor your empire!
+          </p>
+        </div>
+      </section>
+
+      <!-- Stats Grid -->
+      <section class="admin-stats-grid">
+        <div class="astats-card gold">
+          <div class="astats-icon"><i class="fas fa-users"></i></div>
+          <div>
+            <span class="astats-value" id="totalUsers">0</span>
+            <span class="astats-label">Total Users</span>
+          </div>
+        </div>
+        <div class="astats-card purple">
+          <div class="astats-icon"><i class="fas fa-book"></i></div>
+          <div>
+            <span class="astats-value" id="totalCoursesAdmin">0</span>
+            <span class="astats-label">Total Courses</span>
+          </div>
+        </div>
+        <div class="astats-card teal">
+          <div class="astats-icon"><i class="fas fa-coins"></i></div>
+          <div>
+            <span class="astats-value" id="totalCoinsCirc">0</span>
+            <span class="astats-label">Coins in Circulation</span>
+          </div>
+        </div>
+        <div class="astats-card red">
+          <div class="astats-icon"><i class="fas fa-fire"></i></div>
+          <div>
+            <span class="astats-value" id="activeStreaks">0</span>
+            <span class="astats-label">Users with Streaks</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Admin Tabs -->
+      <section class="admin-tabs">
+        <button class="admin-tab active" data-tab="users">
+          <i class="fas fa-users"></i>
+          User Management
+        </button>
+        <button class="admin-tab" data-tab="courses">
+          <i class="fas fa-book"></i>
+          Course Management
+        </button>
+        <button class="admin-tab" data-tab="analytics">
+          <i class="fas fa-chart-bar"></i>
+          Analytics
+        </button>
+      </section>
+
+      <!-- Users Tab -->
+      <section class="admin-section active" data-section="users">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2><i class="fas fa-users"></i> All Users</h2>
+            <input type="text" class="admin-search" placeholder="🔍 Search users..." id="userSearchAdmin"/>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Level</th>
+                  <th>Coins</th>
+                  <th>Streak</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTable">
+                <!-- Injected -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Courses Tab -->
+      <section class="admin-section" data-section="courses">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2><i class="fas fa-book"></i> All Courses</h2>
+            <input type="text" class="admin-search" placeholder="🔍 Search courses..." id="courseSearchAdmin"/>
+          </div>
+          <div class="admin-courses-grid" id="coursesAdminGrid">
+            <!-- Injected -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Analytics Tab -->
+      <section class="admin-section" data-section="analytics">
+        <div class="admin-card">
+          <h2><i class="fas fa-chart-bar"></i> Platform Analytics</h2>
+          <div class="analytics-grid">
+            <div class="analytics-item">
+              <span class="an-label">Total Signups</span>
+              <span class="an-value" id="anSignups">0</span>
+            </div>
+            <div class="analytics-item">
+              <span class="an-label">Total Coins Earned</span>
+              <span class="an-value" id="anCoinsEarned">0</span>
+            </div>
+            <div class="analytics-item">
+              <span class="an-label">Total Coins Spent</span>
+              <span class="an-value" id="anCoinsSpent">0</span>
+            </div>
+            <div class="analytics-item">
+              <span class="an-label">Avg. Level</span>
+              <span class="an-value" id="anAvgLevel">0</span>
+            </div>
+            <div class="analytics-item">
+              <span class="an-label">Top Streak</span>
+              <span class="an-value" id="anTopStreak">0</span>
+            </div>
+            <div class="analytics-item">
+              <span class="an-label">Free Courses</span>
+              <span class="an-value" id="anFreeCourses">0</span>
+            </div>
+            <div class="analytics-item">
+              <span class="an-label">Paid Courses</span>
+              <span class="an-value" id="anPaidCourses">0</span>
+            </div>
+            <div class="analytics-item">
+              <span class="an-label">Total Enrollments</span>
+              <span class="an-value" id="anEnrollments">0</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Edit User Modal -->
+  <div class="modal-overlay" id="editUserModal">
+    <div class="modal">
+      <button class="modal-close" onclick="document.getElementById('editUserModal').classList.remove('active')">
+        <i class="fas fa-times"></i>
+      </button>
+      <h2 style="margin-bottom:16px;"><i class="fas fa-user-edit"></i> Edit User</h2>
+      <p style="color:var(--text-muted);margin-bottom:20px;" id="editUserName">--</p>
+
+      <div class="settings-form">
+        <div class="tool-input-group">
+          <label>Coins</label>
+          <input type="number" id="editCoins" placeholder="Amount"/>
+        </div>
+        <div class="tool-input-group">
+          <label>Level</label>
+          <input type="number" id="editLevel" placeholder="Level"/>
+        </div>
+        <div class="tool-input-group">
+          <label>Streak</label>
+          <input type="number" id="editStreak" placeholder="Days"/>
+        </div>
+        <button class="btn btn-primary" id="saveUserEdit" style="margin-top:10px;">
+          <i class="fas fa-save"></i>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
