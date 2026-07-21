@@ -130,7 +130,6 @@ function loadMissions() {
 }
 
 function getMissionProgress(mission, completed, isDaily = false) {
-  // Real progress based on user data
   const today = new Date().toDateString();
   
   switch(mission.id) {
@@ -138,6 +137,19 @@ function getMissionProgress(mission, completed, isDaily = false) {
     case 'd_browse':
     case 's_first_login':
       return 1;
+    
+    case 'd_lessons':
+      // Count how many lessons user has completed today
+      return userData.dailyLessonsCompleted || 0;
+    
+    case 'd_quiz':
+      return userData.dailyQuizzesTaken || 0;
+    
+    case 'd_ai_chat':
+      return userData.dailyAIChats || 0;
+    
+    case 'd_review':
+      return userData.dailyReviews || 0;
     
     case 'w_streak':
       return userData.streak || 0;
@@ -155,6 +167,12 @@ function getMissionProgress(mission, completed, isDaily = false) {
     
     case 'w_upload':
       return userData.uploadedCourses?.length || 0;
+    
+    case 'w_coins':
+      return userData.totalCoinsEarned || 0;
+    
+    case 'w_missions':
+      return userData.weeklyMissionsCompleted || 0;
     
     default:
       return completed.includes(mission.id) || completed.includes(`${mission.id}_${today}`) ? mission.target : 0;

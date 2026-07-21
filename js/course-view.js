@@ -307,22 +307,112 @@ function renderLessonContent(index) {
 
   const hasNext = index < lessons.length - 1;
   const hasPrev = index > 0;
+  const hasVideo = lesson.hasVideo || lesson.videoId;
+  const hasNotes = lesson.hasNotes || lesson.notes;
+
+  // Build video section
+  let videoSection = '';
+  if (hasVideo && lesson.videoId) {
+    videoSection = `
+      <div class="lesson-video-wrapper">
+        <iframe 
+          src="https://www.youtube.com/embed/${lesson.videoId}?rel=0&modestbranding=1"
+          title="${escapeHtml(lesson.title)}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin">
+        </iframe>
+      </div>
+    `;
+  } else {
+    videoSection = `
+      <div class="lesson-video-placeholder-wrap">
+        <div class="lesson-video-placeholder-inner">
+          <i class="fas fa-book-open" style="font-size:3rem;color:var(--primary);margin-bottom:12px;"></i>
+          <h3>${hasNotes ? 'Read the notes below 📝' : 'No content yet'}</h3>
+          <p>${hasNotes ? 'This lesson uses text notes' : 'Content coming soon!'}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Build notes section
+  let notesSection = '';
+  if (hasNotes && lesson.notes) {
+    notesSection = `
+      <div class="lesson-notes-view">
+        <div class="notes-view-header">
+          <h3><i class="fas fa-sticky-note"></i> Lesson Notes</h3>
+        </div>
+        <div class="notes-view-content">
+          ${lesson.notes}
+        </div>
+      </div>
+    `;
+  }
+
+  // Build tabs (only if both video and notes exist)
+  let tabsSection = '';
+  let contentSection = '';
+  
+  if (hasVideo && hasNotes) {
+    // Both exist - show tabs
+    tabsSection = `
+      <div class="content-tabs">
+        <button class="content-tab-btn active" data-tab="video">
+          <i class="fas fa-video"></i> Video
+        </button>
+        <button class="content-tab-btn" data-tab="notes">
+          <i class="fas fa-sticky-note"></i> Notes
+        </button>
+      </div>
+    `;
+    contentSection = `
+      <div class="content-view-video active">
+        ${videoSection}
+      </div>
+      <div class="content-view-notes">
+        ${notesSection}
+      </div>
+    `;
+  } else if (hasVideo) {
+    // Only video
+    contentSection = `
+      <div class="content-view-video active">
+        ${videoSection}
+      </div>
+    `;
+  } else if (hasNotes) {
+    // Only notes
+    contentSection = `
+      <div class="content-view-notes active">
+        ${notesSection}
+      </div>
+    `;
+  } else {
+    // Nothing - show placeholder
+    contentSection = `
+      <div class="lesson-video-placeholder-wrap">
+        <div class="lesson-video-placeholder-inner">
+          <i class="fas fa-info-circle" style="font-size:3rem;color:var(--text-muted);margin-bottom:12px;"></i>
+          <h3>No content added yet</h3>
+          <p>The instructor hasn't added video or notes for this lesson</p>
+        </div>
+      </div>
+    `;
+  }
 
   contentArea.innerHTML = `
-    <div class="lesson-video-area">
-      <div class="lesson-video-placeholder">
-        <div class="play-btn-big" onclick="playLesson()">
-          <i class="fas fa-play"></i>
-        </div>
-        <h3>${lesson.title}</h3>
-        <p>${lesson.duration} • Lesson ${index + 1} of ${lessons.length}</p>
-      </div>
+    ${tabsSection}
+    <div class="lesson-content-wrapper">
+      ${contentSection}
     </div>
 
     <div class="lesson-content-info">
       <div class="lesson-content-header">
         <div class="lesson-content-title">
-          <h2>${lesson.title}</h2>
+          <h2>${escapeHtml(lesson.title)}</h2>
           <div class="lesson-content-meta">
             <span><i class="fas fa-clock"></i> ${lesson.duration}</span>
             <span><i class="fas fa-list"></i> Lesson ${index + 1} of ${lessons.length}</span>
@@ -340,24 +430,10 @@ function renderLessonContent(index) {
         </button>
       </div>
 
-      <div class="lesson-description">
-        <p>Welcome to <strong>${lesson.title}</strong>! In this lesson, you will learn key concepts that will help you master ${courseData.title}.</p>
-        <p>Follow along with the video above and make sure to practice the concepts covered. Feel free to use <strong>Skill AI</strong> if you need help understanding anything!</p>
-        <p>Once you finish watching, click <strong>"Mark Complete"</strong> to earn your coins and track your progress! 🚀</p>
-      </div>
-
       <div class="lesson-actions">
         <button class="lesson-action-btn ai-btn" onclick="window.location.href='skill-ai.html'">
           <i class="fas fa-robot"></i>
           Ask Skill AI
-        </button>
-        <button class="lesson-action-btn" onclick="showToast('info', 'Notes!', 'Notes feature coming soon! 📝')">
-          <i class="fas fa-sticky-note"></i>
-          My Notes
-        </button>
-        <button class="lesson-action-btn" onclick="showToast('info', 'Resources!', 'Resources feature coming soon! 📚')">
-          <i class="fas fa-download"></i>
-          Resources
         </button>
         <button class="nav-lesson-btn" onclick="selectLesson(${index - 1})" ${!hasPrev ? 'disabled' : ''}>
           <i class="fas fa-arrow-left"></i>
@@ -370,6 +446,46 @@ function renderLessonContent(index) {
       </div>
     </div>
   `;
+
+  // Initialize tabs if both exist
+  if (hasVideo && hasNotes) {
+    initContentTabs();
+  }
+}
+
+// ==========================================
+// CONTENT TABS SWITCHER
+// ==========================================
+function initContentTabs() {
+  const tabs = document.querySelectorAll('.content-tab-btn');
+  const videoView = document.querySelector('.content-view-video');
+  const notesView = document.querySelector('.content-view-notes');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      const target = tab.getAttribute('data-tab');
+      if (target === 'video') {
+        videoView?.classList.add('active');
+        notesView?.classList.remove('active');
+      } else {
+        notesView?.classList.add('active');
+        videoView?.classList.remove('active');
+      }
+    });
+  });
+}
+
+// ==========================================
+// HELPER
+// ==========================================
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // ==========================================
@@ -442,13 +558,30 @@ window.completeLesson = async function(lessonId) {
     const newLevel = calculateLevel(newXP);
     const newTotalEarned = (userData.totalCoinsEarned || 0) + 10;
 
+        // Track daily lesson completion for missions
+    const today = new Date().toDateString();
+    const lastLessonDate = userData.lastLessonCompletedDate;
+    let dailyLessonsCompleted = userData.dailyLessonsCompleted || 0;
+    
+    if (lastLessonDate !== today) {
+      // New day, reset counter
+      dailyLessonsCompleted = 1;
+    } else {
+      dailyLessonsCompleted++;
+    }
+
     const userRef = doc(db, 'users', currentUser.uid);
     await setDoc(userRef, {
       skillCoins: newCoins,
       xp: newXP,
       level: newLevel,
-      totalCoinsEarned: newTotalEarned
+      totalCoinsEarned: newTotalEarned,
+      dailyLessonsCompleted: dailyLessonsCompleted,
+      lastLessonCompletedDate: today
     }, { merge: true });
+
+    userData.dailyLessonsCompleted = dailyLessonsCompleted;
+    userData.lastLessonCompletedDate = today;
 
     // Update local state
     userData.skillCoins = newCoins;

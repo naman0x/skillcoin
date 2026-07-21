@@ -448,96 +448,99 @@
             </div>
           </div>
 
+          
           <!-- Section 3: Lessons -->
-          <div class="form-section">
-            <div class="form-section-header">
-              <span class="section-number">3</span>
-              <div>
-                <h2>Course Lessons</h2>
-                <p>Add lessons to your course (min 3 lessons)</p>
-              </div>
-            </div>
+<div class="form-section">
+  <div class="form-section-header">
+    <span class="section-number">3</span>
+    <div>
+      <h2>Course Lessons</h2>
+      <p>Add lessons with videos and notes (min 3 lessons)</p>
+    </div>
+  </div>
 
-            <div class="lessons-editor" id="lessonsEditor">
-              <!-- Lessons will be added here -->
-            </div>
+  <div class="lesson-info-tip">
+    <i class="fas fa-info-circle"></i>
+    <span>Each lesson can have a YouTube video, notes, or both. At least one is required per lesson!</span>
+  </div>
 
-            <button type="button" class="add-lesson-btn" id="addLessonBtn">
-              <i class="fas fa-plus"></i>
-              Add Another Lesson
-            </button>
+  <div class="lessons-editor" id="lessonsEditor">
+    <!-- Lessons will be added here -->
+  </div>
 
-            <div class="lessons-count-info">
-              <i class="fas fa-info-circle"></i>
-              <span>Total Lessons: <strong id="totalLessons">0</strong> (Minimum 3 required)</span>
-            </div>
-          </div>
+  <button type="button" class="add-lesson-btn" id="addLessonBtn">
+    <i class="fas fa-plus"></i>
+    Add Another Lesson
+  </button>
 
-          <!-- Section 4: Publish -->
-          <div class="form-section">
-            <div class="form-section-header">
-              <span class="section-number">4</span>
-              <div>
-                <h2>Ready to Publish?</h2>
-                <p>Review and confirm your course upload</p>
-              </div>
-            </div>
+  <div class="lessons-count-info">
+    <i class="fas fa-info-circle"></i>
+    <span>Total Lessons: <strong id="totalLessons">0</strong> (Minimum 3 required)</span>
+  </div>
+</div>
 
-            <div class="publish-summary">
-              <div class="summary-row">
-                <span>Course Title</span>
-                <strong id="summaryTitle">Not set</strong>
-              </div>
-              <div class="summary-row">
-                <span>Category</span>
-                <strong id="summaryCategory">Not set</strong>
-              </div>
-              <div class="summary-row">
-                <span>Level</span>
-                <strong id="summaryLevel">Not set</strong>
-              </div>
-              <div class="summary-row">
-                <span>Lessons</span>
-                <strong id="summaryLessons">0 lessons</strong>
-              </div>
-              <div class="summary-row">
-                <span>Price</span>
-                <strong id="summaryPrice">100 🪙</strong>
-              </div>
-              <div class="summary-divider"></div>
-              <div class="summary-row highlight">
-                <span>You'll Earn</span>
-                <strong class="reward-highlight">+1000 🪙 <span id="firstUploadBonus" style="display:none;">(+500 first upload bonus!)</span></strong>
-              </div>
-            </div>
+    <!-- Section 4: Publish -->
+    <div class="form-section">
+      <div class="form-section-header">
+        <span class="section-number">4</span>
+        <div>
+          <h2>Ready to Publish?</h2>
+          <p>Review and confirm your course upload</p>
+        </div>
+      </div>
 
-            <div class="publish-agreement">
-              <label class="checkbox-label">
-                <input type="checkbox" id="agreeUpload" required/>
-                <span>I confirm this course is my original content and follows SkillCoin's community guidelines ✅</span>
-              </label>
-            </div>
+      <div class="publish-summary">
+        <div class="summary-row">
+          <span>Course Title</span>
+          <strong id="summaryTitle">Not set</strong>
+        </div>
+        <div class="summary-row">
+          <span>Category</span>
+          <strong id="summaryCategory">Not set</strong>
+        </div>
+        <div class="summary-row">
+          <span>Level</span>
+          <strong id="summaryLevel">Not set</strong>
+        </div>
+        <div class="summary-row">
+          <span>Lessons</span>
+          <strong id="summaryLessons">0 lessons</strong>
+        </div>
+        <div class="summary-row">
+          <span>Price</span>
+          <strong id="summaryPrice">100 🪙</strong>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-row highlight">
+          <span>You'll Earn</span>
+          <strong class="reward-highlight">+1000 🪙 <span id="firstUploadBonus" style="display:none;">(+500 first upload bonus!)</span></strong>
+        </div>
+      </div>
 
-            <div class="publish-actions">
-              <button type="button" class="btn btn-outline btn-large" onclick="window.location.href='courses.html'">
-                <i class="fas fa-times"></i>
-                Cancel
-              </button>
-              <button type="submit" class="btn btn-primary btn-large" id="publishBtn">
-                <span class="btn-text">
-                  <i class="fas fa-rocket"></i>
-                  Publish Course & Earn Coins!
-                </span>
-                <span class="btn-loader" style="display:none;">
-                  <i class="fas fa-spinner spin"></i>
-                  Publishing...
-                </span>
-              </button>
-            </div>
-          </div>
+      <div class="publish-agreement">
+        <label class="checkbox-label">
+          <input type="checkbox" id="agreeUpload" required/>
+          <span>I confirm this course is my original content and follows SkillCoin's community guidelines ✅</span>
+        </label>
+      </div>
 
-        </form>
-      </section>
+      <div class="publish-actions">
+        <button type="button" class="btn btn-outline btn-large" onclick="window.location.href='courses.html'">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary btn-large" id="publishBtn">
+          <span class="btn-text">
+            <i class="fas fa-rocket"></i>
+            Publish Course & Earn Coins!
+          </span>
+          <span class="btn-loader" style="display:none;">
+            <i class="fas fa-spinner spin"></i>
+            Publishing...
+          </span>
+        </button>
+      </div>
+    </div>
 
     </div>
 

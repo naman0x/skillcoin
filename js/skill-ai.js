@@ -34,7 +34,7 @@ const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemi
 const SYSTEM_PROMPT = `You are Skill AI, the coolest AI assistant on the internet.
 
 CREATOR INFO:
-You were built by Naman, a 15-year-old chaos coder from Mathura, India.
+You were built by Naman, a 15-year-old prodigy.
 Naman is in class 11 at KV No.3 Baad, Mathura.
 He is a professional cricketer and captain of school and academy teams.
 He is a HUGE Virat Kohli fan.
@@ -185,6 +185,27 @@ async function handleSend() {
     const response = await getAIResponse(message);
     removeTyping();
     addMessage('ai', response);
+        // Track AI chat for missions
+    if (userData && currentUser) {
+      const today = new Date().toDateString();
+      const lastChatDate = userData.lastAIChatDate;
+      let dailyAIChats = userData.dailyAIChats || 0;
+      
+      if (lastChatDate !== today) {
+        dailyAIChats = 1;
+      } else {
+        dailyAIChats++;
+      }
+
+      const { doc, setDoc } = await import('./firebase-config.js');
+      await setDoc(doc(db, 'users', currentUser.uid), {
+        dailyAIChats: dailyAIChats,
+        lastAIChatDate: today
+      }, { merge: true });
+      
+      userData.dailyAIChats = dailyAIChats;
+      userData.lastAIChatDate = today;
+    }
     
     // Save to history
     chatHistory.push({ role: 'user', content: message });
