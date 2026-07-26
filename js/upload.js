@@ -423,6 +423,11 @@ async function handleFormSubmit(e) {
   console.log("🚀 Publishing course...");
 
   const btn = document.getElementById('publishBtn');
+    // Prevent double-submission
+  if (btn.disabled) {
+    console.log("⏳ Already submitting, please wait...");
+    return;
+  }
 
   const title = document.getElementById('courseTitle').value.trim();
   const description = document.getElementById('courseDesc').value.trim();
@@ -497,9 +502,19 @@ async function handleFormSubmit(e) {
   setButtonLoading(btn, true);
 
   try {
-    const courseId = `course_${Date.now()}_${currentUser.uid.slice(0, 6)}`;
+     // Create unique ID with more randomness
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
+    const courseId = `course_${timestamp}_${currentUser.uid.slice(0, 6)}_${random}`;
     const courseRef = doc(db, 'courses', courseId);
-
+    
+    // Double-check no course exists with this ID (extra safety)
+    const existingCheck = await getDoc(courseRef);
+    if (existingCheck.exists()) {
+      showToast('error', 'Duplicate!', 'Please try again in a moment');
+      setButtonLoading(btn, false);
+      return;
+    }
     const courseData = {
       title: title,
       description: description,
@@ -557,6 +572,11 @@ async function handleFormSubmit(e) {
       userData.uploadedCourses = newUploaded;
     }
 
+        // Keep button disabled after success (already published!)
+    btn.disabled = true;
+    
+    setText('earnedCoins', `+${totalReward}`);
+    document.getElementById('successModal').classList.add('active');
     setText('earnedCoins', `+${totalReward}`);
     document.getElementById('successModal').classList.add('active');
 
