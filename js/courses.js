@@ -97,7 +97,18 @@ async function loadCourses() {
     if (cachedCourses && cacheAge < CACHE_DURATION) {
       const minutesOld = Math.floor(cacheAge / 60000);
       const secondsOld = Math.floor((cacheAge % 60000) / 1000);
-      allCourses = JSON.parse(cachedCourses);
+      const parsed = JSON.parse(cachedCourses);
+      
+      // Ensure no duplicates in cache either
+      const seenIds = new Set();
+      allCourses = [];
+      parsed.forEach(course => {
+        if (!seenIds.has(course.id)) {
+          allCourses.push(course);
+          seenIds.add(course.id);
+        }
+      });
+      
       console.log(`⚡ CACHE HIT: ${allCourses.length} courses (${minutesOld}m ${secondsOld}s old, 0 DB reads!) 🎉`);
     } else {
       // Cache expired or empty → Fetch fresh
@@ -105,9 +116,20 @@ async function loadCourses() {
       const coursesRef = collection(db, 'courses');
       const snapshot = await getDocs(coursesRef);
       
+      // Reset array completely to prevent duplicates
       allCourses = [];
+      const seenIds = new Set();
+      
       snapshot.forEach(docSnap => {
-        allCourses.push({ id: docSnap.id, ...docSnap.data() });
+        const courseId = docSnap.id;
+        // Skip duplicates and deleted courses
+        if (!seenIds.has(courseId)) {
+          const data = docSnap.data();
+          if (!data.deleted) {
+            allCourses.push({ id: courseId, ...data });
+            seenIds.add(courseId);
+          }
+        }
       });
       
       // Save to cache with current timestamp
