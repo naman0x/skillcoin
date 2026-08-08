@@ -132,13 +132,21 @@ If context is provided about user, USE IT naturally!
 Example: If context says "user learning Python", say "Yo bro! How's Python going?"
 Never say "I remember from database" - just naturally use the info!
 
-CRITICAL RULE - NO HALLUCINATION:
+CRITICAL RULE - NO HALLUCINATION (VERY IMPORTANT!):
 - NEVER make up numbers, users, or issues!
-- If ADMIN DATA is provided, ONLY mention what's actually in it
-- If no data exists, say "No issues reported yet, Sir!" - don't invent!
-- Don't say things like "a few minor bugs" if you have no real data
-- Be HONEST about what you know vs don't know
-- If admin data shows 0 issues, say ZERO issues!
+- If ADMIN DATA is provided, ONLY mention what's ACTUALLY in the JSON
+- Count the exact items in the data - don't guess or estimate
+- If issue array is empty, say "Zero issues reported!"
+- If user asked about specific user, ONLY share info from that user's actual record
+- Don't infer or assume anything not explicitly in the data
+- If no matching user found, say "No user found with that name, Sir!"
+- If data shows null/empty, say so honestly
+- Present data in a FUN way but stay 100% accurate!
+
+CRITICAL RULE - USER PRIVACY:
+- Regular users NEVER get "Sir", "Boss", "King", "Queen" — only Naman gets these!
+- If regular user asks for admin data (issues, other users, stats), politely deflect
+- Say something like "That's admin stuff, [their name]! But I can help you with YOUR journey!"
 
 REPORTING ISSUES:
 If user says "not working / broken / bug / error / slow / problem":
@@ -456,43 +464,169 @@ async function reportIssue(userMessage) {
 function detectAdminQuery(userMessage) {
   const msg = userMessage.toLowerCase();
   
-  if (msg.match(/(?:any )?(?:issues|problems|bugs)/i)) return 'issues';
-  if (msg.match(/(?:how many|user )?(?:stats|users|total)/i)) return 'stats';
-  if (msg.match(/tell me about (?:user )?(\w+)/i)) return 'user_search';
-  if (msg.match(/(?:gossip|what.*users.*say|user insights)/i)) return 'gossip';
+  // Only detect if MULTIPLE admin-related keywords
+  const adminKeywords = ['issues', 'problems', 'bugs', 'reports', 'reported', 'errors on site', 'user complaints'];
+  const statKeywords = ['how many users', 'user stats', 'total users', 'active users', 'site stats', 'platform stats'];
+  const userSearchKeywords = ['tell me about user', 'info about user', 'details about'];
+  const gossipKeywords = ['gossip', 'what users saying', 'user insights', 'top users'];
+  
+  if (adminKeywords.some(kw => msg.includes(kw))) return 'issues';
+  if (statKeywords.some(kw => msg.includes(kw))) return 'stats';
+  if (userSearchKeywords.some(kw => msg.includes(kw))) return 'user_search';
+  if (msg.match(/^tell me about (\w+)/i) && msg.split(' ').length <= 5) return 'user_search';
+  if (gossipKeywords.some(kw => msg.includes(kw))) return 'gossip';
   
   return null;
 }
 
+// ==========================================
+// FETCH ADMIN DATA (D1 + Firebase Combined!)
+// ==========================================
+
 async function fetchAdminData(queryType, userMessage) {
   try {
-    let url = `${ADMIN_URL}?admin_email=${currentUser.email}`;
+    let combinedData = {};
+    
+    // Get D1 data (chats, issues)
+    let d1Url = `${ADMIN_URL}?admin_email=${currentUser.email}`;
     
     if (queryType === 'issues') {
-      url += '&action=issues&status=open';
+      d1Url += '&action=issues&status=open';
     } else if (queryType === 'stats') {
-      url += '&action=stats';
+      d1Url += '&action=stats';
     } else if (queryType === 'user_search') {
-      const match = userMessage.match(/tell me about (?:user )?(\w+)/i);
-      const name = match ? match[1] : '';
-      url += `&action=search&name=${encodeURIComponent(name)}`;
+      const match = userMessage.match(/tell me about (?:user )?(.+?)(?:\?|$|\.)/i);
+      const name = match ? match[1].trim() : '';
+      d1Url += `&action=search&name=${encodeURIComponent(name)}`;
     } else if (queryType === 'gossip') {
-      url += '&action=users';
+      d1Url += '&action=users';
     }
     
-    const response = await fetch(url);
-    const data = await response.json();
+    const d1Response = await fetch(d1Url);
+    const d1Data = await d1Response.json();
     
-    if (data.success) {
-      return JSON.stringify(data, null, 2);
+    if (d1Data.success) {
+      combinedData.d1_data = d1Data;
     }
-    return null;
+    
+    // 🔥 Also fetch Firebase data for stats and users!
+    if (queryType === 'stats' || queryType === 'gossip' || queryType === 'user_search') {
+      combinedData.firebase_data = await fetchFirebaseData(queryType, userMessage);
+    }
+    
+    return JSON.stringify(combinedData, null, 2);
+    
   } catch (err) {
     console.error("Admin fetch error:", err);
     return null;
   }
 }
 
+// ==========================================
+// FETCH FIREBASE DATA
+// ==========================================
+
+async function fetchFirebaseData(queryType, userMessage) {
+  try {
+    const { collection, getDocs, query, where } = await import('./firebase-config.js');
+    
+    if (queryType === 'stats') {
+      // Get all users from Firebase
+      const usersSnap = await getDocs(collection(db, 'users'));
+      const coursesSnap = await getDocs(collection(db, 'courses'));
+      
+      let totalCoins = 0;
+      let totalCourses = 0;
+      let activeUsers = 0;
+      const today = Date.now() - (7 * 24 * 60 * 60 * 1000);
+      
+      usersSnap.forEach(doc => {
+        const data = doc.data();
+        totalCoins += data.skillCoins || 0;
+        totalCourses += (data.completedCourses?.length || 0);
+        if (data.lastSeen && data.lastSeen.toMillis && data.lastSeen.toMillis() > today) {
+          activeUsers++;
+        }
+      });
+      
+      return {
+        total_users: usersSnap.size,
+        total_courses: coursesSnap.size,
+        active_last_week: activeUsers,
+        total_coins_circulating: totalCoins,
+        total_courses_completed: totalCourses
+      };
+    }
+    
+    if (queryType === 'gossip') {
+      // Get top users
+      const usersSnap = await getDocs(collection(db, 'users'));
+      const users = [];
+      
+      usersSnap.forEach(doc => {
+        const data = doc.data();
+        users.push({
+          name: data.name || 'Unknown',
+          email: data.email || '',
+          level: data.level || 1,
+          coins: data.skillCoins || 0,
+          streak: data.streak || 0,
+          courses_done: data.completedCourses?.length || 0,
+          courses_uploaded: data.uploadedCourses?.length || 0,
+          badges: data.badges?.length || 0
+        });
+      });
+      
+      users.sort((a, b) => b.coins - a.coins);
+      
+      return {
+        total_users: users.length,
+        top_users: users.slice(0, 10),
+        newest_users: users.slice(-5)
+      };
+    }
+    
+    if (queryType === 'user_search') {
+      const match = userMessage.match(/tell me about (?:user )?(.+?)(?:\?|$|\.)/i);
+      const searchName = match ? match[1].trim().toLowerCase() : '';
+      
+      if (!searchName) return null;
+      
+      const usersSnap = await getDocs(collection(db, 'users'));
+      const foundUsers = [];
+      
+      usersSnap.forEach(doc => {
+        const data = doc.data();
+        const userName = (data.name || '').toLowerCase();
+        if (userName.includes(searchName)) {
+          foundUsers.push({
+            name: data.name,
+            email: data.email,
+            level: data.level || 1,
+            coins: data.skillCoins || 0,
+            streak: data.streak || 0,
+            courses_completed: data.completedCourses?.length || 0,
+            courses_uploaded: data.uploadedCourses?.length || 0,
+            badges: data.badges || [],
+            joined: data.joinedDate ? new Date(data.joinedDate.toMillis()).toLocaleDateString() : 'unknown',
+            referral_code: data.referralCode || ''
+          });
+        }
+      });
+      
+      return {
+        search_query: searchName,
+        found_count: foundUsers.length,
+        users: foundUsers
+      };
+    }
+    
+    return null;
+  } catch (err) {
+    console.error("Firebase fetch error:", err);
+    return null;
+  }
+}
 // ==========================================
 // GET AI RESPONSE (Smart Routing + Fallback)
 // ==========================================
