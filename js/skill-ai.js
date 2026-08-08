@@ -296,6 +296,70 @@ function selectBestModel(userMessage) {
   return 'casual';
 }
 
+
+// ==========================================
+// 🎯 SMART TOKEN LIMIT CALCULATOR
+// ==========================================
+
+function getSmartTokenLimit(userMessage, modelType) {
+  const msg = userMessage.toLowerCase();
+  
+  // User wants MASSIVE detailed response
+  const megaKeywords = [
+    'explain everything', 'complete guide', 'full tutorial',
+    'from scratch to advanced', 'ultimate guide', 'exhaustive'
+  ];
+  if (megaKeywords.some(kw => msg.includes(kw))) {
+    console.log("📊 Token limit: 4000 (mega detail)");
+    return 4000;
+  }
+  
+  // User wants DEEP/LONG response
+  const longKeywords = [
+    'deeply', 'in detail', 'step by step', 'detailed explanation',
+    'comprehensive', 'thorough', 'break down', 'in depth',
+    'explain properly', 'complete explanation', 'walk me through'
+  ];
+  if (longKeywords.some(kw => msg.includes(kw))) {
+    console.log("📊 Token limit: 3500 (long detail)");
+    return 3500;
+  }
+  
+  // User wants QUICK/SHORT response
+  const shortKeywords = [
+    'quickly', 'briefly', 'in short', 'one line',
+    'summarize', 'summary', 'tldr', 'in one word',
+    'yes or no', 'quick answer', 'short answer'
+  ];
+  if (shortKeywords.some(kw => msg.includes(kw))) {
+    console.log("📊 Token limit: 300 (short answer)");
+    return 300;
+  }
+  
+  // User wants a project/complete code
+  const projectKeywords = [
+    'build a', 'create a full', 'complete project',
+    'entire code', 'full app', 'whole program'
+  ];
+  if (projectKeywords.some(kw => msg.includes(kw))) {
+    console.log("📊 Token limit: 3000 (project code)");
+    return 3000;
+  }
+  
+  // Default by model type
+  if (modelType === 'reasoning') {
+    console.log("📊 Token limit: 3000 (reasoning default)");
+    return 3000;
+  }
+  if (modelType === 'coding') {
+    console.log("📊 Token limit: 1800 (coding default)");
+    return 1800;
+  }
+  
+  // Casual default
+  console.log("📊 Token limit: 800 (casual default)");
+  return 800;
+}
 // ==========================================
 // GET AI RESPONSE (Smart Routing + Fallback)
 // ==========================================
@@ -357,6 +421,10 @@ async function callNvidia(modelName, userMessage, userContext) {
     { role: 'user', content: userMessage }
   ];
 
+  // Get smart token limit based on user's query
+  const modelType = modelName.includes('nemotron') ? 'reasoning' : 'coding';
+  const tokenLimit = getSmartTokenLimit(userMessage, modelType);
+
   // Call through Cloudflare Worker (bypasses CORS ✅)
   const response = await fetch(NVIDIA_WORKER_URL, {
     method: 'POST',
@@ -367,7 +435,7 @@ async function callNvidia(modelName, userMessage, userContext) {
       model: modelName,
       messages: messages,
       temperature: 0.9,
-      max_tokens: 600
+      max_tokens: tokenLimit
     })
   });
 
@@ -377,7 +445,6 @@ async function callNvidia(modelName, userMessage, userContext) {
 
   const data = await response.json();
   
-  // Check for API errors returned by worker
   if (data.error) {
     throw new Error(`NVIDIA API error: ${data.error}`);
   }
@@ -395,6 +462,9 @@ async function callGroq(userMessage, userContext) {
     { role: 'user', content: userMessage }
   ];
 
+  // Smart token limit for casual queries
+  const tokenLimit = getSmartTokenLimit(userMessage, 'casual');
+
   const response = await fetch(GROQ_URL, {
     method: 'POST',
     headers: {
@@ -405,7 +475,7 @@ async function callGroq(userMessage, userContext) {
       model: MODELS.casual,
       messages: messages,
       temperature: 0.9,
-      max_tokens: 500,
+      max_tokens: tokenLimit,
       top_p: 1
     })
   });
@@ -445,6 +515,9 @@ async function callGemini(userMessage, userContext) {
     }
   ];
 
+  // Smart token limit
+  const tokenLimit = getSmartTokenLimit(userMessage, 'casual');
+
   const response = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -452,7 +525,7 @@ async function callGemini(userMessage, userContext) {
       contents: contents,
       generationConfig: {
         temperature: 0.9,
-        maxOutputTokens: 500,
+        maxOutputTokens: tokenLimit,
         topP: 1
       }
     })
