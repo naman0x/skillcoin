@@ -1882,3 +1882,46 @@ img {
     font-size: 0.9rem;
   }
 }
+/* ==========================================
+   GOOGLE SIGN-IN BUTTON
+   ========================================== */
+
+.btn-google {
+  background: white !important;
+  color: #444 !important;
+  border: 1px solid #ddd !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  font-weight: 600 !important;
+  transition: var(--transition);
+}
+
+.btn-google:hover {
+  background: #f8f8f8 !important;
+  border-color: #ccc !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.btn-google svg {
+  flex-shrink: 0;
+}
+
+.divider-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin: 20px 0;
+}
+
+.divider-text::before,
+.divider-text::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}

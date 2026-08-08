@@ -13,7 +13,9 @@ import {
   doc,
   setDoc,
   getDoc,
-  serverTimestamp
+  serverTimestamp,
+  GoogleAuthProvider,
+  signInWithPopup
 } from './firebase-config.js';
 
 console.log("🚀 auth.js loaded!");
@@ -186,7 +188,9 @@ function initPasswordStrength() {
 function initForms() {
   initLoginForm();
   initSignupForm();
+  initGoogleAuth();
 }
+
 
 // ---- LOGIN ----
 function initLoginForm() {
@@ -285,6 +289,77 @@ function initSignupForm() {
   });
 }
 
+// ==========================================
+// GOOGLE SIGN-IN / SIGN-UP
+// ==========================================
+
+function initGoogleAuth() {
+  const loginBtn = document.getElementById('googleLoginBtn');
+  const signupBtn = document.getElementById('googleSignupBtn');
+  
+  if (loginBtn) {
+    loginBtn.addEventListener('click', handleGoogleAuth);
+  }
+  
+  if (signupBtn) {
+    signupBtn.addEventListener('click', handleGoogleAuth);
+  }
+}
+
+async function handleGoogleAuth() {
+  console.log("🔍 Google sign-in started...");
+  
+  try {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    
+    // Set signup flag
+    sessionStorage.setItem('isSigningUp', 'true');
+    
+    // Open Google popup
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    console.log("✅ Google auth success:", user.email);
+    
+    // Check if user already exists in Firestore
+    const userRef = doc(db, 'users', user.uid);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) {
+      // New user - create profile
+      console.log("📝 Creating new user profile...");
+      await createUserProfile(user, user.displayName || 'Learner');
+      showToast('coin', '🎉 Welcome!', 'Account created! +100 coins added!');
+    } else {
+      // Existing user - just login
+      console.log("👤 Existing user, logging in...");
+      await handleDailyLogin(user.uid);
+      showToast('success', 'Welcome back!', 'Redirecting...');
+    }
+    
+    // Redirect
+    sessionStorage.removeItem('isSigningUp');
+    setTimeout(() => {
+      window.location.href = 'dashboard.html';
+    }, 1500);
+    
+  } catch (error) {
+    console.error("❌ Google auth error:", error);
+    sessionStorage.removeItem('isSigningUp');
+    
+    let errorMsg = 'Could not sign in with Google';
+    
+    if (error.code === 'auth/popup-closed-by-user') {
+      errorMsg = 'Sign-in cancelled';
+    } else if (error.code === 'auth/popup-blocked') {
+      errorMsg = 'Popup blocked! Please allow popups.';
+    } else if (error.code === 'auth/account-exists-with-different-credential') {
+      errorMsg = 'Account exists with different method. Try email login!';
+    }
+    
+    showToast('error', 'Sign-in Failed', errorMsg);
+  }
+}
 // ==========================================
 // CREATE USER PROFILE
 // ==========================================

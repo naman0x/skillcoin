@@ -10,7 +10,9 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  updateProfile
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 import { 
   getFirestore,
@@ -25,7 +27,7 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-// ✅ Your Firebase Config
+// ✅ Your Firebase Config (get from Firebase Console)
 const firebaseConfig = {
   apiKey: "AIzaSyDizG4SCFJkqvoMNEKgMR9uXjHyEIqr3H4",
   authDomain: "skillcoin-87e0b.firebaseapp.com",
@@ -52,6 +54,8 @@ export {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
   doc,
   setDoc,
   getDoc,
