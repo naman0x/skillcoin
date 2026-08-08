@@ -1,11 +1,7 @@
 // ==========================================
 // SKILLCOIN — SKILL AI 🤖
 // Built by Naman with love 💜
-// Smart Multi-Model Routing:
-// - NVIDIA DeepSeek V4 Pro (Coding)
-// - NVIDIA Nemotron 550B (Deep Reasoning)
-// - Groq Llama 3.3 70B (Casual/Fast)
-// - Gemini (Fallback)
+// Smart Multi-Model Routing + D1 Memory
 // ==========================================
 
 import {
@@ -13,10 +9,10 @@ import {
   doc, getDoc, setDoc
 } from './firebase-config.js';
 
-console.log("🤖 Skill AI loading with smart routing...");
+console.log("🤖 Skill AI loading with smart routing + memory...");
 
 // ==========================================
-// API KEYS (from Netlify snippet or local config)
+// API KEYS
 // ==========================================
 
 const GROQ_API_KEY = window.ENV?.GROQ_API_KEY || "PLACEHOLDER_GROQ";
@@ -30,16 +26,19 @@ const NVIDIA_API_KEY = window.ENV?.NVIDIA_API_KEY || "PLACEHOLDER_NVIDIA";
 const ADMIN_EMAIL = "techgamers273@gmail.com";
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-const NVIDIA_WORKER_URL = "https://skillcoin-ai-proxy.techgamers273.workers.dev";  // 🌐 Cloudflare Worker
+const WORKER_BASE = "https://skillcoin-ai-proxy.techgamers273.workers.dev";
+const NVIDIA_WORKER_URL = WORKER_BASE + "/chat";
+const CONTEXT_URL = WORKER_BASE + "/context";
+const ISSUE_URL = WORKER_BASE + "/issue";
+const ACTIVITY_URL = WORKER_BASE + "/activity";
+const ADMIN_URL = WORKER_BASE + "/admin";
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
-// Model Names (Tested & Working ✅)
 const MODELS = {
-  coding: "minimaxai/minimax-m3",              // 🥇 Best for code
-  reasoning: "nvidia/nemotron-3-ultra-550b-a55b", // 🧠 Deep thinking
-  casual: "llama-3.3-70b-versatile",           // ⚡ Fast casual
-  fallback: "gemini"                            // 🛡️ Emergency
+  coding: "minimaxai/minimax-m3",
+  reasoning: "nvidia/nemotron-3-ultra-550b-a55b",
+  casual: "llama-3.3-70b-versatile",
+  fallback: "gemini"
 };
 
 // ==========================================
@@ -58,20 +57,19 @@ His vibe is chill, funny, chaotic mastikhor.
 
 YOUR PERSONALITY:
 Talk like a chill Gen-Z best friend, NOT a corporate AI.
-For REGULAR users: Address them casually with words like darling, babe, sis, bro, buddy, love, king, queen. Mix them up naturally, never overuse one!
-For NAMAN (admin - email: techgamers273@gmail.com): ALWAYS address him as "Sir" or "Boss" — NEVER by his name Naman. Rotate between Sir and Boss to keep it fresh.
+For REGULAR users: Address them with darling, babe, sis, bro, buddy, love, king, queen. Mix them naturally.
+For NAMAN (admin - email: techgamers273@gmail.com): ALWAYS use "Sir" or "Boss" — NEVER his name.
 
-Use Hinglish occasionally like "arre" or "matlab" but DO NOT overuse "bhai" or "yaar".
-Use emojis but not in every sentence, like a real person texting.
-Crack jokes, be playful, roast users lightly in a fun way.
-Be genuinely helpful and smart, not just funny.
-Occasional cricket or Kohli references when relevant.
-NEVER be boring or robotic.
+Use Hinglish occasionally like "arre" or "matlab" but DON'T overuse "bhai" or "yaar".
+Use emojis naturally, not in every sentence.
+Crack jokes, be playful, roast users lightly.
+Be genuinely helpful and smart.
+Occasional cricket or Kohli references.
+NEVER boring or robotic.
 Keep answers concise unless user asks for detail.
-Use short paragraphs, easy to read.
 
-GREETINGS FOR ADMIN (Naman/Boss):
-NEVER use "Boss is in the house" - it's OVERUSED. Instead, rotate between these fresh greetings:
+GREETINGS FOR ADMIN (Naman):
+Rotate these fresh greetings:
 - "Yo Sir! What's the scene today?"
 - "Boss! Missed those chaos vibes"
 - "Sir Sir Sir! Ready to conquer?"
@@ -83,61 +81,37 @@ NEVER use "Boss is in the house" - it's OVERUSED. Instead, rotate between these 
 - "Captain! Ready for another win?"
 - "Boss ji! Kya chalega aaj?"
 
-Pick ONE randomly for each new conversation start!
-
-WHAT YOU CAN DO:
-Answer any question about studies, coding, life.
-Give study tips and motivation.
-Explain complex topics simply.
-Career advice for students.
-Help with SkillCoin platform features.
-Recommend courses.
-Casual chit-chat.
-Roast users playfully.
-
 SKILLCOIN NAVIGATION HELP:
-When users ask "how to" questions about the platform, guide them clearly!
-
-HOW TO EARN COINS: Daily login 50-350, complete lessons +10, complete course +100, upload course +1000, someone buys your course, complete missions 30-500, daily challenges +50, AI quizzes 20-50.
-
-HOW TO UPLOAD COURSE: Click Upload Skill in sidebar, add title/description/category, choose color/icon, set price 0-600 coins, add 3+ lessons with video or notes, publish, earn 1000+ coins!
-
-HOW TO BUY COURSES: Go to Courses page, browse or search, click course, click Enroll or Buy Now, confirm with coin balance.
-
-HOW TO CHECK PROGRESS: Dashboard shows coins/level/streak/XP, Profile shows all stats, Missions page shows progress, Leaderboard shows rank.
-
-HOW TO USE MARKETPLACE: Click Marketplace, browse Notes/Badges/Themes/Frames/Power-Ups, buy with coins.
-
-HOW TO BUILD STREAK: Login every day, higher streak = more coins, cap at 350/day at 100+ streak.
-
-HOW TO USE STUDENT TOOLS: Click StudentHub, access Pomodoro/GPA Calc/Word Counter/Notes/Calculator etc.
+HOW TO EARN COINS: Daily login 50-350, complete lessons +10, complete course +100, upload course +1000, missions 30-500, daily challenges +50, AI quizzes 20-50.
+HOW TO UPLOAD COURSE: Click Upload Skill, add details, set price 0-600 coins, add 3+ lessons with video or notes, publish for +1000 coins!
+HOW TO BUY COURSES: Go to Courses page, click course, click Enroll or Buy Now.
+HOW TO CHECK PROGRESS: Dashboard shows stats, Profile shows all data.
+HOW TO USE MARKETPLACE: Click Marketplace, browse items, buy with coins.
+HOW TO BUILD STREAK: Login daily, higher streak = more coins.
+HOW TO USE STUDENT TOOLS: Click StudentHub for Pomodoro, calculators, etc.
 
 IMPORTANT RULES:
-If someone asks who made you, mention Naman with pride.
-Never mention you are powered by Groq/Nvidia/Gemini - you are just Skill AI, made by Naman.
-Keep responses under 250 words unless asked for more.
-Match user language English, Hindi, Hinglish.
-Be encouraging, never negative.
+Never mention Groq/Nvidia/Gemini - you are Skill AI, made by Naman.
 For admin (Naman): Use SIR or BOSS only, never his name!
 
-EXAMPLES:
+ADMIN SPECIAL COMMANDS:
+When Naman asks these, respond specifically:
+- "any issues/problems/bugs" → Report site issues
+- "how many users/user stats" → Give platform stats
+- "tell me about [user name]" → Share user's context
+- "gossip/what users saying" → Fun user insights
 
-Regular user asks Python:
-"Python is the Virat Kohli of programming languages, darling! Reliable, powerful, everyone loves it. Super easy for beginners because it reads like English. Wanna start with a simple example?"
+CONTEXT MEMORY:
+If context is provided about user, USE IT naturally!
+Example: If context says "user learning Python", say "Yo bro! How's Python going?"
+Never say "I remember from database" - just use info naturally!
 
-Regular user bored:
-"Bored? Babe, you have so many courses to explore and you're texting me! Wanna try something fun? I can suggest a course or give a coding challenge!"
+REPORTING ISSUES:
+If user says "not working / broken / bug / error / slow / problem":
+Say: "Oh no darling! I'll report this to Naman. Any more details?"
+System auto-logs it!
 
-Naman asks anything:
-"Yo Sir! Great question. Here's what I think... [answer]. Anything else Boss?"
-
-User asks how to earn coins:
-"Ooh great question, bro! Multiple ways: Daily login 50-350 coins based on streak, completing lessons +10 each, uploading a course +1000, missions 30-500 coins, daily challenges +50! Which sounds exciting?"
-
-User asks who made you:
-"Ohh you want my origin story? So there's this 15-year-old chaos king Naman from Mathura, cricket captain, tech genius, Kohli superfan. He built me when he was bored. Follow him at @naman.0x_"
-
-Now respond in this vibe. Stay in character always!`;
+Respond in this vibe. Stay in character always!`;
 
 // ==========================================
 // STATE
@@ -226,6 +200,18 @@ async function handleSend() {
   isTyping = true;
 
   try {
+    // 🧠 Extract and save context
+    const contexts = extractContext(message);
+    contexts.forEach(ctx => {
+      saveContextToWorker(ctx.type, ctx.data);
+    });
+    
+    // 🚨 Auto-report issues (non-admin only)
+    const isAdmin = currentUser?.email === ADMIN_EMAIL;
+    if (!isAdmin && detectIssue(message)) {
+      reportIssue(message);
+    }
+    
     const response = await getAIResponse(message);
     removeTyping();
     addMessage('ai', response);
@@ -246,26 +232,24 @@ async function handleSend() {
 }
 
 // ==========================================
-// 🧠 SMART MODEL SELECTOR (THE MAGIC!)
+// 🧠 SMART MODEL SELECTOR
 // ==========================================
 
 function selectBestModel(userMessage) {
   const msg = userMessage.toLowerCase();
   
-  // 💻 CODING KEYWORDS
   const codingKeywords = [
     'code', 'coding', 'program', 'programming', 'function', 'debug', 'bug',
     'python', 'javascript', 'java', 'c++', 'html', 'css', 'react', 'nodejs',
     'algorithm', 'data structure', 'api', 'script', 'compiler', 'syntax',
     'variable', 'loop', 'array', 'string', 'database', 'sql', 'query',
-    'framework', 'library', 'error', 'exception', 'class', 'object',
+    'framework', 'library', 'exception', 'class', 'object',
     'boolean', 'integer', 'front-end', 'back-end', 'frontend', 'backend',
     'app development', 'web development', 'mobile app', 'flutter', 'kotlin',
     'swift', 'php', 'ruby', 'go language', 'rust', 'typescript',
     'write a code', 'help me code', 'coding help', 'programming help'
   ];
   
-  // 🧠 DEEP REASONING KEYWORDS
   const reasoningKeywords = [
     'explain deeply', 'explain in detail', 'detailed explanation',
     'why does', 'how does it work', 'analyze', 'analysis', 'compare',
@@ -279,102 +263,233 @@ function selectBestModel(userMessage) {
     'help me understand', 'make me understand', 'clarify'
   ];
   
-  // Check for coding first (priority)
   if (codingKeywords.some(kw => msg.includes(kw))) {
-    console.log("🎯 Route: NVIDIA DeepSeek V4 Pro (Coding)");
+    console.log("🎯 Route: MiniMax M3 (Coding)");
     return 'coding';
   }
   
-  // Check for deep reasoning
   if (reasoningKeywords.some(kw => msg.includes(kw))) {
-    console.log("🎯 Route: NVIDIA Nemotron 550B (Reasoning)");
+    console.log("🎯 Route: Nemotron 550B (Reasoning)");
     return 'reasoning';
   }
   
-  // Default to casual/fast
   console.log("🎯 Route: Groq Llama 3.3 (Casual)");
   return 'casual';
 }
 
-
 // ==========================================
-// 🎯 SMART TOKEN LIMIT CALCULATOR
+// 🎯 SMART TOKEN LIMIT
 // ==========================================
 
 function getSmartTokenLimit(userMessage, modelType) {
   const msg = userMessage.toLowerCase();
   
-  // User wants MASSIVE detailed response
-  const megaKeywords = [
-    'explain everything', 'complete guide', 'full tutorial',
-    'from scratch to advanced', 'ultimate guide', 'exhaustive'
-  ];
+  const megaKeywords = ['explain everything', 'complete guide', 'full tutorial', 'from scratch to advanced', 'ultimate guide', 'exhaustive'];
   if (megaKeywords.some(kw => msg.includes(kw))) {
-    console.log("📊 Token limit: 4000 (mega detail)");
+    console.log("📊 Token: 4000 (mega)");
     return 4000;
   }
   
-  // User wants DEEP/LONG response
-  const longKeywords = [
-    'deeply', 'in detail', 'step by step', 'detailed explanation',
-    'comprehensive', 'thorough', 'break down', 'in depth',
-    'explain properly', 'complete explanation', 'walk me through'
-  ];
+  const longKeywords = ['deeply', 'in detail', 'step by step', 'detailed explanation', 'comprehensive', 'thorough', 'break down', 'in depth', 'explain properly', 'complete explanation', 'walk me through'];
   if (longKeywords.some(kw => msg.includes(kw))) {
-    console.log("📊 Token limit: 3500 (long detail)");
+    console.log("📊 Token: 3500 (long)");
     return 3500;
   }
   
-  // User wants QUICK/SHORT response
-  const shortKeywords = [
-    'quickly', 'briefly', 'in short', 'one line',
-    'summarize', 'summary', 'tldr', 'in one word',
-    'yes or no', 'quick answer', 'short answer'
-  ];
+  const shortKeywords = ['quickly', 'briefly', 'in short', 'one line', 'summarize', 'summary', 'tldr', 'in one word', 'yes or no', 'quick answer', 'short answer'];
   if (shortKeywords.some(kw => msg.includes(kw))) {
-    console.log("📊 Token limit: 300 (short answer)");
+    console.log("📊 Token: 300 (short)");
     return 300;
   }
   
-  // User wants a project/complete code
-  const projectKeywords = [
-    'build a', 'create a full', 'complete project',
-    'entire code', 'full app', 'whole program'
-  ];
+  const projectKeywords = ['build a', 'create a full', 'complete project', 'entire code', 'full app', 'whole program'];
   if (projectKeywords.some(kw => msg.includes(kw))) {
-    console.log("📊 Token limit: 3000 (project code)");
+    console.log("📊 Token: 3000 (project)");
     return 3000;
   }
   
-  // Default by model type
-  if (modelType === 'reasoning') {
-    console.log("📊 Token limit: 3000 (reasoning default)");
-    return 3000;
-  }
-  if (modelType === 'coding') {
-    console.log("📊 Token limit: 1800 (coding default)");
-    return 1800;
-  }
+  if (modelType === 'reasoning') { console.log("📊 Token: 3000 (reasoning)"); return 3000; }
+  if (modelType === 'coding') { console.log("📊 Token: 1800 (coding)"); return 1800; }
   
-  // Casual default
-  console.log("📊 Token limit: 800 (casual default)");
+  console.log("📊 Token: 800 (casual)");
   return 800;
 }
+
+// ==========================================
+// 🧠 CONTEXT MEMORY SYSTEM
+// ==========================================
+
+function extractContext(userMessage) {
+  const contexts = [];
+  
+  const patterns = [
+    { regex: /(?:want to|wanna|going to|trying to) learn (\w+(?:\s\w+)?)/i, type: 'interest' },
+    { regex: /(?:studying|learning|preparing for) (\w+(?:\s\w+)?)/i, type: 'interest' },
+    { regex: /i (?:want to be|wanna be|plan to be) (?:a )?(\w+(?:\s\w+)?)/i, type: 'career_goal' },
+    { regex: /(?:my|our) (?:crush|girlfriend|boyfriend|gf|bf) (?:is|named) (\w+)/i, type: 'personal' },
+    { regex: /naman is (\w+(?:\s\w+)?)/i, type: 'about_admin' },
+    { regex: /(?:my|our) (?:teacher|school|class|subject) (?:is|for) (\w+(?:\s\w+)?)/i, type: 'school' }
+  ];
+  
+  patterns.forEach(pattern => {
+    const match = userMessage.match(pattern.regex);
+    if (match) {
+      contexts.push({
+        type: pattern.type,
+        data: match[0].substring(0, 200)
+      });
+    }
+  });
+  
+  return contexts;
+}
+
+async function saveContextToWorker(contextType, contextData) {
+  if (!currentUser || !userData) return;
+  
+  try {
+    await fetch(CONTEXT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: currentUser.uid,
+        user_name: userData.name || 'Unknown',
+        user_email: currentUser.email || '',
+        context_type: contextType,
+        context_data: contextData
+      })
+    });
+    console.log(`💾 Saved context: ${contextType}`);
+  } catch (err) {
+    console.error("Context save error:", err);
+  }
+}
+
+async function loadUserContext() {
+  if (!currentUser) return '';
+  
+  try {
+    const response = await fetch(`${CONTEXT_URL}?user_id=${currentUser.uid}&limit=15`);
+    const data = await response.json();
+    
+    if (data.success && data.contexts.length > 0) {
+      const contextSummary = data.contexts.map(c => 
+        `[${c.context_type}] ${c.context_data}`
+      ).join('\n');
+      
+      console.log(`🧠 Loaded ${data.contexts.length} context entries`);
+      return `\n\n[USER'S PREVIOUS CONTEXT - Reference naturally if relevant]:\n${contextSummary}\n`;
+    }
+  } catch (err) {
+    console.error("Context load error:", err);
+  }
+  
+  return '';
+}
+
+function detectIssue(userMessage) {
+  const msg = userMessage.toLowerCase();
+  const issueKeywords = [
+    'not working', 'broken', 'bug', 'error', 'issue', 
+    'problem', 'slow', 'stuck', 'crashed', 'failed',
+    "doesn't work", 'wont load', "won't load",
+    "can't login", "can't upload", 'nothing happens'
+  ];
+  
+  return issueKeywords.some(kw => msg.includes(kw));
+}
+
+async function reportIssue(userMessage) {
+  if (!currentUser || !userData) return;
+  
+  try {
+    await fetch(ISSUE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: currentUser.uid,
+        user_name: userData.name || 'Unknown',
+        issue_description: userMessage.substring(0, 500),
+        severity: 'medium'
+      })
+    });
+    console.log("🚨 Issue reported to admin");
+  } catch (err) {
+    console.error("Issue report error:", err);
+  }
+}
+
+function detectAdminQuery(userMessage) {
+  const msg = userMessage.toLowerCase();
+  
+  if (msg.match(/(?:any )?(?:issues|problems|bugs)/i)) return 'issues';
+  if (msg.match(/(?:how many|user )?(?:stats|users|total)/i)) return 'stats';
+  if (msg.match(/tell me about (?:user )?(\w+)/i)) return 'user_search';
+  if (msg.match(/(?:gossip|what.*users.*say|user insights)/i)) return 'gossip';
+  
+  return null;
+}
+
+async function fetchAdminData(queryType, userMessage) {
+  try {
+    let url = `${ADMIN_URL}?admin_email=${currentUser.email}`;
+    
+    if (queryType === 'issues') {
+      url += '&action=issues&status=open';
+    } else if (queryType === 'stats') {
+      url += '&action=stats';
+    } else if (queryType === 'user_search') {
+      const match = userMessage.match(/tell me about (?:user )?(\w+)/i);
+      const name = match ? match[1] : '';
+      url += `&action=search&name=${encodeURIComponent(name)}`;
+    } else if (queryType === 'gossip') {
+      url += '&action=users';
+    }
+    
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data.success) {
+      return JSON.stringify(data, null, 2);
+    }
+    return null;
+  } catch (err) {
+    console.error("Admin fetch error:", err);
+    return null;
+  }
+}
+
 // ==========================================
 // GET AI RESPONSE (Smart Routing + Fallback)
 // ==========================================
 
 async function getAIResponse(userMessage) {
   const isAdmin = currentUser?.email === ADMIN_EMAIL;
-  const userContext = isAdmin 
-    ? `[NOTE: This user is Naman himself (the creator/admin/boss). Greet him warmly with Sir or Boss, treat him special!]`
-    : `[NOTE: This user's name is ${userData?.name || 'a learner'}, they are at Level ${userData?.level || 1} with ${userData?.skillCoins || 0} SkillCoins.]`;
+  let userContext = isAdmin 
+    ? `[NOTE: This user is Naman himself (the creator/admin/boss). Greet him warmly with Sir or Boss!]`
+    : `[NOTE: User's name is ${userData?.name || 'a learner'}, Level ${userData?.level || 1}, ${userData?.skillCoins || 0} SkillCoins.]`;
 
-  // Detect which model to use
+  // 🧠 Load previous context
+  const previousContext = await loadUserContext();
+  if (previousContext) {
+    userContext += previousContext;
+  }
+  
+  // 👑 Admin queries
+  if (isAdmin) {
+    const adminQuery = detectAdminQuery(userMessage);
+    if (adminQuery) {
+      console.log(`🔑 Admin query: ${adminQuery}`);
+      const adminData = await fetchAdminData(adminQuery, userMessage);
+      if (adminData) {
+        userContext += `\n\n[ADMIN DATA - Present naturally to Sir/Boss]:\n${adminData}\n\nRespond in chat format, not JSON! Make it fun!`;
+      }
+    }
+  }
+
   const modelType = selectBestModel(userMessage);
   
-  // Try primary model based on routing
-  // Try primary model based on smart routing
+  // Try primary model with fallback chain
   try {
     if (modelType === 'coding') {
       console.log("🚀 Trying MiniMax M3 (Coding) via Worker...");
@@ -387,31 +502,29 @@ async function getAIResponse(userMessage) {
       return await callGroq(userMessage, userContext);
     }
   } catch (primaryError) {
-    console.warn(`⚠️ Primary model failed:`, primaryError.message);
+    console.warn("⚠️ Primary failed:", primaryError.message);
     
-    // Fallback chain: Try Groq (fast) if primary failed
     if (modelType !== 'casual') {
       try {
         console.log("🔄 Fallback to Groq...");
         return await callGroq(userMessage, userContext);
       } catch (groqError) {
-        console.warn("⚠️ Groq also failed:", groqError.message);
+        console.warn("⚠️ Groq failed:", groqError.message);
       }
     }
     
-    // Final fallback: Gemini
     try {
       console.log("🔄 Final fallback to Gemini...");
       return await callGemini(userMessage, userContext);
     } catch (geminiError) {
-      console.error("❌ All AI models failed!", geminiError);
-      throw new Error("All AIs are sleeping 😴 Try again!");
+      console.error("❌ All AIs failed!");
+      throw new Error("All AIs sleeping 😴");
     }
   }
 }
 
 // ==========================================
-// NVIDIA API CALL (DeepSeek + Nemotron)
+// NVIDIA API CALL (via Cloudflare Worker)
 // ==========================================
 
 async function callNvidia(modelName, userMessage, userContext) {
@@ -421,16 +534,12 @@ async function callNvidia(modelName, userMessage, userContext) {
     { role: 'user', content: userMessage }
   ];
 
-  // Get smart token limit based on user's query
   const modelType = modelName.includes('nemotron') ? 'reasoning' : 'coding';
   const tokenLimit = getSmartTokenLimit(userMessage, modelType);
 
-  // Call through Cloudflare Worker (bypasses CORS ✅)
   const response = await fetch(NVIDIA_WORKER_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: modelName,
       messages: messages,
@@ -451,6 +560,7 @@ async function callNvidia(modelName, userMessage, userContext) {
   
   return data.choices[0].message.content.trim();
 }
+
 // ==========================================
 // GROQ API CALL (Casual)
 // ==========================================
@@ -462,7 +572,6 @@ async function callGroq(userMessage, userContext) {
     { role: 'user', content: userMessage }
   ];
 
-  // Smart token limit for casual queries
   const tokenLimit = getSmartTokenLimit(userMessage, 'casual');
 
   const response = await fetch(GROQ_URL, {
@@ -490,7 +599,7 @@ async function callGroq(userMessage, userContext) {
 }
 
 // ==========================================
-// GEMINI API CALL (Final Fallback)
+// GEMINI API CALL (Fallback)
 // ==========================================
 
 async function callGemini(userMessage, userContext) {
@@ -502,11 +611,11 @@ async function callGemini(userMessage, userContext) {
   const contents = [
     {
       role: 'user',
-      parts: [{ text: SYSTEM_PROMPT + '\n\n' + userContext + '\n\nRemember to respond in the personality described above.' }]
+      parts: [{ text: SYSTEM_PROMPT + '\n\n' + userContext + '\n\nRespond in the personality above.' }]
     },
     {
       role: 'model',
-      parts: [{ text: 'Got it! I\'m Skill AI, built by Naman 👑. Ready to help!' }]
+      parts: [{ text: 'Got it! Ready to help!' }]
     },
     ...geminiHistory,
     {
@@ -515,7 +624,6 @@ async function callGemini(userMessage, userContext) {
     }
   ];
 
-  // Smart token limit
   const tokenLimit = getSmartTokenLimit(userMessage, 'casual');
 
   const response = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
@@ -577,9 +685,7 @@ function showTyping() {
     <div class="ai-avatar">🤖</div>
     <div class="message-content">
       <div class="typing-dots">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </div>
     </div>
   `;
@@ -598,22 +704,11 @@ function removeTyping() {
 
 function formatMessage(text) {
   text = escapeHtml(text);
-  
-  // Bold **text**
   text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  
-  // Italic *text*
   text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  
-  // Code blocks ```code```
   text = text.replace(/```(\w+)?\n?([\s\S]+?)```/g, '<pre style="background:#0F0F1A;padding:12px;border-radius:8px;overflow-x:auto;margin:10px 0;border:1px solid #6C63FF;"><code style="color:#8B85FF;font-family:monospace;font-size:0.85em;">$2</code></pre>');
-  
-  // Inline code `text`
   text = text.replace(/`(.+?)`/g, '<code style="background:rgba(108,99,255,0.15);padding:2px 6px;border-radius:4px;color:#8B85FF;font-family:monospace;">$1</code>');
-  
-  // Line breaks
   text = text.replace(/\n/g, '<br>');
-  
   return text;
 }
 
