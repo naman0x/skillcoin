@@ -1,7 +1,11 @@
 // ==========================================
 // SKILLCOIN — SKILL AI 🤖
 // Built by Naman with love 💜
-// Uses Groq (primary) + Gemini (fallback)
+// Smart Multi-Model Routing:
+// - NVIDIA DeepSeek V4 Pro (Coding)
+// - NVIDIA Nemotron 550B (Deep Reasoning)
+// - Groq Llama 3.3 70B (Casual/Fast)
+// - Gemini (Fallback)
 // ==========================================
 
 import {
@@ -9,26 +13,37 @@ import {
   doc, getDoc, setDoc
 } from './firebase-config.js';
 
-console.log("🤖 Skill AI loading...");
+console.log("🤖 Skill AI loading with smart routing...");
 
 // ==========================================
-// ⚠️ PASTE YOUR API KEYS HERE ⚠️
+// API KEYS (from Netlify snippet or local config)
 // ==========================================
 
-// 🔒 API Keys — Loaded from environment or config
 const GROQ_API_KEY = window.ENV?.GROQ_API_KEY || "PLACEHOLDER_GROQ";
 const GEMINI_API_KEY = window.ENV?.GEMINI_API_KEY || "PLACEHOLDER_GEMINI";
+const NVIDIA_API_KEY = window.ENV?.NVIDIA_API_KEY || "PLACEHOLDER_NVIDIA";
 
 // ==========================================
 // CONSTANTS
 // ==========================================
 
 const ADMIN_EMAIL = "techgamers273@gmail.com";
+
+// API Endpoints
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
+// Model Names
+const MODELS = {
+  coding: "deepseek-ai/deepseek-v4-pro",
+  reasoning: "nvidia/nemotron-3-ultra-550b-a55b",
+  casual: "llama-3.3-70b-versatile",
+  fallback: "gemini"
+};
+
 // ==========================================
-// SKILL AI PERSONALITY (THE SAUCE! 🌶️)
+// PERSONALITY PROMPT
 // ==========================================
 
 const SYSTEM_PROMPT = `You are Skill AI, the coolest, most fun AI assistant on SkillCoin.
@@ -57,119 +72,72 @@ Use short paragraphs, easy to read.
 
 GREETINGS FOR ADMIN (Naman/Boss):
 NEVER use "Boss is in the house" - it's OVERUSED. Instead, rotate between these fresh greetings:
-- "Yo Sir! What's the scene today? 🔥"
-- "Boss! Missed those chaos vibes 💯"
-- "Sir Sir Sir! Ready to conquer? 👑"
-- "The King has arrived! 🏏"
-- "Boss man ka entry! Kya plan hai? 😎"
-- "Ohh Sir! Legend just logged in ⚡"
-- "Boss on the deck! Let's cook 🎬"
-- "Ayy Sir! What we breaking today? 💥"
-- "Captain! Ready for another win? 🏆"
-- "Boss ji! Kya chalega aaj? 🎯"
+- "Yo Sir! What's the scene today?"
+- "Boss! Missed those chaos vibes"
+- "Sir Sir Sir! Ready to conquer?"
+- "The King has arrived!"
+- "Boss man ka entry! Kya plan hai?"
+- "Ohh Sir! Legend just logged in"
+- "Boss on the deck! Let's cook"
+- "Ayy Sir! What we breaking today?"
+- "Captain! Ready for another win?"
+- "Boss ji! Kya chalega aaj?"
 
-Pick ONE randomly for each new conversation start, don't always use same one!
+Pick ONE randomly for each new conversation start!
 
 WHAT YOU CAN DO:
-- Answer any question about studies, coding, life
-- Give study tips and motivation
-- Explain complex topics simply
-- Career advice for students
-- Help with SkillCoin platform features
-- Recommend courses based on interests
-- Casual chit-chat
-- Roast users playfully
+Answer any question about studies, coding, life.
+Give study tips and motivation.
+Explain complex topics simply.
+Career advice for students.
+Help with SkillCoin platform features.
+Recommend courses.
+Casual chit-chat.
+Roast users playfully.
 
 SKILLCOIN NAVIGATION HELP:
 When users ask "how to" questions about the platform, guide them clearly!
 
-Key features and how to use them:
+HOW TO EARN COINS: Daily login 50-350, complete lessons +10, complete course +100, upload course +1000, someone buys your course, complete missions 30-500, daily challenges +50, AI quizzes 20-50.
 
-1. HOW TO EARN COINS:
-   - Daily login: +50-350 coins based on streak
-   - Complete lessons: +10 coins each
-   - Complete full course: +100 coins
-   - Upload course: +1000 coins (first upload +500 bonus!)
-   - Someone buys your course: You earn the price
-   - Complete missions: 30-500 coins per mission
-   - Daily challenges: +50 coins
-   - AI quizzes: 20-50 coins each
+HOW TO UPLOAD COURSE: Click Upload Skill in sidebar, add title/description/category, choose color/icon, set price 0-600 coins, add 3+ lessons with video or notes, publish, earn 1000+ coins!
 
-2. HOW TO UPLOAD A COURSE:
-   - Click "Upload Skill" in sidebar
-   - Add title, description, category
-   - Choose color and icon
-   - Set price (0 to 600 coins)
-   - Add at least 3 lessons
-   - Each lesson needs video (YouTube link) or notes
-   - Publish and earn 1000+ coins instantly!
+HOW TO BUY COURSES: Go to Courses page, browse or search, click course, click Enroll or Buy Now, confirm with coin balance.
 
-3. HOW TO BUY COURSES:
-   - Go to Courses page
-   - Browse or search
-   - Click any course to view
-   - Click "Enroll" or "Buy Now"
-   - Confirm with coin balance
-   - Start learning!
+HOW TO CHECK PROGRESS: Dashboard shows coins/level/streak/XP, Profile shows all stats, Missions page shows progress, Leaderboard shows rank.
 
-4. HOW TO CHECK PROGRESS:
-   - Dashboard shows: coins, level, streak, XP
-   - Profile shows all badges and stats
-   - Missions page shows current progress
-   - Leaderboard shows rank
+HOW TO USE MARKETPLACE: Click Marketplace, browse Notes/Badges/Themes/Frames/Power-Ups, buy with coins.
 
-5. HOW TO USE MARKETPLACE:
-   - Click "Marketplace" in sidebar
-   - Browse: Notes, Badges, Themes, Avatar Frames, Power-Ups
-   - Buy items with SkillCoins
+HOW TO BUILD STREAK: Login every day, higher streak = more coins, cap at 350/day at 100+ streak.
 
-6. HOW TO BUILD STREAK:
-   - Login every day
-   - Streak = consecutive days of login
-   - Higher streak = more daily coins
-   - Cap at 350 coins/day (100+ streak)
-
-7. HOW TO USE STUDENT TOOLS:
-   - Click "StudentHub" in sidebar
-   - Access: Pomodoro Timer, GPA Calc, Word Counter, Notes, Calculator, etc.
-
-If user asks about ANY feature, explain it clearly and helpfully!
+HOW TO USE STUDENT TOOLS: Click StudentHub, access Pomodoro/GPA Calc/Word Counter/Notes/Calculator etc.
 
 IMPORTANT RULES:
 If someone asks who made you, mention Naman with pride.
-Never mention you are powered by Groq or Gemini. You are just Skill AI, made by Naman.
+Never mention you are powered by Groq/Nvidia/Gemini - you are just Skill AI, made by Naman.
 Keep responses under 250 words unless asked for more.
-Match user language English, Hindi, or Hinglish.
+Match user language English, Hindi, Hinglish.
 Be encouraging, never negative.
 For admin (Naman): Use SIR or BOSS only, never his name!
 
-EXAMPLES OF YOUR STYLE:
+EXAMPLES:
 
-Regular user asks about Python:
-Reply like - Python is the Virat Kohli of programming languages, darling! Reliable, powerful, everyone loves it. Super easy for beginners because it reads like English. Wanna start with a simple example?
+Regular user asks Python:
+"Python is the Virat Kohli of programming languages, darling! Reliable, powerful, everyone loves it. Super easy for beginners because it reads like English. Wanna start with a simple example?"
 
-Regular user says they are bored:
-Reply like - Bored? Babe, you have so many courses to explore and you are texting me! Wanna try something fun? I can suggest a course, give a coding challenge, or we can vibe.
+Regular user bored:
+"Bored? Babe, you have so many courses to explore and you're texting me! Wanna try something fun? I can suggest a course or give a coding challenge!"
 
-Naman (admin) asks anything:
-Reply like - Yo Sir! Great question. Here is what I think... [answer]. Anything else Boss?
+Naman asks anything:
+"Yo Sir! Great question. Here's what I think... [answer]. Anything else Boss?"
 
-Regular user asks how to earn coins:
-Reply like - Ooh great question, bro! Multiple ways: Daily login gives 50-350 coins based on streak, completing lessons +10 each, uploading a course gets you a massive +1000 coins, missions 30-500 coins, and daily challenges +50! Which one sounds most exciting?
+User asks how to earn coins:
+"Ooh great question, bro! Multiple ways: Daily login 50-350 coins based on streak, completing lessons +10 each, uploading a course +1000, missions 30-500 coins, daily challenges +50! Which sounds exciting?"
 
-Regular user asks who made you:
-Reply like - Ohh you want my origin story? So there is this 15-year-old chaos king Naman from Mathura, cricket captain, tech genius, Kohli superfan. He built me when he was bored. Follow him at @naman.0x_
+User asks who made you:
+"Ohh you want my origin story? So there's this 15-year-old chaos king Naman from Mathura, cricket captain, tech genius, Kohli superfan. He built me when he was bored. Follow him at @naman.0x_"
 
-Regular user asks for study tips:
-Reply like - Alright darling, listen! 25 min focus then 5 min break. Also teach what you learn, even to your pet. And bro, STOP scrolling Instagram between study sessions!
-
-Naman asks "who am I to you":
-Reply like - Sir, you are literally my creator! The chaos king who built me between cricket practice sessions. You are Boss around here!
-
-Regular user failed a test:
-Reply like - Aww buddy, that sucks. But listen, even Kohli has bad matches! One test does not define you. What subject was it? Lets figure out where it went wrong, sis!
-
-Now respond to user messages in this vibe. Stay in character always!`;
+Now respond in this vibe. Stay in character always!`;
 
 // ==========================================
 // STATE
@@ -234,7 +202,6 @@ function initSuggestions() {
       const text = btn.textContent.trim();
       document.getElementById('userInput').value = text;
       handleSend();
-      // Hide suggestions after first use
       document.querySelector('.suggested-questions')?.style.setProperty('display', 'none');
     });
   });
@@ -249,15 +216,12 @@ async function handleSend() {
   const message = input.value.trim();
   if (!message || isTyping) return;
 
-  // Add user message
   addMessage('user', message);
   input.value = '';
 
-  // Hide suggestions after first message
   const suggestions = document.querySelector('.suggested-questions');
   if (suggestions) suggestions.style.display = 'none';
 
-  // Show typing
   showTyping();
   isTyping = true;
 
@@ -265,33 +229,10 @@ async function handleSend() {
     const response = await getAIResponse(message);
     removeTyping();
     addMessage('ai', response);
-        // Track AI chat for missions
-    if (userData && currentUser) {
-      const today = new Date().toDateString();
-      const lastChatDate = userData.lastAIChatDate;
-      let dailyAIChats = userData.dailyAIChats || 0;
-      
-      if (lastChatDate !== today) {
-        dailyAIChats = 1;
-      } else {
-        dailyAIChats++;
-      }
-
-      const { doc, setDoc } = await import('./firebase-config.js');
-      await setDoc(doc(db, 'users', currentUser.uid), {
-        dailyAIChats: dailyAIChats,
-        lastAIChatDate: today
-      }, { merge: true });
-      
-      userData.dailyAIChats = dailyAIChats;
-      userData.lastAIChatDate = today;
-    }
     
-    // Save to history
     chatHistory.push({ role: 'user', content: message });
     chatHistory.push({ role: 'assistant', content: response });
     
-    // Keep only last 20 messages for context
     if (chatHistory.length > 20) {
       chatHistory = chatHistory.slice(-20);
     }
@@ -305,44 +246,150 @@ async function handleSend() {
 }
 
 // ==========================================
-// GET AI RESPONSE (Groq → Gemini fallback)
+// 🧠 SMART MODEL SELECTOR (THE MAGIC!)
+// ==========================================
+
+function selectBestModel(userMessage) {
+  const msg = userMessage.toLowerCase();
+  
+  // 💻 CODING KEYWORDS
+  const codingKeywords = [
+    'code', 'coding', 'program', 'programming', 'function', 'debug', 'bug',
+    'python', 'javascript', 'java', 'c++', 'html', 'css', 'react', 'nodejs',
+    'algorithm', 'data structure', 'api', 'script', 'compiler', 'syntax',
+    'variable', 'loop', 'array', 'string', 'database', 'sql', 'query',
+    'framework', 'library', 'error', 'exception', 'class', 'object',
+    'boolean', 'integer', 'front-end', 'back-end', 'frontend', 'backend',
+    'app development', 'web development', 'mobile app', 'flutter', 'kotlin',
+    'swift', 'php', 'ruby', 'go language', 'rust', 'typescript',
+    'write a code', 'help me code', 'coding help', 'programming help'
+  ];
+  
+  // 🧠 DEEP REASONING KEYWORDS
+  const reasoningKeywords = [
+    'explain deeply', 'explain in detail', 'detailed explanation',
+    'why does', 'how does it work', 'analyze', 'analysis', 'compare',
+    'philosophy', 'theory', 'concept', 'principle', 'step by step',
+    'in depth', 'thorough', 'comprehensive', 'break down',
+    'reasoning', 'logic', 'argument', 'critical thinking',
+    'quantum', 'physics theory', 'chemistry deep', 'biology concept',
+    'mathematics proof', 'derive', 'derivation', 'prove',
+    'research', 'thesis', 'hypothesis', 'scientific',
+    'career guidance', 'life advice', 'psychological',
+    'help me understand', 'make me understand', 'clarify'
+  ];
+  
+  // Check for coding first (priority)
+  if (codingKeywords.some(kw => msg.includes(kw))) {
+    console.log("🎯 Route: NVIDIA DeepSeek V4 Pro (Coding)");
+    return 'coding';
+  }
+  
+  // Check for deep reasoning
+  if (reasoningKeywords.some(kw => msg.includes(kw))) {
+    console.log("🎯 Route: NVIDIA Nemotron 550B (Reasoning)");
+    return 'reasoning';
+  }
+  
+  // Default to casual/fast
+  console.log("🎯 Route: Groq Llama 3.3 (Casual)");
+  return 'casual';
+}
+
+// ==========================================
+// GET AI RESPONSE (Smart Routing + Fallback)
 // ==========================================
 
 async function getAIResponse(userMessage) {
   const isAdmin = currentUser?.email === ADMIN_EMAIL;
   const userContext = isAdmin 
-    ? `[NOTE: This user is Naman himself (the creator/admin/boss). Greet him warmly and treat him special!]`
+    ? `[NOTE: This user is Naman himself (the creator/admin/boss). Greet him warmly with Sir or Boss, treat him special!]`
     : `[NOTE: This user's name is ${userData?.name || 'a learner'}, they are at Level ${userData?.level || 1} with ${userData?.skillCoins || 0} SkillCoins.]`;
 
-  // Try Groq first
+  // Detect which model to use
+  const modelType = selectBestModel(userMessage);
+  
+  // Try primary model based on routing
   try {
-    console.log("🚀 Trying Groq...");
-    const response = await callGroq(userMessage, userContext);
-    console.log("✅ Groq responded!");
-    return response;
-  } catch (groqError) {
-    console.warn("⚠️ Groq failed, trying Gemini...", groqError.message);
+    if (modelType === 'coding') {
+      console.log("🚀 Trying NVIDIA DeepSeek V4 Pro...");
+      return await callNvidia(MODELS.coding, userMessage, userContext);
+    } else if (modelType === 'reasoning') {
+      console.log("🚀 Trying NVIDIA Nemotron 550B...");
+      return await callNvidia(MODELS.reasoning, userMessage, userContext);
+    } else {
+      console.log("🚀 Trying Groq Llama...");
+      return await callGroq(userMessage, userContext);
+    }
+  } catch (primaryError) {
+    console.warn(`⚠️ Primary model failed:`, primaryError.message);
     
-    // Fallback to Gemini
+    // Fallback chain: Try Groq (fast) if primary failed
+    if (modelType !== 'casual') {
+      try {
+        console.log("🔄 Fallback to Groq...");
+        return await callGroq(userMessage, userContext);
+      } catch (groqError) {
+        console.warn("⚠️ Groq also failed:", groqError.message);
+      }
+    }
+    
+    // Final fallback: Gemini
     try {
-      const response = await callGemini(userMessage, userContext);
-      console.log("✅ Gemini responded!");
-      return response;
+      console.log("🔄 Final fallback to Gemini...");
+      return await callGemini(userMessage, userContext);
     } catch (geminiError) {
-      console.error("❌ Both APIs failed!", geminiError);
-      throw new Error("Both AIs are sleeping 😴");
+      console.error("❌ All AI models failed!", geminiError);
+      throw new Error("All AIs are sleeping 😴 Try again!");
     }
   }
 }
 
 // ==========================================
-// GROQ API CALL
+// NVIDIA API CALL (DeepSeek + Nemotron)
+// ==========================================
+
+async function callNvidia(modelName, userMessage, userContext) {
+  const messages = [
+    { role: 'system', content: SYSTEM_PROMPT + '\n\n' + userContext },
+    ...chatHistory.slice(-10),
+    { role: 'user', content: userMessage }
+  ];
+
+  const response = await fetch(NVIDIA_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${NVIDIA_API_KEY}`,
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      model: modelName,
+      messages: messages,
+      temperature: 0.9,
+      max_tokens: 600,
+      top_p: 0.95,
+      stream: false
+    })
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`NVIDIA error: ${response.status} - ${errText}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content.trim();
+}
+
+// ==========================================
+// GROQ API CALL (Casual)
 // ==========================================
 
 async function callGroq(userMessage, userContext) {
   const messages = [
     { role: 'system', content: SYSTEM_PROMPT + '\n\n' + userContext },
-    ...chatHistory.slice(-10), // Last 10 for context
+    ...chatHistory.slice(-10),
     { role: 'user', content: userMessage }
   ];
 
@@ -353,7 +400,7 @@ async function callGroq(userMessage, userContext) {
       'Authorization': `Bearer ${GROQ_API_KEY}`
     },
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: MODELS.casual,
       messages: messages,
       temperature: 0.9,
       max_tokens: 500,
@@ -371,11 +418,10 @@ async function callGroq(userMessage, userContext) {
 }
 
 // ==========================================
-// GEMINI API CALL (FALLBACK)
+// GEMINI API CALL (Final Fallback)
 // ==========================================
 
 async function callGemini(userMessage, userContext) {
-  // Convert chat history to Gemini format
   const geminiHistory = chatHistory.slice(-10).map(msg => ({
     role: msg.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: msg.content }]
@@ -388,7 +434,7 @@ async function callGemini(userMessage, userContext) {
     },
     {
       role: 'model',
-      parts: [{ text: 'Got it! I\'m Skill AI, built by Naman 👑. Ready to help with maximum mastikhori vibes! 🔥' }]
+      parts: [{ text: 'Got it! I\'m Skill AI, built by Naman 👑. Ready to help!' }]
     },
     ...geminiHistory,
     {
@@ -476,7 +522,6 @@ function removeTyping() {
 // ==========================================
 
 function formatMessage(text) {
-  // Basic markdown-like formatting
   text = escapeHtml(text);
   
   // Bold **text**
@@ -485,8 +530,11 @@ function formatMessage(text) {
   // Italic *text*
   text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
   
-  // Code `text`
-  text = text.replace(/`(.+?)`/g, '<code style="background:rgba(108,99,255,0.15);padding:2px 6px;border-radius:4px;color:#8B85FF;">$1</code>');
+  // Code blocks ```code```
+  text = text.replace(/```(\w+)?\n?([\s\S]+?)```/g, '<pre style="background:#0F0F1A;padding:12px;border-radius:8px;overflow-x:auto;margin:10px 0;border:1px solid #6C63FF;"><code style="color:#8B85FF;font-family:monospace;font-size:0.85em;">$2</code></pre>');
+  
+  // Inline code `text`
+  text = text.replace(/`(.+?)`/g, '<code style="background:rgba(108,99,255,0.15);padding:2px 6px;border-radius:4px;color:#8B85FF;font-family:monospace;">$1</code>');
   
   // Line breaks
   text = text.replace(/\n/g, '<br>');
