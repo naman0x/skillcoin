@@ -29,17 +29,17 @@ const NVIDIA_API_KEY = window.ENV?.NVIDIA_API_KEY || "PLACEHOLDER_NVIDIA";
 
 const ADMIN_EMAIL = "techgamers273@gmail.com";
 
-// API Endpoints
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
+const NVIDIA_WORKER_URL = "https://skillcoin-ai-proxy.techgamers273.workers.dev";  // 🌐 Cloudflare Worker
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
-// Model Names
+// Model Names (Tested & Working ✅)
 const MODELS = {
-  coding: "deepseek-ai/deepseek-v4-pro",
-  reasoning: "nvidia/nemotron-3-ultra-550b-a55b",
-  casual: "llama-3.3-70b-versatile",
-  fallback: "gemini"
+  coding: "minimaxai/minimax-m3",              // 🥇 Best for code
+  reasoning: "nvidia/nemotron-3-ultra-550b-a55b", // 🧠 Deep thinking
+  casual: "llama-3.3-70b-versatile",           // ⚡ Fast casual
+  fallback: "gemini"                            // 🛡️ Emergency
 };
 
 // ==========================================
@@ -310,15 +310,16 @@ async function getAIResponse(userMessage) {
   const modelType = selectBestModel(userMessage);
   
   // Try primary model based on routing
+  // Try primary model based on smart routing
   try {
     if (modelType === 'coding') {
-      console.log("🚀 Trying NVIDIA DeepSeek V4 Pro...");
+      console.log("🚀 Trying MiniMax M3 (Coding) via Worker...");
       return await callNvidia(MODELS.coding, userMessage, userContext);
     } else if (modelType === 'reasoning') {
-      console.log("🚀 Trying NVIDIA Nemotron 550B...");
+      console.log("🚀 Trying Nemotron 550B (Reasoning) via Worker...");
       return await callNvidia(MODELS.reasoning, userMessage, userContext);
     } else {
-      console.log("🚀 Trying Groq Llama...");
+      console.log("🚀 Trying Groq Llama (Casual)...");
       return await callGroq(userMessage, userContext);
     }
   } catch (primaryError) {
@@ -356,32 +357,33 @@ async function callNvidia(modelName, userMessage, userContext) {
     { role: 'user', content: userMessage }
   ];
 
-  const response = await fetch(NVIDIA_URL, {
+  // Call through Cloudflare Worker (bypasses CORS ✅)
+  const response = await fetch(NVIDIA_WORKER_URL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${NVIDIA_API_KEY}`,
-      'Accept': 'application/json'
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       model: modelName,
       messages: messages,
       temperature: 0.9,
-      max_tokens: 600,
-      top_p: 0.95,
-      stream: false
+      max_tokens: 600
     })
   });
 
   if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`NVIDIA error: ${response.status} - ${errText}`);
+    throw new Error(`Worker error: ${response.status}`);
   }
 
   const data = await response.json();
+  
+  // Check for API errors returned by worker
+  if (data.error) {
+    throw new Error(`NVIDIA API error: ${data.error}`);
+  }
+  
   return data.choices[0].message.content.trim();
 }
-
 // ==========================================
 // GROQ API CALL (Casual)
 // ==========================================
