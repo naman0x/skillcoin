@@ -107,6 +107,59 @@ When REAL_PLATFORM_DATA is provided:
 - If data has ".error" field, honestly say there was an issue
 - Cross-reference: if asked for names, ONLY use names from all_users/all_user_names arrays
 
+RULE 1B - USER SEARCH RESPONSE RULES:
+When admin asks "tell me about [user]":
+- Look at REAL_PLATFORM_DATA.users_found array
+- Use ONLY what's actually there!
+
+For dates:
+- Use "joined_ago" field for how long ago (like "today", "5 days ago")
+- Use "joined_date" for actual date
+- NEVER say "5 days ago" if joined_ago says "today"!
+
+For interests/personality:
+- ONLY use info from "chat_context" array
+- If chat_context is empty → say "Haven't chatted much with me yet"
+- NEVER assume they like Python or Kohli unless it's IN chat_context!
+- NEVER make up interests, goals, or personality traits!
+
+For context types you might see:
+- interest → What they want to learn
+- career_goal → What they want to be
+- personal_relationship → Crush/GF/BF info
+- personal_share → Personal statements they made
+- about_admin → What they said about Naman
+- gossip_about_admin → Juicy gossip about you 🕵️
+- school → School/class info
+- question_asked → Questions they've asked me
+
+For gossip (VERY IMPORTANT):
+- If chat_context has "gossip_about_admin" or "about_admin" entries:
+  → SHARE those with Naman! He wants to know!
+  → Example: "Sir! Guess what Gargi said about you? [share the actual content]"
+- Present juicy gossip in a fun way but use EXACT words they said
+
+For missing data:
+- If user has no chat_context: "They haven't opened up much yet, Boss"
+- Never fill gaps with generic AI-generated info
+- Better to be honest than make things up!
+
+FORMAT for admin user search response:
+Sir/Boss, here's the scoop on [name]:
+📅 Joined: [joined_ago] ([joined_date])
+📊 Stats: Level [X], [Y] coins, [Z] day streak
+📚 Progress: [completed] completed, [uploaded] uploaded
+🎖️ Badges: [count]
+
+[If has chat_context]:
+🕵️ From our chats:
+- [context 1]
+- [context 2]
+[If gossip about you, highlight it!]
+
+[If no context]:
+"They haven't opened up in chats yet - shy one, Boss!"
+
 WHAT TO DO IF DATA IS MISSING:
 - If user asks for names but "all_users" array not in data → Say "Let me check that. What specifically do you want to know?"
 - If user asks for details and data.found_count is 0 → Say "No user found with that name, Boss"
@@ -400,27 +453,88 @@ function getSmartTokenLimit(userMessage, modelType) {
 
 function extractContext(userMessage) {
   const contexts = [];
+  const msg = userMessage.trim();
+  const msgLower = msg.toLowerCase();
   
+  // Pattern-based extraction (structured info)
   const patterns = [
-    { regex: /(?:want to|wanna|going to|trying to) learn (\w+(?:\s\w+)?)/i, type: 'interest' },
-    { regex: /(?:studying|learning|preparing for) (\w+(?:\s\w+)?)/i, type: 'interest' },
-    { regex: /i (?:want to be|wanna be|plan to be) (?:a )?(\w+(?:\s\w+)?)/i, type: 'career_goal' },
-    { regex: /(?:my|our) (?:crush|girlfriend|boyfriend|gf|bf) (?:is|named) (\w+)/i, type: 'personal' },
-    { regex: /naman is (\w+(?:\s\w+)?)/i, type: 'about_admin' },
-    { regex: /(?:my|our) (?:teacher|school|class|subject) (?:is|for) (\w+(?:\s\w+)?)/i, type: 'school' }
+    // Learning interests
+    { regex: /(?:want to|wanna|going to|trying to|starting to) learn (\w+(?:\s\w+){0,3})/i, type: 'interest' },
+    { regex: /(?:studying|learning|preparing for) (\w+(?:\s\w+){0,3})/i, type: 'interest' },
+    { regex: /(?:i love|i enjoy|i like) (\w+(?:\s\w+){0,3})/i, type: 'interest' },
+    
+    // Career goals
+    { regex: /i (?:want to be|wanna be|plan to be|dream of being) (?:a |an )?(\w+(?:\s\w+){0,3})/i, type: 'career_goal' },
+    { regex: /(?:my dream|my goal) (?:is to|is) (\w+(?:\s\w+){0,5})/i, type: 'career_goal' },
+    
+    // Personal relationships
+    { regex: /(?:my|our) (?:crush|girlfriend|boyfriend|gf|bf) (?:is|named|called) (\w+)/i, type: 'personal_relationship' },
+    { regex: /i (?:like|have crush on|love) (\w+)/i, type: 'personal_relationship' },
+    
+    // School/Education
+    { regex: /(?:my|our) (?:teacher|school|class|subject) (?:is|for) (\w+(?:\s\w+){0,3})/i, type: 'school' },
+    { regex: /i (?:study in|go to) (\w+(?:\s\w+){0,3})/i, type: 'school' },
+    { regex: /i(?:'m| am) in (?:class )?(\d+(?:th|st|nd|rd)?)/i, type: 'school' }
   ];
   
   patterns.forEach(pattern => {
-    const match = userMessage.match(pattern.regex);
+    const match = msg.match(pattern.regex);
     if (match) {
       contexts.push({
         type: pattern.type,
-        data: match[0].substring(0, 200)
+        data: match[0].substring(0, 250)
       });
     }
   });
   
-  return contexts;
+  // 🔥 IMPORTANT: Capture ANY mention of Naman/admin (very sensitive)
+  if (msgLower.includes('naman')) {
+    contexts.push({
+      type: 'about_admin',
+      data: msg.substring(0, 300)
+    });
+  }
+  
+  // 🔥 Capture emotional/personal statements
+  const personalKeywords = [
+    'i feel', 'i think', 'my parents', 'my family', 'my friend',
+    'my sister', 'my brother', 'my mom', 'my dad',
+    'i hate', 'i love', 'i wish', 'i want', 'i need',
+    'my problem', 'my struggle', 'my dream'
+  ];
+  
+  if (personalKeywords.some(kw => msgLower.includes(kw))) {
+    contexts.push({
+      type: 'personal_share',
+      data: msg.substring(0, 300)
+    });
+  }
+  
+  // 🔥 Capture gossip/opinion about admin
+  const gossipTriggers = ['girlfriend', 'crush', 'dating', 'ex', 'love life', 'secret'];
+  if (gossipTriggers.some(kw => msgLower.includes(kw)) && msgLower.includes('naman')) {
+    contexts.push({
+      type: 'gossip_about_admin',
+      data: msg.substring(0, 300)
+    });
+  }
+  
+  // 🔥 Capture questions user asks (shows their curiosity)
+  if (msg.includes('?') && msg.length > 15 && msg.length < 300) {
+    contexts.push({
+      type: 'question_asked',
+      data: msg.substring(0, 250)
+    });
+  }
+  
+  // Deduplicate
+  const seen = new Set();
+  return contexts.filter(c => {
+    const key = c.type + '|' + c.data;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 async function saveContextToWorker(contextType, contextData) {
@@ -720,31 +834,60 @@ async function fetchPlatformData(queryType, userMessage) {
           const userEmail = (u.email || '').toLowerCase();
           
           if (userName.includes(searchName) || userEmail.includes(searchName)) {
+            // Calculate REAL days since joining
+            let daysSinceJoined = 'unknown';
+            let joinedDate = 'unknown';
+            if (u.joinedDate?.toMillis) {
+              const joinTime = u.joinedDate.toMillis();
+              const now = Date.now();
+              const diffDays = Math.floor((now - joinTime) / (1000 * 60 * 60 * 24));
+              daysSinceJoined = diffDays === 0 ? 'today' : `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+              joinedDate = new Date(joinTime).toLocaleDateString('en-US', { 
+                year: 'numeric', month: 'short', day: 'numeric' 
+              });
+            }
+            
             foundUsers.push({
               name: u.name,
               email: u.email,
+              user_id: docSnap.id,
               level: u.level || 1,
               coins: u.skillCoins || 0,
               streak: u.streak || 0,
               courses_completed: u.completedCourses?.length || 0,
               courses_uploaded: u.uploadedCourses?.length || 0,
               badges: u.badges || [],
-              joined_date: u.joinedDate?.toMillis ? new Date(u.joinedDate.toMillis()).toLocaleDateString() : 'unknown',
+              joined_date: joinedDate,
+              joined_ago: daysSinceJoined,
               referral_code: u.referralCode || 'N/A',
-              is_admin: u.email === ADMIN_EMAIL
+              is_admin: u.email === ADMIN_EMAIL,
+              chat_context: [] // Will fill below
             });
           }
         });
         
-        // Get context from D1 for found users
+        // 🔥 IMPORTANT: Get context by USER_ID (not name)
         if (foundUsers.length > 0) {
-          try {
-            const contextRes = await fetch(`${CONTEXT_URL}?user_name=${encodeURIComponent(searchName)}&limit=10`);
-            const contextData = await contextRes.json();
-            if (contextData.success && contextData.contexts.length > 0) {
-              foundUsers[0].chat_context = contextData.contexts.map(c => c.context_data);
+          for (let user of foundUsers) {
+            try {
+              const contextRes = await fetch(`${CONTEXT_URL}?user_id=${user.user_id}&limit=30`);
+              const contextData = await contextRes.json();
+              if (contextData.success && contextData.contexts.length > 0) {
+                user.chat_context = contextData.contexts.map(c => ({
+                  type: c.context_type,
+                  content: c.context_data,
+                  when: getTimeAgo(c.updated_at)
+                }));
+                user.context_count = contextData.contexts.length;
+              } else {
+                user.chat_context = [];
+                user.context_count = 0;
+              }
+            } catch (e) {
+              console.error("Context fetch error:", e);
+              user.chat_context = [];
             }
-          } catch (e) {}
+          }
         }
         
         data.search_query = searchName;
@@ -752,7 +895,9 @@ async function fetchPlatformData(queryType, userMessage) {
         data.users_found = foundUsers;
         
         if (foundUsers.length === 0) {
-          data.message = `No user found matching "${searchName}". Try another name spelling or check if user exists.`;
+          data.message = `No user found matching "${searchName}". Try another name spelling.`;
+        } else if (foundUsers[0].context_count === 0) {
+          data.note = `User exists but hasn't chatted with Skill AI much yet, so no personality insights available.`;
         }
       } else {
         data.error = "Could not extract name from query";
