@@ -97,13 +97,32 @@ HOW TO USE STUDENT TOOLS: Click StudentHub for Pomodoro, calculators, etc.
 
 CRITICAL RULES:
 
-RULE 1 - NEVER LIE OR HALLUCINATE:
-- If REAL_PLATFORM_DATA is provided, ONLY use what's IN it
-- Count exact numbers - don't estimate or guess
-- If empty array = say ZERO/NONE
-- Never invent user names, coin amounts, courses, or issues
-- If no match found for user search, say honestly "No user found"
-- Present data as it IS, don't add fictional details
+RULE 1 - ABSOLUTELY NO LYING OR MAKING UP DATA (CRITICAL!):
+When REAL_PLATFORM_DATA is provided:
+- Use ONLY the exact data in the JSON
+- Count exact numbers - don't estimate
+- Names must be EXACTLY as shown in "all_user_names" or "all_users" arrays
+- NEVER invent fake names like "Rohan, Aarav, Kiara" if not in the data!
+- If array is empty [], say "None yet!" or "Zero!"
+- If data has ".error" field, honestly say there was an issue
+- Cross-reference: if asked for names, ONLY use names from all_users/all_user_names arrays
+
+WHAT TO DO IF DATA IS MISSING:
+- If user asks for names but "all_users" array not in data → Say "Let me check that. What specifically do you want to know?"
+- If user asks for details and data.found_count is 0 → Say "No user found with that name, Boss"
+- If data has ".message" field → Use that message
+- NEVER fill in gaps with made-up info!
+
+CROSS-QUERY BEHAVIOR:
+- If admin first asks "how many users" then "give me names":
+  → The names ARE in the previous data (all_user_names array)
+  → Use those REAL names, don't invent new ones!
+- Always check ALL provided data fields, not just obvious ones
+
+REMEMBER: 
+- 12 users doesn't mean names like "Rohan, Aarav" - those are FAKE if not in data!
+- Only use names actually shown in JSON data
+- Better to say "I don't have that specific info" than to lie!
 
 RULE 2 - SECURITY FOR REGULAR USERS (VERY STRICT):
 Regular users are STRICTLY PROHIBITED from accessing:
@@ -486,6 +505,13 @@ async function reportIssue(userMessage) {
 function detectAdminQuery(userMessage) {
   const msg = userMessage.toLowerCase().trim();
   
+  // List all users (names)
+  if (msg.match(/(?:list|show|give me|tell me|names of|who are) (?:the |all |real )?(?:users?|members|people)/i) ||
+      msg.match(/(?:names|list) of (?:the |all )?users/i) ||
+      msg.match(/all users/i)) {
+    return 'list_users';
+  }
+  
   // Issues detection
   if (msg.match(/(?:any |what |show |list |tell me )?(?:issues?|problems?|bugs?|reports?|complaints?)(?:\s+(?:today|now|reported|open))?/i)) {
     return 'issues';
@@ -499,16 +525,16 @@ function detectAdminQuery(userMessage) {
   }
   
   // User search
-  if (msg.match(/tell me about (?:user )?(.+)/i) ||
-      msg.match(/(?:info|details|data) (?:about|on|for) (?:user )?(.+)/i) ||
-      msg.match(/(?:who is|about) (\w+)/i)) {
+  if (msg.match(/tell me about (?:user )?(\w+)/i) ||
+      msg.match(/(?:info|details|data) (?:about|on|for) (?:user )?(\w+)/i) ||
+      msg.match(/(?:who is) (\w+)/i)) {
     return 'user_search';
   }
   
   // Gossip mode
   if (msg.match(/(?:gossip|insights|scoop|dirt|tea)/i) ||
       msg.match(/what.*users.*(?:saying|doing|up to)/i) ||
-      msg.match(/(?:top|best|active) users/i) ||
+      msg.match(/(?:top|best) users/i) ||
       msg.match(/user.*(?:activity|behavior)/i)) {
     return 'gossip';
   }
@@ -568,26 +594,26 @@ async function fetchPlatformData(queryType, userMessage) {
   const data = {};
   
   try {
-    // Get D1 data (chats, issues)
+    // Get D1 data (issues)
     if (queryType === 'issues') {
       const response = await fetch(`${ADMIN_URL}?admin_email=${currentUser.email}&action=issues&status=open`);
       const d1Data = await response.json();
       if (d1Data.success) {
         data.issues = d1Data.issues.map(i => ({
-          user_name: i.user_name,
-          issue: i.issue_description,
+          reporter_name: i.user_name,
+          issue_description: i.issue_description,
           severity: i.severity,
-          reported_time_ago: getTimeAgo(i.reported_at)
+          when: getTimeAgo(i.reported_at)
         }));
-        data.total_issues = d1Data.count;
+        data.total_open_issues = d1Data.count;
       } else {
         data.issues = [];
-        data.total_issues = 0;
+        data.total_open_issues = 0;
       }
     }
     
-    // Get Firebase data
-    if (queryType === 'stats' || queryType === 'gossip') {
+    // Get Firebase data (users - full details)
+    if (queryType === 'stats' || queryType === 'gossip' || queryType === 'list_users') {
       const usersSnap = await getDocs(collection(db, 'users'));
       const coursesSnap = await getDocs(collection(db, 'courses'));
       
@@ -610,13 +636,14 @@ async function fetchPlatformData(queryType, userMessage) {
         
         users.push({
           name: u.name || 'Unknown',
-          email: u.email || '',
+          email: u.email || 'No email',
           level: u.level || 1,
           coins: u.skillCoins || 0,
           streak: u.streak || 0,
           courses_completed: u.completedCourses?.length || 0,
           courses_uploaded: u.uploadedCourses?.length || 0,
           badges_count: u.badges?.length || 0,
+          joined: u.joinedDate?.toMillis ? new Date(u.joinedDate.toMillis()).toLocaleDateString() : 'unknown',
           is_admin: u.email === ADMIN_EMAIL
         });
       });
@@ -624,7 +651,21 @@ async function fetchPlatformData(queryType, userMessage) {
       // Sort by coins
       users.sort((a, b) => b.coins - a.coins);
       
+      if (queryType === 'list_users') {
+        // Return ALL user names with basic info
+        data.total_users = users.length;
+        data.all_users = users.map((u, i) => ({
+          rank: i + 1,
+          name: u.name,
+          email: u.email,
+          level: u.level,
+          coins: u.coins,
+          is_admin: u.is_admin
+        }));
+      }
+      
       if (queryType === 'stats') {
+        // Include names in stats too!
         data.stats = {
           total_users_registered: usersSnap.size,
           total_courses_on_platform: coursesSnap.size,
@@ -633,14 +674,22 @@ async function fetchPlatformData(queryType, userMessage) {
           total_courses_completed_by_all: totalCoursesCompleted,
           total_courses_uploaded_by_all: totalCoursesUploaded
         };
+        // Add user list for reference
+        data.all_user_names = users.map(u => ({
+          name: u.name,
+          level: u.level,
+          coins: u.coins,
+          is_admin: u.is_admin
+        }));
       }
       
       if (queryType === 'gossip') {
-        data.top_users_by_coins = users.slice(0, 5).filter(u => !u.is_admin);
+        const nonAdminUsers = users.filter(u => !u.is_admin);
+        data.top_users_by_coins = nonAdminUsers.slice(0, 5);
         data.total_users = users.length;
-        data.highest_streak = Math.max(...users.map(u => u.streak));
-        data.most_courses_uploaded = Math.max(...users.map(u => u.courses_uploaded));
-        data.avg_level = (users.reduce((s, u) => s + u.level, 0) / users.length).toFixed(1);
+        data.highest_streak_user = nonAdminUsers.reduce((max, u) => u.streak > (max?.streak || 0) ? u : max, null);
+        data.most_courses_uploaded_user = nonAdminUsers.reduce((max, u) => u.courses_uploaded > (max?.courses_uploaded || 0) ? u : max, null);
+        data.avg_level = users.length > 0 ? (users.reduce((s, u) => s + u.level, 0) / users.length).toFixed(1) : 0;
       }
     }
     
@@ -648,9 +697,9 @@ async function fetchPlatformData(queryType, userMessage) {
     if (queryType === 'user_search') {
       let searchName = '';
       const patterns = [
-        /tell me about (?:user )?(.+?)(?:\?|$|\.|,)/i,
-        /(?:info|details|data) (?:about|on|for) (?:user )?(.+?)(?:\?|$|\.|,)/i,
-        /(?:who is|about) (\w+)/i
+        /tell me about (?:user )?(\w+)/i,
+        /(?:info|details|data) (?:about|on|for) (?:user )?(\w+)/i,
+        /(?:who is) (\w+)/i
       ];
       
       for (const pattern of patterns) {
@@ -693,7 +742,7 @@ async function fetchPlatformData(queryType, userMessage) {
             const contextRes = await fetch(`${CONTEXT_URL}?user_name=${encodeURIComponent(searchName)}&limit=10`);
             const contextData = await contextRes.json();
             if (contextData.success && contextData.contexts.length > 0) {
-              foundUsers[0].context_from_chats = contextData.contexts.map(c => c.context_data);
+              foundUsers[0].chat_context = contextData.contexts.map(c => c.context_data);
             }
           } catch (e) {}
         }
@@ -701,6 +750,12 @@ async function fetchPlatformData(queryType, userMessage) {
         data.search_query = searchName;
         data.found_count = foundUsers.length;
         data.users_found = foundUsers;
+        
+        if (foundUsers.length === 0) {
+          data.message = `No user found matching "${searchName}". Try another name spelling or check if user exists.`;
+        }
+      } else {
+        data.error = "Could not extract name from query";
       }
     }
     
