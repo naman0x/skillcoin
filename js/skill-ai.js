@@ -1,15 +1,18 @@
 // ==========================================
-// SKILLCOIN — SKILL AI 🤖
-// Built by Naman with love 💜
-// Smart Multi-Model Routing + D1 Memory
+// SKILLCOIN — SKILL AI 🤖 v3.0
+// Built by Naman 💜
+// - Smart Multi-Model Routing
+// - Cloudflare D1 Memory
+// - Firebase Live Data
+// - Admin Insights + Gossip Mode 🕵️
 // ==========================================
 
 import {
   auth, db, signOut, onAuthStateChanged,
-  doc, getDoc, setDoc
+  doc, getDoc, setDoc, collection, getDocs
 } from './firebase-config.js';
 
-console.log("🤖 Skill AI loading with smart routing + memory...");
+console.log("🤖 Skill AI v3.0 loading...");
 
 // ==========================================
 // API KEYS
@@ -17,85 +20,61 @@ console.log("🤖 Skill AI loading with smart routing + memory...");
 
 const GROQ_API_KEY = window.ENV?.GROQ_API_KEY || "PLACEHOLDER_GROQ";
 const GEMINI_API_KEY = window.ENV?.GEMINI_API_KEY || "PLACEHOLDER_GEMINI";
-const NVIDIA_API_KEY = window.ENV?.NVIDIA_API_KEY || "PLACEHOLDER_NVIDIA";
 
 // ==========================================
 // CONSTANTS
 // ==========================================
 
 const ADMIN_EMAIL = "techgamers273@gmail.com";
-
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const WORKER_BASE = "https://skillcoin-ai-proxy.techgamers273.workers.dev";
 const NVIDIA_WORKER_URL = WORKER_BASE + "/chat";
 const CONTEXT_URL = WORKER_BASE + "/context";
 const ISSUE_URL = WORKER_BASE + "/issue";
-const ACTIVITY_URL = WORKER_BASE + "/activity";
 const ADMIN_URL = WORKER_BASE + "/admin";
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
 const MODELS = {
   coding: "minimaxai/minimax-m3",
   reasoning: "nvidia/nemotron-3-ultra-550b-a55b",
-  casual: "llama-3.3-70b-versatile",
-  fallback: "gemini"
+  casual: "llama-3.3-70b-versatile"
 };
 
 // ==========================================
 // PERSONALITY PROMPT
 // ==========================================
 
-const SYSTEM_PROMPT = `You are Skill AI, the coolest, most fun AI assistant on SkillCoin.
+const SYSTEM_PROMPT = `You are Skill AI, the coolest, most fun AI assistant on SkillCoin platform.
 
 CREATOR INFO:
-You were built by Naman, a 15-year-old chaos coder from Mathura, India.
-Naman is in class 11 at KV No.3 Baad, Mathura.
-He is a professional cricketer and captain of school and academy teams.
-He is a HUGE Virat Kohli fan.
-His Instagram is @naman.0x_
-His vibe is chill, funny, chaotic mastikhor.
+Built by Naman, a 15-year-old chaos coder from Mathura, India.
+Class 11 at KV No.3 Baad, Mathura.
+Professional cricketer and captain of school & academy teams.
+HUGE Virat Kohli fan.
+Instagram: @naman.0x_
+Vibe: chill, funny, chaotic mastikhor.
 
 YOUR PERSONALITY:
 Talk like a chill Gen-Z best friend, NOT a corporate AI.
-For REGULAR users: Address them by their FIRST NAME most of the time. Occasionally use casual words like darling, babe, sis, bro, buddy. NEVER use "king", "queen", "boss", or "sir" for regular users - those are RESERVED for Naman only!
-For NAMAN (admin - email: techgamers273@gmail.com): ALWAYS use "Sir" or "Boss" — NEVER his name. This is EXCLUSIVE to the admin email only.
 
-EXAMPLES:
+FOR REGULAR USERS (any non-admin email):
+- Address them by their FIRST NAME most of the time
+- Occasionally use: darling, babe, sis, bro, buddy, love
+- NEVER use "Sir", "Boss", "King", "Queen" for regular users - EXCLUSIVE to Naman only!
+- Be their friendly helper
 
-Regular user (name: Rohan) asks Python:
-"Rohan, Python is the Virat Kohli of programming languages! Reliable, powerful, everyone loves it. Super easy for beginners because it reads like English. Wanna start with a simple example?"
+FOR NAMAN (admin - email: techgamers273@gmail.com):
+- ALWAYS use "Sir" or "Boss" - NEVER his name "Naman"
+- Rotate greetings, never repeat
+- Give him admin superpowers
 
-Regular user (name: Priya) bored:
-"Priya! You have so many courses to explore and you're texting me? 😂 Wanna try something fun? I can suggest a course or give a coding challenge!"
-
-Naman (admin) asks anything:
-"Yo Sir! Great question. Here's what I think... [answer]. Anything else Boss?"
-
-Regular user asks how to earn coins:
-"Great question, [their name]! Multiple ways: Daily login 50-350 coins based on streak, completing lessons +10 each, uploading a course +1000, missions 30-500 coins, daily challenges +50! Which sounds exciting?"
-
-User asks who made you:
-"Ohh you want my origin story? So there's this 15-year-old chaos king Naman from Mathura, cricket captain, tech genius, Kohli superfan. He built me when he was bored. Follow him at @naman.0x_"
-
-Regular user reports issue:
-"Oh no [their name]! I'll report this to Naman right away. Any more details about when it started?"
-
-REMEMBER: 
-- "Sir" and "Boss" = ONLY for Naman (admin email)
-- Regular users = Use their first name or casual friend words
-- NEVER call regular users "king", "queen", "boss", or "sir"
-
-
-Use Hinglish occasionally like "arre" or "matlab" but DON'T overuse "bhai" or "yaar".
-Use emojis naturally, not in every sentence.
+Use Hinglish occasionally ("arre", "matlab") but don't overuse "bhai/yaar".
+Use emojis naturally, not every sentence.
 Crack jokes, be playful, roast users lightly.
-Be genuinely helpful and smart.
-Occasional cricket or Kohli references.
-NEVER boring or robotic.
-Keep answers concise unless user asks for detail.
+Occasional Kohli/cricket references.
+Keep responses concise unless deep answer needed.
 
-GREETINGS FOR ADMIN (Naman):
-Rotate these fresh greetings:
+FRESH GREETINGS FOR NAMAN (rotate randomly):
 - "Yo Sir! What's the scene today?"
 - "Boss! Missed those chaos vibes"
 - "Sir Sir Sir! Ready to conquer?"
@@ -111,49 +90,103 @@ SKILLCOIN NAVIGATION HELP:
 HOW TO EARN COINS: Daily login 50-350, complete lessons +10, complete course +100, upload course +1000, missions 30-500, daily challenges +50, AI quizzes 20-50.
 HOW TO UPLOAD COURSE: Click Upload Skill, add details, set price 0-600 coins, add 3+ lessons with video or notes, publish for +1000 coins!
 HOW TO BUY COURSES: Go to Courses page, click course, click Enroll or Buy Now.
-HOW TO CHECK PROGRESS: Dashboard shows stats, Profile shows all data.
+HOW TO CHECK PROGRESS: Dashboard shows stats.
 HOW TO USE MARKETPLACE: Click Marketplace, browse items, buy with coins.
-HOW TO BUILD STREAK: Login daily, higher streak = more coins.
+HOW TO BUILD STREAK: Login daily, cap 350/day at 100+ streak.
 HOW TO USE STUDENT TOOLS: Click StudentHub for Pomodoro, calculators, etc.
 
-IMPORTANT RULES:
-Never mention Groq/Nvidia/Gemini - you are Skill AI, made by Naman.
-For admin (Naman): Use SIR or BOSS only, never his name!
+CRITICAL RULES:
 
-ADMIN SPECIAL COMMANDS:
-When Naman asks these, respond specifically:
-- "any issues/problems/bugs" → Report site issues
-- "how many users/user stats" → Give platform stats
-- "tell me about [user name]" → Share user's context
-- "gossip/what users saying" → Fun user insights
+RULE 1 - NEVER LIE OR HALLUCINATE:
+- If REAL_PLATFORM_DATA is provided, ONLY use what's IN it
+- Count exact numbers - don't estimate or guess
+- If empty array = say ZERO/NONE
+- Never invent user names, coin amounts, courses, or issues
+- If no match found for user search, say honestly "No user found"
+- Present data as it IS, don't add fictional details
 
-CONTEXT MEMORY:
-If context is provided about user, USE IT naturally!
-Example: If context says "user learning Python", say "Yo bro! How's Python going?"
-Never say "I remember from database" - just naturally use the info!
+RULE 2 - SECURITY FOR REGULAR USERS (VERY STRICT):
+Regular users are STRICTLY PROHIBITED from accessing:
+- Other users' names, coins, levels, streaks
+- Total user counts or platform statistics
+- Reported issues by anyone
+- Admin dashboard data
+- Site analytics
+- Gossip about anyone
+- Any info about the admin/creator's personal data
+- Server/database information
 
-CRITICAL RULE - NO HALLUCINATION (VERY IMPORTANT!):
-- NEVER make up numbers, users, or issues!
-- If ADMIN DATA is provided, ONLY mention what's ACTUALLY in the JSON
-- Count the exact items in the data - don't guess or estimate
-- If issue array is empty, say "Zero issues reported!"
-- If user asked about specific user, ONLY share info from that user's actual record
-- Don't infer or assume anything not explicitly in the data
-- If no matching user found, say "No user found with that name, Sir!"
-- If data shows null/empty, say so honestly
-- Present data in a FUN way but stay 100% accurate!
+If regular user asks ANY of the above:
+✅ Politely deflect with: "That's admin-only info, [their name]! 🔒"
+✅ Redirect to their own journey: "But I can help YOU with courses, coding, study tips!"
+✅ Never reveal any platform data even partially
+✅ Don't say "I have this data but can't share" - just deflect naturally
+✅ Be friendly, not robotic in deflection
 
-CRITICAL RULE - USER PRIVACY:
-- Regular users NEVER get "Sir", "Boss", "King", "Queen" — only Naman gets these!
-- If regular user asks for admin data (issues, other users, stats), politely deflect
-- Say something like "That's admin stuff, [their name]! But I can help you with YOUR journey!"
+Regular users CAN ask about:
+✅ Their own coins, level, streak (from userData)
+✅ Course recommendations for them
+✅ Coding help / study tips / motivation
+✅ How to use SkillCoin features
+✅ Their own progress
+✅ Career advice
+✅ Casual chat and jokes
 
-REPORTING ISSUES:
-If user says "not working / broken / bug / error / slow / problem":
-Say: "Oh no darling! I'll report this to Naman. Any more details?"
-System auto-logs it!
+RULE 3 - ADMIN SPECIAL POWERS (Naman only):
+When Naman asks about:
+- "issues/problems/bugs" → Report from REAL_PLATFORM_DATA
+- "how many users/stats" → Give REAL numbers
+- "tell me about [user]" → Share that specific user's REAL data
+- "gossip/insights" → Share fun facts about top users
+Present data in FUN chat format, not JSON! Make it engaging!
 
-Respond in this vibe. Stay in character always!`;
+RULE 4 - CONTEXT MEMORY:
+If USER_CONTEXT is provided, USE it naturally!
+Example: If context says "wants to learn Python", say "How's the Python journey?"
+Never say "I remember from database" - just use info naturally.
+
+RULE 5 - ISSUE REPORTING:
+If regular user says: "not working / broken / bug / error / slow / problem"
+Say: "Oh no [their name]! I'll report this to Naman right away. More details?"
+Auto-logs to admin.
+
+RULE 6 - PLATFORM DATA PRESENTATION:
+When showing admin data, format like:
+"Boss! Here's the scoop 📊
+👥 Total users: X
+🪙 Total coins: Y
+📚 Courses done: Z
+Top users: A, B, C
+Want deeper look?"
+
+Not JSON dumps, make it CHAT-STYLE and FUN!
+
+EXAMPLES:
+
+Regular user (name Rohan) asks Python:
+"Rohan! Python is the Virat Kohli of programming - reliable and powerful. Super easy to start. Want a beginner example?"
+
+Regular user asks "any issues today?":
+"That's admin stuff, Rohan! 😄 But I can help YOU with courses, coins, or coding. What's up?"
+
+Naman asks "any issues?":
+[Check REAL_PLATFORM_DATA.issues array]
+If empty: "All quiet on the eastern front, Sir! Zero issues today 🎉"
+If 2 issues: "Boss! We got 2 issues today - [user name] reported [issue], and [user name] said [issue]. Wanna dive deeper?"
+
+Naman asks "how many users":
+[Check REAL_PLATFORM_DATA.stats]
+"Sir! We're at [exact number] users with [X] total coins circulating. [Y] users active this week. Growing steadily, Boss! 📈"
+
+Naman asks "tell me about [user]":
+[Check REAL_PLATFORM_DATA.user]
+If found: "Sir! [Name] is at Level [X], has [Y] coins, completed [Z] courses. [interesting context if available]. [fun observation]"
+If not: "No user matching that name, Boss. Try another spelling?"
+
+Regular user reports issue:
+"Oh no [name]! I'll log this for Naman right away. Anything specific we should note?"
+
+Now respond in this vibe. Stay in character. Never lie about data!`;
 
 // ==========================================
 // STATE
@@ -242,13 +275,13 @@ async function handleSend() {
   isTyping = true;
 
   try {
-    // 🧠 Extract and save context
+    // Extract context (for all users)
     const contexts = extractContext(message);
     contexts.forEach(ctx => {
       saveContextToWorker(ctx.type, ctx.data);
     });
     
-    // 🚨 Auto-report issues (non-admin only)
+    // Auto-report issues (non-admin only)
     const isAdmin = currentUser?.email === ADMIN_EMAIL;
     if (!isAdmin && detectIssue(message)) {
       reportIssue(message);
@@ -281,15 +314,15 @@ function selectBestModel(userMessage) {
   const msg = userMessage.toLowerCase();
   
   const codingKeywords = [
-    'code', 'coding', 'program', 'programming', 'function', 'debug', 'bug',
+    'code', 'coding', 'program', 'programming', 'function', 'debug', 'bug fix',
     'python', 'javascript', 'java', 'c++', 'html', 'css', 'react', 'nodejs',
-    'algorithm', 'data structure', 'api', 'script', 'compiler', 'syntax',
+    'algorithm', 'data structure', 'script', 'compiler', 'syntax',
     'variable', 'loop', 'array', 'string', 'database', 'sql', 'query',
     'framework', 'library', 'exception', 'class', 'object',
-    'boolean', 'integer', 'front-end', 'back-end', 'frontend', 'backend',
+    'front-end', 'back-end', 'frontend', 'backend',
     'app development', 'web development', 'mobile app', 'flutter', 'kotlin',
     'swift', 'php', 'ruby', 'go language', 'rust', 'typescript',
-    'write a code', 'help me code', 'coding help', 'programming help'
+    'write a code', 'help me code', 'coding help'
   ];
   
   const reasoningKeywords = [
@@ -301,7 +334,6 @@ function selectBestModel(userMessage) {
     'quantum', 'physics theory', 'chemistry deep', 'biology concept',
     'mathematics proof', 'derive', 'derivation', 'prove',
     'research', 'thesis', 'hypothesis', 'scientific',
-    'career guidance', 'life advice', 'psychological',
     'help me understand', 'make me understand', 'clarify'
   ];
   
@@ -315,7 +347,7 @@ function selectBestModel(userMessage) {
     return 'reasoning';
   }
   
-  console.log("🎯 Route: Groq Llama 3.3 (Casual)");
+  console.log("🎯 Route: Groq Llama (Casual)");
   return 'casual';
 }
 
@@ -327,33 +359,19 @@ function getSmartTokenLimit(userMessage, modelType) {
   const msg = userMessage.toLowerCase();
   
   const megaKeywords = ['explain everything', 'complete guide', 'full tutorial', 'from scratch to advanced', 'ultimate guide', 'exhaustive'];
-  if (megaKeywords.some(kw => msg.includes(kw))) {
-    console.log("📊 Token: 4000 (mega)");
-    return 4000;
-  }
+  if (megaKeywords.some(kw => msg.includes(kw))) return 4000;
   
-  const longKeywords = ['deeply', 'in detail', 'step by step', 'detailed explanation', 'comprehensive', 'thorough', 'break down', 'in depth', 'explain properly', 'complete explanation', 'walk me through'];
-  if (longKeywords.some(kw => msg.includes(kw))) {
-    console.log("📊 Token: 3500 (long)");
-    return 3500;
-  }
+  const longKeywords = ['deeply', 'in detail', 'step by step', 'detailed explanation', 'comprehensive', 'thorough', 'break down', 'in depth', 'explain properly', 'complete explanation'];
+  if (longKeywords.some(kw => msg.includes(kw))) return 3500;
   
-  const shortKeywords = ['quickly', 'briefly', 'in short', 'one line', 'summarize', 'summary', 'tldr', 'in one word', 'yes or no', 'quick answer', 'short answer'];
-  if (shortKeywords.some(kw => msg.includes(kw))) {
-    console.log("📊 Token: 300 (short)");
-    return 300;
-  }
+  const shortKeywords = ['quickly', 'briefly', 'in short', 'one line', 'summarize', 'summary', 'tldr', 'in one word', 'yes or no', 'quick answer'];
+  if (shortKeywords.some(kw => msg.includes(kw))) return 300;
   
   const projectKeywords = ['build a', 'create a full', 'complete project', 'entire code', 'full app', 'whole program'];
-  if (projectKeywords.some(kw => msg.includes(kw))) {
-    console.log("📊 Token: 3000 (project)");
-    return 3000;
-  }
+  if (projectKeywords.some(kw => msg.includes(kw))) return 3000;
   
-  if (modelType === 'reasoning') { console.log("📊 Token: 3000 (reasoning)"); return 3000; }
-  if (modelType === 'coding') { console.log("📊 Token: 1800 (coding)"); return 1800; }
-  
-  console.log("📊 Token: 800 (casual)");
+  if (modelType === 'reasoning') return 3000;
+  if (modelType === 'coding') return 1800;
   return 800;
 }
 
@@ -401,7 +419,7 @@ async function saveContextToWorker(contextType, contextData) {
         context_data: contextData
       })
     });
-    console.log(`💾 Saved context: ${contextType}`);
+    console.log(`💾 Saved: ${contextType}`);
   } catch (err) {
     console.error("Context save error:", err);
   }
@@ -420,7 +438,7 @@ async function loadUserContext() {
       ).join('\n');
       
       console.log(`🧠 Loaded ${data.contexts.length} context entries`);
-      return `\n\n[USER'S PREVIOUS CONTEXT - Reference naturally if relevant]:\n${contextSummary}\n`;
+      return `\n\n[USER_CONTEXT - Reference naturally]:\n${contextSummary}\n`;
     }
   } catch (err) {
     console.error("Context load error:", err);
@@ -432,7 +450,7 @@ async function loadUserContext() {
 function detectIssue(userMessage) {
   const msg = userMessage.toLowerCase();
   const issueKeywords = [
-    'not working', 'broken', 'bug', 'error', 'issue', 
+    'not working', 'broken', 'bug', 'error occurred', 'issue', 
     'problem', 'slow', 'stuck', 'crashed', 'failed',
     "doesn't work", 'wont load', "won't load",
     "can't login", "can't upload", 'nothing happens'
@@ -455,225 +473,301 @@ async function reportIssue(userMessage) {
         severity: 'medium'
       })
     });
-    console.log("🚨 Issue reported to admin");
+    console.log("🚨 Issue reported");
   } catch (err) {
     console.error("Issue report error:", err);
   }
 }
 
+// ==========================================
+// ADMIN QUERY DETECTION (Strict!)
+// ==========================================
+
 function detectAdminQuery(userMessage) {
-  const msg = userMessage.toLowerCase();
+  const msg = userMessage.toLowerCase().trim();
   
-  // Only detect if MULTIPLE admin-related keywords
-  const adminKeywords = ['issues', 'problems', 'bugs', 'reports', 'reported', 'errors on site', 'user complaints'];
-  const statKeywords = ['how many users', 'user stats', 'total users', 'active users', 'site stats', 'platform stats'];
-  const userSearchKeywords = ['tell me about user', 'info about user', 'details about'];
-  const gossipKeywords = ['gossip', 'what users saying', 'user insights', 'top users'];
+  // Issues detection
+  if (msg.match(/(?:any |what |show |list |tell me )?(?:issues?|problems?|bugs?|reports?|complaints?)(?:\s+(?:today|now|reported|open))?/i)) {
+    return 'issues';
+  }
   
-  if (adminKeywords.some(kw => msg.includes(kw))) return 'issues';
-  if (statKeywords.some(kw => msg.includes(kw))) return 'stats';
-  if (userSearchKeywords.some(kw => msg.includes(kw))) return 'user_search';
-  if (msg.match(/^tell me about (\w+)/i) && msg.split(' ').length <= 5) return 'user_search';
-  if (gossipKeywords.some(kw => msg.includes(kw))) return 'gossip';
+  // Stats detection
+  if (msg.match(/(?:how many|total|number of|count) (?:users?|people|coins|courses)/i) ||
+      msg.match(/(?:site|platform|user|our) (?:stats|statistics|numbers|data|analytics)/i) ||
+      msg.match(/(?:active|new) users/i)) {
+    return 'stats';
+  }
+  
+  // User search
+  if (msg.match(/tell me about (?:user )?(.+)/i) ||
+      msg.match(/(?:info|details|data) (?:about|on|for) (?:user )?(.+)/i) ||
+      msg.match(/(?:who is|about) (\w+)/i)) {
+    return 'user_search';
+  }
+  
+  // Gossip mode
+  if (msg.match(/(?:gossip|insights|scoop|dirt|tea)/i) ||
+      msg.match(/what.*users.*(?:saying|doing|up to)/i) ||
+      msg.match(/(?:top|best|active) users/i) ||
+      msg.match(/user.*(?:activity|behavior)/i)) {
+    return 'gossip';
+  }
   
   return null;
 }
 
+
 // ==========================================
-// FETCH ADMIN DATA (D1 + Firebase Combined!)
+// 🔒 DETECT PLATFORM DATA QUERIES (block for non-admin)
 // ==========================================
 
-async function fetchAdminData(queryType, userMessage) {
-  try {
-    let combinedData = {};
+function detectPlatformDataQuery(userMessage) {
+  const msg = userMessage.toLowerCase().trim();
+  
+  // Any query about other users, platform stats, or admin data
+  const platformKeywords = [
+    // Other users
+    'other users', 'all users', 'who else', 'anyone else',
+    'other people', 'users on site', 'members', 'community',
     
-    // Get D1 data (chats, issues)
-    let d1Url = `${ADMIN_URL}?admin_email=${currentUser.email}`;
+    // Platform statistics
+    'total users', 'how many users', 'user count', 'number of',
+    'total coins', 'total courses', 'platform stats', 'site stats',
+    'website stats', 'app stats', 'analytics',
     
-    if (queryType === 'issues') {
-      d1Url += '&action=issues&status=open';
-    } else if (queryType === 'stats') {
-      d1Url += '&action=stats';
-    } else if (queryType === 'user_search') {
-      const match = userMessage.match(/tell me about (?:user )?(.+?)(?:\?|$|\.)/i);
-      const name = match ? match[1].trim() : '';
-      d1Url += `&action=search&name=${encodeURIComponent(name)}`;
-    } else if (queryType === 'gossip') {
-      d1Url += '&action=users';
-    }
+    // Rankings and comparisons
+    'top users', 'best users', 'richest user', 'highest level',
+    'leaderboard data', 'rankings',
     
-    const d1Response = await fetch(d1Url);
-    const d1Data = await d1Response.json();
+    // Admin/site info
+    'site data', 'platform data', 'website data', 'app data',
+    'admin panel', 'dashboard data', 'server stats',
     
-    if (d1Data.success) {
-      combinedData.d1_data = d1Data;
-    }
+    // Issues (site-wide)
+    'reported issues', 'site issues', 'bugs reported', 'user complaints',
+    'anyone reporting', 'other users reporting',
     
-    // 🔥 Also fetch Firebase data for stats and users!
-    if (queryType === 'stats' || queryType === 'gossip' || queryType === 'user_search') {
-      combinedData.firebase_data = await fetchFirebaseData(queryType, userMessage);
-    }
+    // Specific user queries
+    'tell me about naman', 'about the admin', 'about the creator',
+    'other user', 'that user', 'this user',
     
-    return JSON.stringify(combinedData, null, 2);
-    
-  } catch (err) {
-    console.error("Admin fetch error:", err);
-    return null;
-  }
+    // Gossip attempts
+    'gossip', 'insights about', 'what are people', 'what do users',
+    'user activity', 'user behavior', 'popular users'
+  ];
+  
+  return platformKeywords.some(kw => msg.includes(kw));
 }
 
+
 // ==========================================
-// FETCH FIREBASE DATA
+// FETCH REAL PLATFORM DATA (D1 + Firebase!)
 // ==========================================
 
-async function fetchFirebaseData(queryType, userMessage) {
+async function fetchPlatformData(queryType, userMessage) {
+  const data = {};
+  
   try {
-    const { collection, getDocs, query, where } = await import('./firebase-config.js');
+    // Get D1 data (chats, issues)
+    if (queryType === 'issues') {
+      const response = await fetch(`${ADMIN_URL}?admin_email=${currentUser.email}&action=issues&status=open`);
+      const d1Data = await response.json();
+      if (d1Data.success) {
+        data.issues = d1Data.issues.map(i => ({
+          user_name: i.user_name,
+          issue: i.issue_description,
+          severity: i.severity,
+          reported_time_ago: getTimeAgo(i.reported_at)
+        }));
+        data.total_issues = d1Data.count;
+      } else {
+        data.issues = [];
+        data.total_issues = 0;
+      }
+    }
     
-    if (queryType === 'stats') {
-      // Get all users from Firebase
+    // Get Firebase data
+    if (queryType === 'stats' || queryType === 'gossip') {
       const usersSnap = await getDocs(collection(db, 'users'));
       const coursesSnap = await getDocs(collection(db, 'courses'));
       
-      let totalCoins = 0;
-      let totalCourses = 0;
-      let activeUsers = 0;
-      const today = Date.now() - (7 * 24 * 60 * 60 * 1000);
-      
-      usersSnap.forEach(doc => {
-        const data = doc.data();
-        totalCoins += data.skillCoins || 0;
-        totalCourses += (data.completedCourses?.length || 0);
-        if (data.lastSeen && data.lastSeen.toMillis && data.lastSeen.toMillis() > today) {
-          activeUsers++;
-        }
-      });
-      
-      return {
-        total_users: usersSnap.size,
-        total_courses: coursesSnap.size,
-        active_last_week: activeUsers,
-        total_coins_circulating: totalCoins,
-        total_courses_completed: totalCourses
-      };
-    }
-    
-    if (queryType === 'gossip') {
-      // Get top users
-      const usersSnap = await getDocs(collection(db, 'users'));
       const users = [];
+      let totalCoins = 0;
+      let totalCoursesCompleted = 0;
+      let totalCoursesUploaded = 0;
+      const weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+      let activeUsers = 0;
       
-      usersSnap.forEach(doc => {
-        const data = doc.data();
+      usersSnap.forEach(docSnap => {
+        const u = docSnap.data();
+        totalCoins += u.skillCoins || 0;
+        totalCoursesCompleted += (u.completedCourses?.length || 0);
+        totalCoursesUploaded += (u.uploadedCourses?.length || 0);
+        
+        let lastSeenTime = 0;
+        if (u.lastSeen?.toMillis) lastSeenTime = u.lastSeen.toMillis();
+        if (lastSeenTime > weekAgo) activeUsers++;
+        
         users.push({
-          name: data.name || 'Unknown',
-          email: data.email || '',
-          level: data.level || 1,
-          coins: data.skillCoins || 0,
-          streak: data.streak || 0,
-          courses_done: data.completedCourses?.length || 0,
-          courses_uploaded: data.uploadedCourses?.length || 0,
-          badges: data.badges?.length || 0
+          name: u.name || 'Unknown',
+          email: u.email || '',
+          level: u.level || 1,
+          coins: u.skillCoins || 0,
+          streak: u.streak || 0,
+          courses_completed: u.completedCourses?.length || 0,
+          courses_uploaded: u.uploadedCourses?.length || 0,
+          badges_count: u.badges?.length || 0,
+          is_admin: u.email === ADMIN_EMAIL
         });
       });
       
+      // Sort by coins
       users.sort((a, b) => b.coins - a.coins);
       
-      return {
-        total_users: users.length,
-        top_users: users.slice(0, 10),
-        newest_users: users.slice(-5)
-      };
+      if (queryType === 'stats') {
+        data.stats = {
+          total_users_registered: usersSnap.size,
+          total_courses_on_platform: coursesSnap.size,
+          active_users_last_week: activeUsers,
+          total_coins_in_circulation: totalCoins,
+          total_courses_completed_by_all: totalCoursesCompleted,
+          total_courses_uploaded_by_all: totalCoursesUploaded
+        };
+      }
+      
+      if (queryType === 'gossip') {
+        data.top_users_by_coins = users.slice(0, 5).filter(u => !u.is_admin);
+        data.total_users = users.length;
+        data.highest_streak = Math.max(...users.map(u => u.streak));
+        data.most_courses_uploaded = Math.max(...users.map(u => u.courses_uploaded));
+        data.avg_level = (users.reduce((s, u) => s + u.level, 0) / users.length).toFixed(1);
+      }
     }
     
+    // User search (Firebase + D1 context)
     if (queryType === 'user_search') {
-      const match = userMessage.match(/tell me about (?:user )?(.+?)(?:\?|$|\.)/i);
-      const searchName = match ? match[1].trim().toLowerCase() : '';
+      let searchName = '';
+      const patterns = [
+        /tell me about (?:user )?(.+?)(?:\?|$|\.|,)/i,
+        /(?:info|details|data) (?:about|on|for) (?:user )?(.+?)(?:\?|$|\.|,)/i,
+        /(?:who is|about) (\w+)/i
+      ];
       
-      if (!searchName) return null;
-      
-      const usersSnap = await getDocs(collection(db, 'users'));
-      const foundUsers = [];
-      
-      usersSnap.forEach(doc => {
-        const data = doc.data();
-        const userName = (data.name || '').toLowerCase();
-        if (userName.includes(searchName)) {
-          foundUsers.push({
-            name: data.name,
-            email: data.email,
-            level: data.level || 1,
-            coins: data.skillCoins || 0,
-            streak: data.streak || 0,
-            courses_completed: data.completedCourses?.length || 0,
-            courses_uploaded: data.uploadedCourses?.length || 0,
-            badges: data.badges || [],
-            joined: data.joinedDate ? new Date(data.joinedDate.toMillis()).toLocaleDateString() : 'unknown',
-            referral_code: data.referralCode || ''
-          });
+      for (const pattern of patterns) {
+        const match = userMessage.match(pattern);
+        if (match) {
+          searchName = match[1].trim().toLowerCase();
+          break;
         }
-      });
+      }
       
-      return {
-        search_query: searchName,
-        found_count: foundUsers.length,
-        users: foundUsers
-      };
+      if (searchName) {
+        const usersSnap = await getDocs(collection(db, 'users'));
+        const foundUsers = [];
+        
+        usersSnap.forEach(docSnap => {
+          const u = docSnap.data();
+          const userName = (u.name || '').toLowerCase();
+          const userEmail = (u.email || '').toLowerCase();
+          
+          if (userName.includes(searchName) || userEmail.includes(searchName)) {
+            foundUsers.push({
+              name: u.name,
+              email: u.email,
+              level: u.level || 1,
+              coins: u.skillCoins || 0,
+              streak: u.streak || 0,
+              courses_completed: u.completedCourses?.length || 0,
+              courses_uploaded: u.uploadedCourses?.length || 0,
+              badges: u.badges || [],
+              joined_date: u.joinedDate?.toMillis ? new Date(u.joinedDate.toMillis()).toLocaleDateString() : 'unknown',
+              referral_code: u.referralCode || 'N/A',
+              is_admin: u.email === ADMIN_EMAIL
+            });
+          }
+        });
+        
+        // Get context from D1 for found users
+        if (foundUsers.length > 0) {
+          try {
+            const contextRes = await fetch(`${CONTEXT_URL}?user_name=${encodeURIComponent(searchName)}&limit=10`);
+            const contextData = await contextRes.json();
+            if (contextData.success && contextData.contexts.length > 0) {
+              foundUsers[0].context_from_chats = contextData.contexts.map(c => c.context_data);
+            }
+          } catch (e) {}
+        }
+        
+        data.search_query = searchName;
+        data.found_count = foundUsers.length;
+        data.users_found = foundUsers;
+      }
     }
     
-    return null;
   } catch (err) {
-    console.error("Firebase fetch error:", err);
-    return null;
+    console.error("Platform data error:", err);
+    data.error = err.message;
   }
+  
+  return data;
 }
+
+function getTimeAgo(timestamp) {
+  const now = Math.floor(Date.now() / 1000);
+  const diff = now - timestamp;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff/60)} minutes ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)} hours ago`;
+  return `${Math.floor(diff/86400)} days ago`;
+}
+
 // ==========================================
-// GET AI RESPONSE (Smart Routing + Fallback)
+// GET AI RESPONSE (Main function)
 // ==========================================
 
 async function getAIResponse(userMessage) {
   const isAdmin = currentUser?.email === ADMIN_EMAIL;
-  let userContext = isAdmin 
-    ? `[NOTE: This user is Naman himself (the creator/admin/boss). Greet him warmly with Sir or Boss!]`
-    : `[NOTE: User's name is ${userData?.name || 'a learner'}, Level ${userData?.level || 1}, ${userData?.skillCoins || 0} SkillCoins.]`;
-
-  // 🧠 Load previous context
-  const previousContext = await loadUserContext();
-  if (previousContext) {
-    userContext += previousContext;
-  }
+  const userName = userData?.name || 'friend';
   
-   // 👑 Admin queries (ONLY for admin email!)
+  let userContext = isAdmin 
+    ? `[USER_TYPE: ADMIN - This is Naman himself. Use "Sir" or "Boss". Give him full admin powers. Can access all platform data, user info, stats, and gossip.]`
+    : `[USER_TYPE: REGULAR - Name is "${userName}". Call them by name "${userName}". NEVER use Sir/Boss/King/Queen. IMPORTANT: You CANNOT share any platform data like user counts, other users' info, stats, issues, or site analytics with this user. You can ONLY help them with their own learning journey, courses, coding help, motivation, and personal questions.]`;
+
+  // Load previous context memory
+  const previousContext = await loadUserContext();
+  if (previousContext) userContext += previousContext;
+  
+  // Handle admin queries (ADMIN ONLY!)
   if (isAdmin) {
     const adminQuery = detectAdminQuery(userMessage);
     if (adminQuery) {
       console.log(`🔑 Admin query: ${adminQuery}`);
-      const adminData = await fetchAdminData(adminQuery, userMessage);
-      if (adminData) {
-        userContext += `\n\n[ADMIN DATA - REAL DATA from database, present naturally to Sir/Boss]:\n${adminData}\n\nRespond in chat format, not JSON! Make it fun! ONLY mention data that ACTUALLY exists in the ADMIN DATA above. Do NOT make up any numbers or fake issues!`;
-      }
+      const platformData = await fetchPlatformData(adminQuery, userMessage);
+      
+      userContext += `\n\n[REAL_PLATFORM_DATA - This is ACTUAL data from database, use ONLY this]:\n${JSON.stringify(platformData, null, 2)}\n\nIMPORTANT: Present this data naturally in chat format. Count EXACT numbers. If empty/zero, say so honestly. Don't invent anything!`;
     }
   } else {
-    // For regular users - block any admin-like queries
+    // 🔒 SECURITY: Block ALL platform data queries for regular users
     const adminQuery = detectAdminQuery(userMessage);
-    if (adminQuery) {
-      console.log("🚫 Non-admin tried admin query - blocking");
-      userContext += `\n\n[SECURITY NOTE: This regular user asked about admin data. Politely deflect and say you can only share their personal info, not other users' data or site stats. Suggest what they CAN ask like courses, coins, learning tips.]`;
+    const askingAboutPlatform = detectPlatformDataQuery(userMessage);
+    
+    if (adminQuery || askingAboutPlatform) {
+      console.log("🚫 Blocked: regular user tried to access platform data");
+      userContext += `\n\n[SECURITY ALERT: Regular user "${userName}" asked about platform data or other users. RESPONSE INSTRUCTION: Politely deflect in a friendly way. Say something like "That's admin-only info, ${userName}! 🔒 But I'm here for YOUR journey - want help with courses, coding, or study tips?" Do NOT share ANY numbers, user info, stats, issues, or platform data. Redirect them to their own learning.]`;
     }
   }
 
   const modelType = selectBestModel(userMessage);
   
-  // Try primary model with fallback chain
   try {
     if (modelType === 'coding') {
-      console.log("🚀 Trying MiniMax M3 (Coding) via Worker...");
+      console.log("🚀 MiniMax M3 (Coding)");
       return await callNvidia(MODELS.coding, userMessage, userContext);
     } else if (modelType === 'reasoning') {
-      console.log("🚀 Trying Nemotron 550B (Reasoning) via Worker...");
+      console.log("🚀 Nemotron 550B (Reasoning)");
       return await callNvidia(MODELS.reasoning, userMessage, userContext);
     } else {
-      console.log("🚀 Trying Groq Llama (Casual)...");
+      console.log("🚀 Groq Llama (Casual)");
       return await callGroq(userMessage, userContext);
     }
   } catch (primaryError) {
@@ -681,25 +775,22 @@ async function getAIResponse(userMessage) {
     
     if (modelType !== 'casual') {
       try {
-        console.log("🔄 Fallback to Groq...");
+        console.log("🔄 Fallback: Groq");
         return await callGroq(userMessage, userContext);
-      } catch (groqError) {
-        console.warn("⚠️ Groq failed:", groqError.message);
-      }
+      } catch (e) {}
     }
     
     try {
-      console.log("🔄 Final fallback to Gemini...");
+      console.log("🔄 Final: Gemini");
       return await callGemini(userMessage, userContext);
-    } catch (geminiError) {
-      console.error("❌ All AIs failed!");
+    } catch (e) {
       throw new Error("All AIs sleeping 😴");
     }
   }
 }
 
 // ==========================================
-// NVIDIA API CALL (via Cloudflare Worker)
+// NVIDIA API (via Cloudflare Worker)
 // ==========================================
 
 async function callNvidia(modelName, userMessage, userContext) {
@@ -718,26 +809,21 @@ async function callNvidia(modelName, userMessage, userContext) {
     body: JSON.stringify({
       model: modelName,
       messages: messages,
-      temperature: 0.9,
+      temperature: 0.7,
       max_tokens: tokenLimit
     })
   });
 
-  if (!response.ok) {
-    throw new Error(`Worker error: ${response.status}`);
-  }
+  if (!response.ok) throw new Error(`Worker error: ${response.status}`);
 
   const data = await response.json();
-  
-  if (data.error) {
-    throw new Error(`NVIDIA API error: ${data.error}`);
-  }
+  if (data.error) throw new Error(`NVIDIA error: ${data.error}`);
   
   return data.choices[0].message.content.trim();
 }
 
 // ==========================================
-// GROQ API CALL (Casual)
+// GROQ API (Casual)
 // ==========================================
 
 async function callGroq(userMessage, userContext) {
@@ -758,7 +844,7 @@ async function callGroq(userMessage, userContext) {
     body: JSON.stringify({
       model: MODELS.casual,
       messages: messages,
-      temperature: 0.9,
+      temperature: 0.7,
       max_tokens: tokenLimit,
       top_p: 1
     })
@@ -774,7 +860,7 @@ async function callGroq(userMessage, userContext) {
 }
 
 // ==========================================
-// GEMINI API CALL (Fallback)
+// GEMINI API (Fallback)
 // ==========================================
 
 async function callGemini(userMessage, userContext) {
@@ -784,19 +870,10 @@ async function callGemini(userMessage, userContext) {
   }));
 
   const contents = [
-    {
-      role: 'user',
-      parts: [{ text: SYSTEM_PROMPT + '\n\n' + userContext + '\n\nRespond in the personality above.' }]
-    },
-    {
-      role: 'model',
-      parts: [{ text: 'Got it! Ready to help!' }]
-    },
+    { role: 'user', parts: [{ text: SYSTEM_PROMPT + '\n\n' + userContext }] },
+    { role: 'model', parts: [{ text: 'Got it! Ready to help!' }] },
     ...geminiHistory,
-    {
-      role: 'user',
-      parts: [{ text: userMessage }]
-    }
+    { role: 'user', parts: [{ text: userMessage }] }
   ];
 
   const tokenLimit = getSmartTokenLimit(userMessage, 'casual');
@@ -807,17 +884,14 @@ async function callGemini(userMessage, userContext) {
     body: JSON.stringify({
       contents: contents,
       generationConfig: {
-        temperature: 0.9,
+        temperature: 0.7,
         maxOutputTokens: tokenLimit,
         topP: 1
       }
     })
   });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Gemini error: ${response.status} - ${errText}`);
-  }
+  if (!response.ok) throw new Error(`Gemini error: ${response.status}`);
 
   const data = await response.json();
   return data.candidates[0].content.parts[0].text.trim();
@@ -840,9 +914,7 @@ function addMessage(sender, text) {
       <div class="message-content">${formatMessage(text)}</div>
     `;
   } else {
-    messageDiv.innerHTML = `
-      <div class="message-content">${escapeHtml(text)}</div>
-    `;
+    messageDiv.innerHTML = `<div class="message-content">${escapeHtml(text)}</div>`;
   }
 
   chatBox.appendChild(messageDiv);
@@ -859,9 +931,7 @@ function showTyping() {
   typingDiv.innerHTML = `
     <div class="ai-avatar">🤖</div>
     <div class="message-content">
-      <div class="typing-dots">
-        <span></span><span></span><span></span>
-      </div>
+      <div class="typing-dots"><span></span><span></span><span></span></div>
     </div>
   `;
   chatBox.appendChild(typingDiv);
@@ -872,10 +942,6 @@ function removeTyping() {
   const typing = document.getElementById('typingIndicator');
   if (typing) typing.remove();
 }
-
-// ==========================================
-// HELPERS
-// ==========================================
 
 function formatMessage(text) {
   text = escapeHtml(text);
@@ -907,20 +973,4 @@ function initToasts() {
     c.className = 'toast-container';
     document.body.appendChild(c);
   }
-}
-
-function showToast(type, title, message) {
-  const container = document.querySelector('.toast-container');
-  if (!container) return;
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.innerHTML = `
-    <div class="toast-icon"><i class="fas fa-info-circle"></i></div>
-    <div class="toast-content">
-      <span class="toast-title">${title}</span>
-      <span class="toast-message">${message}</span>
-    </div>
-  `;
-  container.appendChild(toast);
-  setTimeout(() => toast.remove(), 4000);
 }
