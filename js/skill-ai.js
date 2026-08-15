@@ -1295,19 +1295,9 @@ function getPollinationsUrl(imagePrompt) {
 }
 async function generateSceneBreakdown(book, chapter, userKeywords) {
   const prompt = `You are a visual scene director for CBSE Class 11 English literature (${book}: "${chapter}").
-The user wants to visualize this specific scene query: "${userKeywords}".
+Scene query: "${userKeywords}".
 
-Task:
-1. Locate this exact scene inside the chapter "${chapter}".
-2. Determine how many sequential visual frames are required (1 for static portraits, 2-4 for action sequences).
-3. Identify technical/literary terms in the scene and create explanatory hotspot pins for students.
-
-CRITICAL FORMATTING RULES:
-- Return ONLY valid raw JSON matching the schema below.
-- Do NOT use raw line breaks or newlines inside string values. Write all explanations on a single line.
-- Do NOT use unescaped double quotes inside text values.
-
-Exact JSON schema:
+Return ONLY a valid JSON object (no markdown formatting, no conversational text) with this exact structure:
 {
   "chapter_title": "${chapter}",
   "scene_requested": "${userKeywords}",
@@ -1316,14 +1306,14 @@ Exact JSON schema:
     {
       "frame_number": 1,
       "title": "Short title of frame",
-      "explanation": "Clear explanation for Class 11 students explaining the context and terms used.",
-      "image_prompt": "Highly detailed cinematic graphic novel scene depiction",
+      "explanation": "Clear explanation for Class 11 students without using double quotes inside.",
+      "image_prompt": "Cinematic visual depiction of the scene for art generation without quotes",
       "hotspots": [
         {
-          "term": "Starboard",
-          "explanation": "The right-hand side of a ship when facing forward.",
+          "term": "Key Term",
+          "explanation": "Short definition",
           "top": "40%",
-          "left": "60%"
+          "left": "50%"
         }
       ]
     }
@@ -1332,11 +1322,38 @@ Exact JSON schema:
 
   const responseText = await callGemini(prompt, "[ROLE: VISUAL DIRECTOR]");
   
-  // 1. Remove markdown syntax blocks
-  let cleaned = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
-  
-  // 2. Sanitize unescaped control characters and raw line breaks that break JSON parsing
-  cleaned = cleaned.replace(/[\r\n]+/g, ' ').replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+  let sceneData;
+  try {
+    // 1. Extract JSON object between first '{' and last '}'
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    let jsonString = jsonMatch ? jsonMatch[0] : responseText;
+    
+    // 2. Remove raw newlines inside JSON strings & invalid control characters
+    jsonString = jsonString
+      .replace(/[\r\n]+/g, ' ')
+      .replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
 
-  return JSON.parse(cleaned);
+    sceneData = JSON.parse(jsonString);
+  } catch (err) {
+    console.warn("⚠️ JSON parse warning, generating smart fallback scene:", err);
+    
+    // 🛡️ Bulletproof Fallback: Guarantees images will ALWAYS display!
+    const cleanQuery = userKeywords.replace(/[^a-zA-Z0-9 ]/g, '');
+    sceneData = {
+      chapter_title: chapter,
+      scene_requested: userKeywords,
+      total_frames: 1,
+      frames: [
+        {
+          frame_number: 1,
+          title: `${chapter} Scene`,
+          explanation: `Visual representation of ${userKeywords} from ${chapter}.`,
+          image_prompt: `CBSE English literature scene depiction of ${cleanQuery} in ${chapter}, cinematic graphic novel artwork, 8k resolution`,
+          hotspots: []
+        }
+      ]
+    };
+  }
+
+  return sceneData;
 }
