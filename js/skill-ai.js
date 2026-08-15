@@ -1162,9 +1162,10 @@ function renderVisualScene(sceneData) {
   let framesHTML = '';
 
   sceneData.frames.forEach((frame, idx) => {
-    const encodedPrompt = encodeURIComponent(`${frame.image_prompt}, cinematic shot, 8k detailed graphic novel art, CBSE literature visual style`);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&seed=${Math.floor(Math.random() * 99999)}&nologo=true`;
-
+// 🚀 Switch Pollinations engine to FLUX.1 for photorealistic/graphic-novel accuracy
+    const encodedPrompt = encodeURIComponent(`${frame.image_prompt}, detailed artwork, 8k resolution`);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&seed=${Math.floor(Math.random() * 99999)}&model=flux&nologo=true`;
+    
     let hotspotsHTML = '';
     if (frame.hotspots && frame.hotspots.length > 0) {
       frame.hotspots.forEach((spot, i) => {
