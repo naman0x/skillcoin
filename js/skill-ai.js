@@ -1294,17 +1294,20 @@ function getPollinationsUrl(imagePrompt) {
   return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&seed=${seed}&nologo=true`;
 }
 async function generateSceneBreakdown(book, chapter, userKeywords) {
-  const prompt = `You are an expert CBSE Class 11 English Literature Visual Director (${book}: "${chapter}").
+  const prompt = `You are a visual scene director for CBSE Class 11 English literature (${book}: "${chapter}").
+The user wants to visualize this specific scene query: "${userKeywords}".
 
-USER SCENE REQUEST: "${userKeywords}"
+Task:
+1. Locate this exact scene inside the chapter "${chapter}".
+2. Determine how many sequential visual frames are required (1 for static portraits, 2-4 for action sequences).
+3. Identify technical/literary terms in the scene and create explanatory hotspot pins for students.
 
-YOUR INSTRUCTIONS:
-1. Match the user's keywords or description to the exact section in the chapter "${chapter}".
-2. Analyze the context: What was the weather? What were the characters feeling or doing? What key events occurred?
-3. Determine how many sequential visual frames are needed (1 for character portraits, 2 to 4 for action/narrative sequences).
-4. Identify 1 to 3 specific technical, nautical, or literary terms present in this scene (e.g., "starboard", "storm jib", "shroud", "veranda", "hearth") and provide concise explanations for Class 11 students.
+CRITICAL FORMATTING RULES:
+- Return ONLY valid raw JSON matching the schema below.
+- Do NOT use raw line breaks or newlines inside string values. Write all explanations on a single line.
+- Do NOT use unescaped double quotes inside text values.
 
-CRITICAL: Return ONLY raw JSON without markdown or extra text using this exact structure:
+Exact JSON schema:
 {
   "chapter_title": "${chapter}",
   "scene_requested": "${userKeywords}",
@@ -1312,21 +1315,15 @@ CRITICAL: Return ONLY raw JSON without markdown or extra text using this exact s
   "frames": [
     {
       "frame_number": 1,
-      "title": "The Silent Tribute of Sparrows",
-      "explanation": "When the grandmother passed away, thousands of sparrows sat silently on the veranda without chirping, refusing the bread crumbs offered by the mother.",
-      "image_prompt": "Cinematic shot of an elderly Indian woman wrapped in a red shroud lying peacefully on a veranda floor, thousands of small sparrows sitting completely quiet around her in golden afternoon sunlight",
+      "title": "Short title of frame",
+      "explanation": "Clear explanation for Class 11 students explaining the context and terms used.",
+      "image_prompt": "Highly detailed cinematic graphic novel scene depiction",
       "hotspots": [
         {
-          "term": "Shroud",
-          "explanation": "A length of cloth in which a dead person is wrapped for burial.",
-          "top": "45%",
-          "left": "50%"
-        },
-        {
-          "term": "Veranda",
-          "explanation": "A roofed, open-air gallery or porch attached to the exterior of a building.",
-          "top": "30%",
-          "left": "70%"
+          "term": "Starboard",
+          "explanation": "The right-hand side of a ship when facing forward.",
+          "top": "40%",
+          "left": "60%"
         }
       ]
     }
@@ -1334,6 +1331,12 @@ CRITICAL: Return ONLY raw JSON without markdown or extra text using this exact s
 }`;
 
   const responseText = await callGemini(prompt, "[ROLE: VISUAL DIRECTOR]");
-  let cleaned = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+  
+  // 1. Remove markdown syntax blocks
+  let cleaned = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+  
+  // 2. Sanitize unescaped control characters and raw line breaks that break JSON parsing
+  cleaned = cleaned.replace(/[\r\n]+/g, ' ').replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+
   return JSON.parse(cleaned);
 }
