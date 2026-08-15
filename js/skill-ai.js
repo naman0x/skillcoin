@@ -33,7 +33,7 @@ const NVIDIA_WORKER_URL = WORKER_BASE + "/chat";
 const CONTEXT_URL = WORKER_BASE + "/context";
 const ISSUE_URL = WORKER_BASE + "/issue";
 const ADMIN_URL = WORKER_BASE + "/admin";
-const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent";
+const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent";
 
 const MODELS = {
   coding: "minimaxai/minimax-m3",
