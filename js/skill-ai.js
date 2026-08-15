@@ -1119,42 +1119,6 @@ function initVisualizerBar() {
   });
 }
 
-async function generateSceneBreakdown(book, chapter, userKeywords) {
-  const prompt = `You are a visual scene director for CBSE Class 11 English literature (${book}: ${chapter}).
-The user wants to visualize this specific scene/keyword query: "${userKeywords}".
-
-Task:
-1. Locate this exact scene inside the chapter "${chapter}".
-2. Determine how many sequential visual frames are required to accurately show this specific event (1 frame for static portraits, 2-4 frames for action sequences).
-3. Identify technical/literary terms in the scene (like "starboard", "storm jib", "hull", "stern") and create explanatory hotspot pins for students.
-
-CRITICAL: Return ONLY valid raw JSON without markdown formatting, matching this exact schema:
-{
-  "chapter_title": "${chapter}",
-  "scene_requested": "${userKeywords}",
-  "total_frames": 2,
-  "frames": [
-    {
-      "frame_number": 1,
-      "title": "Short title of frame",
-      "explanation": "Clear explanation for Class 11 students explaining the context and terms used.",
-      "image_prompt": "Highly detailed cinematic graphic novel scene depiction",
-      "hotspots": [
-        {
-          "term": "Starboard",
-          "explanation": "The right-hand side of a ship when facing forward.",
-          "top": "40%",
-          "left": "60%"
-        }
-      ]
-    }
-  ]
-}`;
-
-  const responseText = await callGemini(prompt, "[ROLE: VISUAL DIRECTOR]");
-  let cleaned = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-  return JSON.parse(cleaned);
-}
 
 // ==========================================
 // 🎨 RENDER STORYBOARD, AUDIO & DOWNLOADS
