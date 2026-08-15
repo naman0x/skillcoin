@@ -63,6 +63,42 @@
 
     <div class="ai-container">
 
+
+      <div class="visualizer-bar" id="visualizerBar">
+        <div class="vis-header">
+          <i class="fas fa-clapperboard"></i>
+          <span>Class 11 CBSE Visualizer</span>
+        </div>
+        <div class="vis-selects">
+          <select id="visBookSelect" class="vis-dropdown">
+            <option value="hornbill" selected>Hornbill</option>
+            <option value="snapshots">Snapshots</option>
+          </select>
+
+          <select id="visChapterSelect" class="vis-dropdown">
+            <option value="ch_1">The Portrait of a Lady</option>
+            <option value="ch_2" selected>We're Not Afraid to Die... if We Can All Be Together</option>
+            <option value="ch_3">Discovering Tut: the Saga Continues</option>
+            <option value="ch_4">The Ailing Planet: the Green Movement's Role</option>
+            <option value="ch_5">The Adventure</option>
+            <option value="ch_6">Silk Road</option>
+          </select>
+
+
+          <input 
+            type="text" 
+            id="visSceneInput" 
+            class="vis-input" 
+            placeholder="Describe the scene (e.g., grandma and sparrows)..."
+          />
+
+
+          <button id="visStartBtn" class="btn btn-primary btn-sm">
+            <i class="fas fa-wand-magic-sparkles"></i> Visualize Scene
+          </button>
+        </div>
+      </div>
+
       <!-- Chat Window -->
       <div class="chat-box" id="chatBox">
         <div class="ai-message">

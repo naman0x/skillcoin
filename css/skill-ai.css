@@ -141,3 +141,214 @@ code {
   font-family: 'Courier New', monospace;
   font-size: 0.85em;
 }
+/* ==========================================
+   LITERATURE VISUALIZER & ANIMATED STORYBOARD
+   ========================================== */
+
+.visualizer-bar {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.vis-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--gold);
+  font-size: 0.95rem;
+}
+
+.vis-selects {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.vis-dropdown {
+  background: var(--bg-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+/* Dynamic Storyboard Cards */
+.storyboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.storyboard-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Motion Pan & Zoom Container */
+.img-viewport {
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+
+.animated-scene-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: kenburns 12s infinite alternate ease-in-out;
+}
+
+@keyframes kenburns {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.08) translate(-2%, -1%); }
+  100% { transform: scale(1.04) translate(2%, 1%); }
+}
+
+/* Image Download Overlay Button */
+.img-download-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(15, 15, 26, 0.85);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.img-download-btn:hover {
+  background: var(--primary);
+  transform: translateY(-2px);
+}
+
+/* Interactive Hotspot Pins */
+.hotspot-pin {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background: var(--gold);
+  color: #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+  animation: pulse-pin 2s infinite;
+  z-index: 5;
+}
+
+@keyframes pulse-pin {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}
+
+.storyboard-body {
+  padding: 16px 20px;
+}
+
+.storyboard-body h4 {
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.storyboard-body p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.storyboard-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.audio-play-btn {
+  background: rgba(108, 99, 255, 0.15);
+  color: var(--primary-light);
+  border: 1px solid var(--primary);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.audio-play-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+/* Visualizer Scene Keyword Input */
+.vis-input {
+  background: var(--bg-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  min-width: 260px;
+  flex: 1;
+  transition: border-color 0.2s ease;
+}
+
+.vis-input:focus {
+  border-color: var(--primary);
+}
+/* Visualizer Scene Keyword Input */
+.vis-input {
+  background: var(--bg-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  min-width: 260px;
+  flex: 1;
+  transition: border-color 0.2s ease;
+}
+
+.vis-input:focus {
+  border-color: var(--primary);
+}

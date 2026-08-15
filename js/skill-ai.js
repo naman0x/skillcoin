@@ -5,6 +5,7 @@
 // - Cloudflare D1 Memory
 // - Firebase Live Data
 // - Admin Insights + Gossip Mode 🕵️
+// - CBSE Class 11 Scene Visualizer 🎬
 // ==========================================
 
 import {
@@ -278,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initToasts();
   initChat();
   initSuggestions();
+  initVisualizerBar();
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -297,10 +299,9 @@ async function loadUserData() {
     if (userSnap.exists()) userData = userSnap.data();
     console.log("✅ User data loaded");
   } catch (err) {
-    console.error(err);
+    console.error("User data load error:", err);
   }
 }
-
 // ==========================================
 // CHAT INIT
 // ==========================================
@@ -456,22 +457,14 @@ function extractContext(userMessage) {
   const msg = userMessage.trim();
   const msgLower = msg.toLowerCase();
   
-  // Pattern-based extraction (structured info)
   const patterns = [
-    // Learning interests
     { regex: /(?:want to|wanna|going to|trying to|starting to) learn (\w+(?:\s\w+){0,3})/i, type: 'interest' },
     { regex: /(?:studying|learning|preparing for) (\w+(?:\s\w+){0,3})/i, type: 'interest' },
     { regex: /(?:i love|i enjoy|i like) (\w+(?:\s\w+){0,3})/i, type: 'interest' },
-    
-    // Career goals
     { regex: /i (?:want to be|wanna be|plan to be|dream of being) (?:a |an )?(\w+(?:\s\w+){0,3})/i, type: 'career_goal' },
     { regex: /(?:my dream|my goal) (?:is to|is) (\w+(?:\s\w+){0,5})/i, type: 'career_goal' },
-    
-    // Personal relationships
     { regex: /(?:my|our) (?:crush|girlfriend|boyfriend|gf|bf) (?:is|named|called) (\w+)/i, type: 'personal_relationship' },
     { regex: /i (?:like|have crush on|love) (\w+)/i, type: 'personal_relationship' },
-    
-    // School/Education
     { regex: /(?:my|our) (?:teacher|school|class|subject) (?:is|for) (\w+(?:\s\w+){0,3})/i, type: 'school' },
     { regex: /i (?:study in|go to) (\w+(?:\s\w+){0,3})/i, type: 'school' },
     { regex: /i(?:'m| am) in (?:class )?(\d+(?:th|st|nd|rd)?)/i, type: 'school' }
@@ -487,7 +480,6 @@ function extractContext(userMessage) {
     }
   });
   
-  // 🔥 IMPORTANT: Capture ANY mention of Naman/admin (very sensitive)
   if (msgLower.includes('naman')) {
     contexts.push({
       type: 'about_admin',
@@ -495,7 +487,6 @@ function extractContext(userMessage) {
     });
   }
   
-  // 🔥 Capture emotional/personal statements
   const personalKeywords = [
     'i feel', 'i think', 'my parents', 'my family', 'my friend',
     'my sister', 'my brother', 'my mom', 'my dad',
@@ -510,7 +501,6 @@ function extractContext(userMessage) {
     });
   }
   
-  // 🔥 Capture gossip/opinion about admin
   const gossipTriggers = ['girlfriend', 'crush', 'dating', 'ex', 'love life', 'secret'];
   if (gossipTriggers.some(kw => msgLower.includes(kw)) && msgLower.includes('naman')) {
     contexts.push({
@@ -519,7 +509,6 @@ function extractContext(userMessage) {
     });
   }
   
-  // 🔥 Capture questions user asks (shows their curiosity)
   if (msg.includes('?') && msg.length > 15 && msg.length < 300) {
     contexts.push({
       type: 'question_asked',
@@ -527,7 +516,6 @@ function extractContext(userMessage) {
     });
   }
   
-  // Deduplicate
   const seen = new Set();
   return contexts.filter(c => {
     const key = c.type + '|' + c.data;
@@ -611,41 +599,35 @@ async function reportIssue(userMessage) {
     console.error("Issue report error:", err);
   }
 }
-
 // ==========================================
-// ADMIN QUERY DETECTION (Strict!)
+// ADMIN QUERY DETECTION
 // ==========================================
 
 function detectAdminQuery(userMessage) {
   const msg = userMessage.toLowerCase().trim();
   
-  // List all users (names)
   if (msg.match(/(?:list|show|give me|tell me|names of|who are) (?:the |all |real )?(?:users?|members|people)/i) ||
       msg.match(/(?:names|list) of (?:the |all )?users/i) ||
       msg.match(/all users/i)) {
     return 'list_users';
   }
   
-  // Issues detection
   if (msg.match(/(?:any |what |show |list |tell me )?(?:issues?|problems?|bugs?|reports?|complaints?)(?:\s+(?:today|now|reported|open))?/i)) {
     return 'issues';
   }
   
-  // Stats detection
   if (msg.match(/(?:how many|total|number of|count) (?:users?|people|coins|courses)/i) ||
       msg.match(/(?:site|platform|user|our) (?:stats|statistics|numbers|data|analytics)/i) ||
       msg.match(/(?:active|new) users/i)) {
     return 'stats';
   }
   
-  // User search
   if (msg.match(/tell me about (?:user )?(\w+)/i) ||
       msg.match(/(?:info|details|data) (?:about|on|for) (?:user )?(\w+)/i) ||
       msg.match(/(?:who is) (\w+)/i)) {
     return 'user_search';
   }
   
-  // Gossip mode
   if (msg.match(/(?:gossip|insights|scoop|dirt|tea)/i) ||
       msg.match(/what.*users.*(?:saying|doing|up to)/i) ||
       msg.match(/(?:top|best) users/i) ||
@@ -656,49 +638,31 @@ function detectAdminQuery(userMessage) {
   return null;
 }
 
-
 // ==========================================
-// 🔒 DETECT PLATFORM DATA QUERIES (block for non-admin)
+// 🔒 DETECT PLATFORM DATA QUERIES
 // ==========================================
 
 function detectPlatformDataQuery(userMessage) {
   const msg = userMessage.toLowerCase().trim();
-  
-  // Any query about other users, platform stats, or admin data
   const platformKeywords = [
-    // Other users
     'other users', 'all users', 'who else', 'anyone else',
     'other people', 'users on site', 'members', 'community',
-    
-    // Platform statistics
     'total users', 'how many users', 'user count', 'number of',
     'total coins', 'total courses', 'platform stats', 'site stats',
     'website stats', 'app stats', 'analytics',
-    
-    // Rankings and comparisons
     'top users', 'best users', 'richest user', 'highest level',
     'leaderboard data', 'rankings',
-    
-    // Admin/site info
     'site data', 'platform data', 'website data', 'app data',
     'admin panel', 'dashboard data', 'server stats',
-    
-    // Issues (site-wide)
     'reported issues', 'site issues', 'bugs reported', 'user complaints',
     'anyone reporting', 'other users reporting',
-    
-    // Specific user queries
     'tell me about naman', 'about the admin', 'about the creator',
     'other user', 'that user', 'this user',
-    
-    // Gossip attempts
     'gossip', 'insights about', 'what are people', 'what do users',
     'user activity', 'user behavior', 'popular users'
   ];
-  
   return platformKeywords.some(kw => msg.includes(kw));
 }
-
 
 // ==========================================
 // FETCH REAL PLATFORM DATA (D1 + Firebase!)
@@ -708,7 +672,6 @@ async function fetchPlatformData(queryType, userMessage) {
   const data = {};
   
   try {
-    // Get D1 data (issues)
     if (queryType === 'issues') {
       const response = await fetch(`${ADMIN_URL}?admin_email=${currentUser.email}&action=issues&status=open`);
       const d1Data = await response.json();
@@ -726,7 +689,6 @@ async function fetchPlatformData(queryType, userMessage) {
       }
     }
     
-    // Get Firebase data (users - full details)
     if (queryType === 'stats' || queryType === 'gossip' || queryType === 'list_users') {
       const usersSnap = await getDocs(collection(db, 'users'));
       const coursesSnap = await getDocs(collection(db, 'courses'));
@@ -762,11 +724,9 @@ async function fetchPlatformData(queryType, userMessage) {
         });
       });
       
-      // Sort by coins
       users.sort((a, b) => b.coins - a.coins);
       
       if (queryType === 'list_users') {
-        // Return ALL user names with basic info
         data.total_users = users.length;
         data.all_users = users.map((u, i) => ({
           rank: i + 1,
@@ -779,7 +739,6 @@ async function fetchPlatformData(queryType, userMessage) {
       }
       
       if (queryType === 'stats') {
-        // Include names in stats too!
         data.stats = {
           total_users_registered: usersSnap.size,
           total_courses_on_platform: coursesSnap.size,
@@ -788,7 +747,6 @@ async function fetchPlatformData(queryType, userMessage) {
           total_courses_completed_by_all: totalCoursesCompleted,
           total_courses_uploaded_by_all: totalCoursesUploaded
         };
-        // Add user list for reference
         data.all_user_names = users.map(u => ({
           name: u.name,
           level: u.level,
@@ -807,7 +765,6 @@ async function fetchPlatformData(queryType, userMessage) {
       }
     }
     
-    // User search (Firebase + D1 context)
     if (queryType === 'user_search') {
       let searchName = '';
       const patterns = [
@@ -834,7 +791,6 @@ async function fetchPlatformData(queryType, userMessage) {
           const userEmail = (u.email || '').toLowerCase();
           
           if (userName.includes(searchName) || userEmail.includes(searchName)) {
-            // Calculate REAL days since joining
             let daysSinceJoined = 'unknown';
             let joinedDate = 'unknown';
             if (u.joinedDate?.toMillis) {
@@ -861,12 +817,11 @@ async function fetchPlatformData(queryType, userMessage) {
               joined_ago: daysSinceJoined,
               referral_code: u.referralCode || 'N/A',
               is_admin: u.email === ADMIN_EMAIL,
-              chat_context: [] // Will fill below
+              chat_context: []
             });
           }
         });
         
-        // 🔥 IMPORTANT: Get context by USER_ID (not name)
         if (foundUsers.length > 0) {
           for (let user of foundUsers) {
             try {
@@ -922,7 +877,7 @@ function getTimeAgo(timestamp) {
 }
 
 // ==========================================
-// GET AI RESPONSE (Main function)
+// GET AI RESPONSE (Main Function)
 // ==========================================
 
 async function getAIResponse(userMessage) {
@@ -933,21 +888,17 @@ async function getAIResponse(userMessage) {
     ? `[USER_TYPE: ADMIN - This is Naman himself. Use "Sir" or "Boss". Give him full admin powers. Can access all platform data, user info, stats, and gossip.]`
     : `[USER_TYPE: REGULAR - Name is "${userName}". Call them by name "${userName}". NEVER use Sir/Boss/King/Queen. IMPORTANT: You CANNOT share any platform data like user counts, other users' info, stats, issues, or site analytics with this user. You can ONLY help them with their own learning journey, courses, coding help, motivation, and personal questions.]`;
 
-  // Load previous context memory
   const previousContext = await loadUserContext();
   if (previousContext) userContext += previousContext;
   
-  // Handle admin queries (ADMIN ONLY!)
   if (isAdmin) {
     const adminQuery = detectAdminQuery(userMessage);
     if (adminQuery) {
       console.log(`🔑 Admin query: ${adminQuery}`);
       const platformData = await fetchPlatformData(adminQuery, userMessage);
-      
       userContext += `\n\n[REAL_PLATFORM_DATA - This is ACTUAL data from database, use ONLY this]:\n${JSON.stringify(platformData, null, 2)}\n\nIMPORTANT: Present this data naturally in chat format. Count EXACT numbers. If empty/zero, say so honestly. Don't invent anything!`;
     }
   } else {
-    // 🔒 SECURITY: Block ALL platform data queries for regular users
     const adminQuery = detectAdminQuery(userMessage);
     const askingAboutPlatform = detectPlatformDataQuery(userMessage);
     
@@ -989,10 +940,6 @@ async function getAIResponse(userMessage) {
   }
 }
 
-// ==========================================
-// NVIDIA API (via Cloudflare Worker)
-// ==========================================
-
 async function callNvidia(modelName, userMessage, userContext) {
   const messages = [
     { role: 'system', content: SYSTEM_PROMPT + '\n\n' + userContext },
@@ -1021,10 +968,6 @@ async function callNvidia(modelName, userMessage, userContext) {
   
   return data.choices[0].message.content.trim();
 }
-
-// ==========================================
-// GROQ API (Casual)
-// ==========================================
 
 async function callGroq(userMessage, userContext) {
   const messages = [
@@ -1059,10 +1002,6 @@ async function callGroq(userMessage, userContext) {
   return data.choices[0].message.content.trim();
 }
 
-// ==========================================
-// GEMINI API (Fallback)
-// ==========================================
-
 async function callGemini(userMessage, userContext) {
   const geminiHistory = chatHistory.slice(-10).map(msg => ({
     role: msg.role === 'assistant' ? 'model' : 'user',
@@ -1096,9 +1035,215 @@ async function callGemini(userMessage, userContext) {
   const data = await response.json();
   return data.candidates[0].content.parts[0].text.trim();
 }
+// ==========================================
+// 📚 CBSE CHAPTER MAP (Hornbill & Snapshots)
+// ==========================================
+
+const CBSE_CHAPTERS = {
+  hornbill: [
+    "The Portrait of a Lady",
+    "We're Not Afraid to Die... if We Can All Be Together",
+    "Discovering Tut: the Saga Continues",
+    "The Ailing Planet: the Green Movement's Role",
+    "The Adventure",
+    "Silk Road"
+  ],
+  snapshots: [
+    "The Summer of the Beautiful White Horse",
+    "The Address",
+    "Ranga's Marriage",
+    "Albert Einstein at School",
+    "Mother's Day",
+    "The Ghat of the Only World",
+    "Birth",
+    "The Tale of Melon City"
+  ]
+};
 
 // ==========================================
-// UI FUNCTIONS
+// 🎬 CBSE SCENE VISUALIZER LOGIC
+// ==========================================
+
+function initVisualizerBar() {
+  const bookSelect = document.getElementById('visBookSelect');
+  const chapterSelect = document.getElementById('visChapterSelect');
+  const startBtn = document.getElementById('visStartBtn');
+  const sceneInput = document.getElementById('visSceneInput');
+
+  if (!bookSelect || !chapterSelect || !startBtn) return;
+
+  function updateChapterDropdown() {
+    const selectedBook = bookSelect.value;
+    const chapters = CBSE_CHAPTERS[selectedBook] || [];
+    
+    chapterSelect.innerHTML = '';
+    chapters.forEach((ch, idx) => {
+      const opt = document.createElement('option');
+      opt.value = `ch_${idx + 1}`;
+      opt.textContent = ch;
+      chapterSelect.appendChild(opt);
+    });
+  }
+
+  updateChapterDropdown();
+  bookSelect.addEventListener('change', updateChapterDropdown);
+
+  startBtn.addEventListener('click', async () => {
+    const book = bookSelect.options[bookSelect.selectedIndex].text;
+    const chapter = chapterSelect.options[chapterSelect.selectedIndex].text;
+    const userPrompt = sceneInput ? sceneInput.value.trim() : '';
+
+    if (!userPrompt) {
+      addMessage('ai', `Arre! Please specify which scene or keywords you want to visualize from **${chapter}** in the box (e.g., *"preparing for bad weather"*, *"dropping storm jib"*, or *"wave smashing boat"*).`);
+      if (sceneInput) sceneInput.focus();
+      return;
+    }
+
+    addMessage('user', `🎬 [Visualizing Scene] ${book}: "${chapter}"\n📌 Scene Query: "${userPrompt}"`);
+    showTyping();
+    isTyping = true;
+
+    try {
+      const sceneData = await generateSceneBreakdown(book, chapter, userPrompt);
+      removeTyping();
+      renderVisualScene(sceneData);
+      
+      if (sceneInput) sceneInput.value = '';
+    } catch (err) {
+      removeTyping();
+      console.error("Visualizer Error:", err);
+      addMessage('ai', "Arrre, failed to render visual scene 😅 If this keeps happening, please tell Naman Sir on Insta @naman.0x_ or Email techgamers273@gmail.com!");
+    }
+
+    isTyping = false;
+  });
+}
+
+async function generateSceneBreakdown(book, chapter, userKeywords) {
+  const prompt = `You are a visual scene director for CBSE Class 11 English literature (${book}: ${chapter}).
+The user wants to visualize this specific scene/keyword query: "${userKeywords}".
+
+Task:
+1. Locate this exact scene inside the chapter "${chapter}".
+2. Determine how many sequential visual frames are required to accurately show this specific event (1 frame for static portraits, 2-4 frames for action sequences).
+3. Identify technical/literary terms in the scene (like "starboard", "storm jib", "hull", "stern") and create explanatory hotspot pins for students.
+
+CRITICAL: Return ONLY valid raw JSON without markdown formatting, matching this exact schema:
+{
+  "chapter_title": "${chapter}",
+  "scene_requested": "${userKeywords}",
+  "total_frames": 2,
+  "frames": [
+    {
+      "frame_number": 1,
+      "title": "Short title of frame",
+      "explanation": "Clear explanation for Class 11 students explaining the context and terms used.",
+      "image_prompt": "Highly detailed cinematic graphic novel scene depiction",
+      "hotspots": [
+        {
+          "term": "Starboard",
+          "explanation": "The right-hand side of a ship when facing forward.",
+          "top": "40%",
+          "left": "60%"
+        }
+      ]
+    }
+  ]
+}`;
+
+  const responseText = await callGemini(prompt, "[ROLE: VISUAL DIRECTOR]");
+  let cleaned = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+  return JSON.parse(cleaned);
+}
+
+// ==========================================
+// 🎨 RENDER STORYBOARD, AUDIO & DOWNLOADS
+// ==========================================
+
+async function downloadSceneImage(imageUrl, fileName = 'skillcoin-scene.jpg') {
+  try {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  } catch (err) {
+    window.open(imageUrl, '_blank');
+  }
+}
+window.downloadSceneImage = downloadSceneImage;
+
+function speakNarration(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.95;
+  window.speechSynthesis.speak(utterance);
+}
+window.speakNarration = speakNarration;
+
+function renderVisualScene(sceneData) {
+  const chatBox = document.getElementById('chatBox');
+  if (!chatBox) return;
+
+  const wrapperDiv = document.createElement('div');
+  wrapperDiv.className = 'ai-message';
+
+  let framesHTML = '';
+
+  sceneData.frames.forEach((frame, idx) => {
+    const encodedPrompt = encodeURIComponent(`${frame.image_prompt}, cinematic shot, 8k detailed graphic novel art, CBSE literature visual style`);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&seed=${Math.floor(Math.random() * 99999)}&nologo=true`;
+
+    let hotspotsHTML = '';
+    if (frame.hotspots && frame.hotspots.length > 0) {
+      frame.hotspots.forEach((spot, i) => {
+        hotspotsHTML += `<div class="hotspot-pin" style="top:${spot.top || '50%'}; left:${spot.left || '50%'};" title="${spot.term}: ${spot.explanation}">${i + 1}</div>`;
+      });
+    }
+
+    framesHTML += `
+      <div class="storyboard-card">
+        <div class="img-viewport">
+          <button class="img-download-btn" onclick="downloadSceneImage('${imageUrl}', 'skillcoin-frame-${idx + 1}.jpg')">
+            <i class="fas fa-download"></i> Save Image
+          </button>
+          <img src="${imageUrl}" alt="${frame.title}" class="animated-scene-img" loading="lazy" />
+          ${hotspotsHTML}
+        </div>
+        <div class="storyboard-body">
+          <h4>Frame ${idx + 1}: ${frame.title}</h4>
+          <p>${frame.explanation}</p>
+          <div class="storyboard-controls">
+            <button class="audio-play-btn" onclick="speakNarration('${frame.explanation.replace(/'/g, "\\'")}')">
+              <i class="fas fa-volume-high"></i> Listen Narration
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  wrapperDiv.innerHTML = `
+    <div class="ai-avatar">🤖</div>
+    <div class="message-content">
+      <h3>🎬 Visual Scene Breakdown: ${sceneData.chapter_title}</h3>
+      <div class="storyboard-wrapper">${framesHTML}</div>
+    </div>
+  `;
+
+  chatBox.appendChild(wrapperDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// ==========================================
+// UI FORMATTING & LOADER FUNCTIONS
 // ==========================================
 
 function addMessage(sender, text) {
@@ -1173,4 +1318,58 @@ function initToasts() {
     c.className = 'toast-container';
     document.body.appendChild(c);
   }
+}
+function getPollinationsUrl(imagePrompt) {
+  // Enhancing prompt for high-res literature graphic novel style
+  const enhancedPrompt = `${imagePrompt}, cinematic lighting, detailed graphic novel art style, 8k resolution, educational literature visual, highly detailed`;
+  const encodedPrompt = encodeURIComponent(enhancedPrompt);
+  
+  // Random seed prevents image caching when re-generating
+  const seed = Math.floor(Math.random() * 1000000);
+  
+  return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&seed=${seed}&nologo=true`;
+}
+async function generateSceneBreakdown(book, chapter, userKeywords) {
+  const prompt = `You are an expert CBSE Class 11 English Literature Visual Director (${book}: "${chapter}").
+
+USER SCENE REQUEST: "${userKeywords}"
+
+YOUR INSTRUCTIONS:
+1. Match the user's keywords or description to the exact section in the chapter "${chapter}".
+2. Analyze the context: What was the weather? What were the characters feeling or doing? What key events occurred?
+3. Determine how many sequential visual frames are needed (1 for character portraits, 2 to 4 for action/narrative sequences).
+4. Identify 1 to 3 specific technical, nautical, or literary terms present in this scene (e.g., "starboard", "storm jib", "shroud", "veranda", "hearth") and provide concise explanations for Class 11 students.
+
+CRITICAL: Return ONLY raw JSON without markdown or extra text using this exact structure:
+{
+  "chapter_title": "${chapter}",
+  "scene_requested": "${userKeywords}",
+  "total_frames": 2,
+  "frames": [
+    {
+      "frame_number": 1,
+      "title": "The Silent Tribute of Sparrows",
+      "explanation": "When the grandmother passed away, thousands of sparrows sat silently on the veranda without chirping, refusing the bread crumbs offered by the mother.",
+      "image_prompt": "Cinematic shot of an elderly Indian woman wrapped in a red shroud lying peacefully on a veranda floor, thousands of small sparrows sitting completely quiet around her in golden afternoon sunlight",
+      "hotspots": [
+        {
+          "term": "Shroud",
+          "explanation": "A length of cloth in which a dead person is wrapped for burial.",
+          "top": "45%",
+          "left": "50%"
+        },
+        {
+          "term": "Veranda",
+          "explanation": "A roofed, open-air gallery or porch attached to the exterior of a building.",
+          "top": "30%",
+          "left": "70%"
+        }
+      ]
+    }
+  ]
+}`;
+
+  const responseText = await callGemini(prompt, "[ROLE: VISUAL DIRECTOR]");
+  let cleaned = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+  return JSON.parse(cleaned);
 }
