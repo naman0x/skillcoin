@@ -1152,38 +1152,48 @@ function speakNarration(text) {
 }
 window.speakNarration = speakNarration;
 
+
 // ==========================================
-// 🎨 GOOGLE IMAGEN 3 ENGINE & RENDERER
+// 🎨 GOOGLE GEMINI NATIVE IMAGE ENGINE
 // ==========================================
 
-async function fetchGoogleImagen(promptText) {
+async function fetchGeminiNativeImage(promptText) {
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          instances: [{ prompt: promptText }],
-          parameters: {
-            sampleCount: 1,
-            aspectRatio: "16:9",
-            outputMimeType: "image/jpeg"
-          }
+          contents: [
+            {
+              parts: [
+                { text: `Generate a detailed visual illustration: ${promptText}` }
+              ]
+            }
+          ]
         })
       }
     );
 
-    if (!response.ok) throw new Error(`Google Imagen HTTP ${response.status}`);
+    if (!response.ok) throw new Error(`Gemini Image HTTP ${response.status}`);
 
     const data = await response.json();
-    if (data.predictions && data.predictions[0]?.bytesBase64Encoded) {
-      return `data:image/jpeg;base64,${data.predictions[0].bytesBase64Encoded}`;
+    const parts = data.candidates?.[0]?.content?.parts || [];
+
+    // Search response parts for returned base64 image payload
+    for (const part of parts) {
+      const inline = part.inlineData || part.inline_data;
+      if (inline && inline.data) {
+        const mime = inline.mimeType || inline.mime_type || 'image/png';
+        return `data:${mime};base64,${inline.data}`;
+      }
     }
-    throw new Error("No image payload returned from Imagen 3");
+
+    throw new Error("No image payload returned from Gemini");
   } catch (err) {
-    console.error("Google Imagen error, using fallback URL:", err);
-    return `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1280&height=720&nologo=true`;
+    console.error("Gemini Native Image error, using fallback URL:", err);
+    return `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1280&height=720&model=flux&nologo=true`;
   }
 }
 
@@ -1198,7 +1208,9 @@ async function renderVisualScene(sceneData) {
 
   for (let idx = 0; idx < sceneData.frames.length; idx++) {
     const frame = sceneData.frames[idx];
-    const imageUrl = await fetchGoogleImagen(frame.image_prompt);
+    
+    // Fetch base64 image directly from Gemini's native visual engine
+    const imageUrl = await fetchGeminiNativeImage(frame.image_prompt);
 
     let hotspotsHTML = '';
     if (frame.hotspots && frame.hotspots.length > 0) {
@@ -1210,7 +1222,7 @@ async function renderVisualScene(sceneData) {
     framesHTML += `
       <div class="storyboard-card">
         <div class="img-viewport">
-          <button class="img-download-btn" onclick="downloadSceneImage('${imageUrl}', 'skillcoin-frame-${idx + 1}.jpg')">
+          <button class="img-download-btn" onclick="downloadSceneImage('${imageUrl}', 'skillcoin-frame-${idx + 1}.png')">
             <i class="fas fa-download"></i> Save Image
           </button>
           <img src="${imageUrl}" alt="${frame.title}" class="animated-scene-img" loading="lazy" />
