@@ -1152,7 +1152,10 @@ function speakNarration(text) {
 }
 window.speakNarration = speakNarration;
 
-// 🎨 Google Imagen 3 Native Fetcher (Uses your existing Gemini API Key)
+// ==========================================
+// 🎨 GOOGLE IMAGEN 3 ENGINE & RENDERER
+// ==========================================
+
 async function fetchGoogleImagen(promptText) {
   try {
     const response = await fetch(
@@ -1179,7 +1182,7 @@ async function fetchGoogleImagen(promptText) {
     }
     throw new Error("No image payload returned from Imagen 3");
   } catch (err) {
-    console.error("Google Imagen error, falling back:", err);
+    console.error("Google Imagen error, using fallback URL:", err);
     return `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1280&height=720&nologo=true`;
   }
 }
@@ -1195,8 +1198,6 @@ async function renderVisualScene(sceneData) {
 
   for (let idx = 0; idx < sceneData.frames.length; idx++) {
     const frame = sceneData.frames[idx];
-    
-    // Fetch high-fidelity base64 image from Google Imagen 3
     const imageUrl = await fetchGoogleImagen(frame.image_prompt);
 
     let hotspotsHTML = '';
@@ -1239,7 +1240,6 @@ async function renderVisualScene(sceneData) {
   chatBox.appendChild(wrapperDiv);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
-
 
 // ==========================================
 // UI FORMATTING & LOADER FUNCTIONS
