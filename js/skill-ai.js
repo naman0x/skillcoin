@@ -1152,7 +1152,39 @@ function speakNarration(text) {
 }
 window.speakNarration = speakNarration;
 
-function renderVisualScene(sceneData) {
+// 🎨 Google Imagen 3 Native Fetcher (Uses your existing Gemini API Key)
+async function fetchGoogleImagen(promptText) {
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          instances: [{ prompt: promptText }],
+          parameters: {
+            sampleCount: 1,
+            aspectRatio: "16:9",
+            outputMimeType: "image/jpeg"
+          }
+        })
+      }
+    );
+
+    if (!response.ok) throw new Error(`Google Imagen HTTP ${response.status}`);
+
+    const data = await response.json();
+    if (data.predictions && data.predictions[0]?.bytesBase64Encoded) {
+      return `data:image/jpeg;base64,${data.predictions[0].bytesBase64Encoded}`;
+    }
+    throw new Error("No image payload returned from Imagen 3");
+  } catch (err) {
+    console.error("Google Imagen error, falling back:", err);
+    return `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1280&height=720&nologo=true`;
+  }
+}
+
+async function renderVisualScene(sceneData) {
   const chatBox = document.getElementById('chatBox');
   if (!chatBox) return;
 
@@ -1161,11 +1193,12 @@ function renderVisualScene(sceneData) {
 
   let framesHTML = '';
 
-  sceneData.frames.forEach((frame, idx) => {
-// 🚀 Switch Pollinations engine to FLUX.1 for photorealistic/graphic-novel accuracy
-    const encodedPrompt = encodeURIComponent(`${frame.image_prompt}, detailed artwork, 8k resolution`);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&seed=${Math.floor(Math.random() * 99999)}&model=flux&nologo=true`;
+  for (let idx = 0; idx < sceneData.frames.length; idx++) {
+    const frame = sceneData.frames[idx];
     
+    // Fetch high-fidelity base64 image from Google Imagen 3
+    const imageUrl = await fetchGoogleImagen(frame.image_prompt);
+
     let hotspotsHTML = '';
     if (frame.hotspots && frame.hotspots.length > 0) {
       frame.hotspots.forEach((spot, i) => {
@@ -1193,7 +1226,7 @@ function renderVisualScene(sceneData) {
         </div>
       </div>
     `;
-  });
+  }
 
   wrapperDiv.innerHTML = `
     <div class="ai-avatar">🤖</div>
@@ -1206,6 +1239,7 @@ function renderVisualScene(sceneData) {
   chatBox.appendChild(wrapperDiv);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 
 // ==========================================
 // UI FORMATTING & LOADER FUNCTIONS
